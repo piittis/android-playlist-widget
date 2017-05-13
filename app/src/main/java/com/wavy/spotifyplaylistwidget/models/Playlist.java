@@ -6,6 +6,7 @@ public class Playlist {
     public String id;
     public int tracks;
     public String owner;
+    public Boolean selected = false;
 
     public Playlist(String name, String id, int tracks, String owner) {
         this.name = name;

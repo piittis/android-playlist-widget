@@ -6,8 +6,11 @@ import java.util.ArrayList;
 
 public class SpotifyApi {
 
+    public interface playlistsLoadedCallbackListener {
+        void onPlaylistsLoaded(ArrayList<Playlist> playlists);
+    }
 
-    public ArrayList<Playlist> getPlaylists() {
+    public void getPlaylists(playlistsLoadedCallbackListener callbackListener) {
         // Generate some random stuff for testing.
         ArrayList<Playlist> playlists = new ArrayList<>();
 
@@ -15,6 +18,6 @@ public class SpotifyApi {
             playlists.add(new Playlist("playlist"+i, Integer.toString(i), 1000, "owner"+1));
         }
 
-        return playlists;
+        callbackListener.onPlaylistsLoaded(playlists);
     }
 }
