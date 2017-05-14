@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
+import android.widget.ListView;
 
+import com.mobeta.android.dslv.DragSortListView;
+import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.models.Playlist;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
@@ -19,11 +22,9 @@ public class ArrangeActivity extends AppCompatActivity {
     private ArrayList<Playlist> playlists;
 
     // view elements
-    /*private RecyclerView playlistsSelectionView;
-    private PlaylistSelectionAdapter playlistSelectionAdapter;
-    private Button nextButton;
-    private Toolbar toolbar;
-    private SwipeRefreshLayout swipeRefresh;*/
+    private DragSortListView playlistArrangeView;
+    private PlaylistArrangeAdapter playlistArrangeAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,13 @@ public class ArrangeActivity extends AppCompatActivity {
 
         playlists = getIntent().getParcelableArrayListExtra("playlists");
 
-        int i = 0 ;
+        playlistArrangeView = (DragSortListView)this.findViewById(R.id.playlist_arrange_list);
+        playlistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, playlists);
+        playlistArrangeView.setAdapter(playlistArrangeAdapter);
 
+        playlistArrangeView.setDropListener(onDrop);
+
+        playlistArrangeView.setDragEnabled(true);
     }
 
     @Override
@@ -41,4 +47,17 @@ public class ArrangeActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
     }
+
+    private DragSortListView.DropListener onDrop =
+            new DragSortListView.DropListener() {
+                @Override
+                public void drop(int from, int to) {
+                    if (from != to) {
+                        Playlist item = playlistArrangeAdapter.getItem(from);
+                        playlistArrangeAdapter.remove(item);
+                        playlistArrangeAdapter.insert(item, to);
+                    }
+                }
+            };
+
 }

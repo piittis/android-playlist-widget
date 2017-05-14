@@ -19,7 +19,7 @@ import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class MainActivity extends AppCompatActivity
+public class SelectActivity extends AppCompatActivity
         implements SpotifyApi.playlistsLoadedCallbackListener {
 
     private ArrayList<Playlist> playlists;
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_select);
 
         toolbar = (Toolbar) findViewById(R.id.selection_toolbar);
         toolbar.setTitle(toolbarDefaultTitle);
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         if (this.playlists.size() == 0) {
             loadPlaylists();
         }
+        updateSelectedPlaylists();
     }
 
     private void initializePlaylistSelectionList() {

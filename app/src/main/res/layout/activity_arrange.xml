@@ -4,12 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:gravity="center"
     android:orientation="vertical"
     tools:context="com.wavy.spotifyplaylistwidget.ArrangeActivity">
 
-    <ListView
-        android:layout_width="344dp"
-        android:layout_height="551dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/selection_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="0dp"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="Arrange playlists" />
+
+    <com.mobeta.android.dslv.DragSortListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:dslv="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/playlist_arrange_list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_margin="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="2dp"
+        dslv:collapsed_height="2dp"
+        dslv:drag_enabled="true"
+        dslv:drag_handle_id="@+id/playlist_drag_handle"
+        dslv:drag_scroll_start="0.33"
+        dslv:drag_start_mode="onDown"
+        dslv:float_alpha="0.6"
+        dslv:max_drag_scroll_speed="0.5"
+        dslv:slide_shuffle_speed="0.3"
+        dslv:track_drag_sort="false"
+        dslv:use_default_controller="true"
+        tools:listitem="@layout/arrangeable_playlist" />
+
+    <Button
+        android:id="@+id/selection_next_button"
+        android:layout_width="100dp"
+        android:layout_height="56dp"
+        android:enabled="false"
+        android:text="Add widget" />
+
 </LinearLayout>
