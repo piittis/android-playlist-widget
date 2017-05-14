@@ -8,4 +8,19 @@
         app:showAsAction="never"
         android:title="select all" />
 
+    <item
+        android:id="@+id/remove_selections"
+        app:showAsAction="never"
+        android:title="remove selections" />
+
+    <item
+        android:id="@+id/refresh"
+        app:showAsAction="never"
+        android:title="refresh" />
+
+    <item
+        android:id="@+id/change_user"
+        app:showAsAction="never"
+        android:title="change user" />
+
 </menu>

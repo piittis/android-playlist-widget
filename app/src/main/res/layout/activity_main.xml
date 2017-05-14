@@ -19,17 +19,27 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="Select playlists" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/playlist_selection_list"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        tools:listitem="@layout/selectable_playlist" />
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/playlist_selection_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0"
+            tools:listitem="@layout/selectable_playlist" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/selection_next_button"
         android:layout_width="100dp"
         android:layout_height="56dp"
+        android:enabled="false"
         android:text="Next" />
 
 </LinearLayout>
