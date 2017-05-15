@@ -1,21 +1,13 @@
 package com.wavy.spotifyplaylistwidget;
 
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.widget.Button;
-import android.widget.ListView;
+import android.support.v7.app.AppCompatActivity;
 
 import com.mobeta.android.dslv.DragSortListView;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
-import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.models.Playlist;
-import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class ArrangeActivity extends AppCompatActivity {
 

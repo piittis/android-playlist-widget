@@ -5,24 +5,15 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-    <FrameLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/rectangle">
-
         <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/playlist_image"
+            android:layout_width="@dimen/playlist_image_size"
+            android:layout_height="@dimen/playlist_image_size"
             android:layout_gravity="center"
             android:adjustViewBounds="false"
-            android:background="@drawable/ic_music_note_white_24dp"
             android:backgroundTint="@color/colorText2"
             android:contentDescription="Playlist image"
-            android:cropToPadding="false"
-            android:scaleType="centerCrop" />
-    </FrameLayout>
-
+            android:cropToPadding="false"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

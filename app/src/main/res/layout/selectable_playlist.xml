@@ -18,5 +18,5 @@
             android:layout_marginLeft="-4.5dp" />
     </FrameLayout>
 
-    <include layout="@layout/paylist_row" />
+    <include layout="@layout/playlist_row" />
 </LinearLayout>

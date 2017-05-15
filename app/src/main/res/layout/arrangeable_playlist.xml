@@ -15,6 +15,6 @@
         android:scaleType="center"
         android:src="@drawable/ic_drag_handle_white_24dp" />
 
-    <include layout="@layout/paylist_row" />
+    <include layout="@layout/playlist_row" />
 
 </LinearLayout>

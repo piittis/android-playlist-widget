@@ -1,9 +1,9 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +22,7 @@ import java.util.HashSet;
 public class SelectActivity extends AppCompatActivity
         implements SpotifyApi.playlistsLoadedCallbackListener {
 
+    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     private ArrayList<Playlist> playlists;
     private HashSet<String> selectedPlaylistIds = new HashSet<>();
     private SpotifyApi spotifyApi = new SpotifyApi();
@@ -72,7 +73,7 @@ public class SelectActivity extends AppCompatActivity
     }
 
     private void initializePlaylistSelectionList() {
-        playlistSelectionAdapter = new PlaylistSelectionAdapter(playlists);
+        playlistSelectionAdapter = new PlaylistSelectionAdapter(playlists, getApplicationContext());
         playlistsSelectionView = (RecyclerView)this.findViewById(R.id.playlist_selection_list);
         playlistsSelectionView.setAdapter(playlistSelectionAdapter);
         playlistsSelectionView.setLayoutManager(new LinearLayoutManager(this));

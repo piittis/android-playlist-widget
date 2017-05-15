@@ -1,13 +1,16 @@
 package com.wavy.spotifyplaylistwidget.listAdapters;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.models.Playlist;
 
@@ -19,9 +22,11 @@ public class PlaylistSelectionAdapter
     private final ArrayList<Playlist> playlists;
     private View view;
     private View.OnClickListener clickListener;
+    private Context mContext;
 
-    public PlaylistSelectionAdapter(ArrayList<Playlist> playlists) {
+    public PlaylistSelectionAdapter(ArrayList<Playlist> playlists, Context context) {
         this.playlists = playlists;
+        mContext = context;
     }
 
     @Override
@@ -39,6 +44,15 @@ public class PlaylistSelectionAdapter
         holder.playlistName.setText(list.name);
         holder.playlistInfo.setText(list.tracks + " kappaletta");
         holder.checkBox.setChecked(list.selected);
+
+        Picasso.with(mContext)
+                .load(list.mImageUrl)
+                .resize(mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
+                        mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
+                .centerCrop()
+                .placeholder(R.drawable.ic_music_note_white_24dp)
+                .into(holder.mImageView);
+
 
         holder.setOnClickListener((v) -> {
             list.selected = !list.selected;
@@ -63,6 +77,7 @@ public class PlaylistSelectionAdapter
         final TextView playlistInfo;
         final CheckBox checkBox;
         final View view;
+        final ImageView mImageView;
 
         public void setOnClickListener (View.OnClickListener listener) {
             view.setOnClickListener(listener);
@@ -77,6 +92,7 @@ public class PlaylistSelectionAdapter
             playlistName = (TextView) view.findViewById(R.id.playlist_name);
             playlistInfo = (TextView) view.findViewById(R.id.playlist_info);
             checkBox = (CheckBox) view.findViewById(R.id.playlist_checkbox);
+            mImageView = (ImageView) view.findViewById(R.id.playlist_image);
         }
     }
 }

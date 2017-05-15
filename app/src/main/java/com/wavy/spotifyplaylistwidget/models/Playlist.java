@@ -7,14 +7,16 @@ public class Playlist implements Parcelable {
 
     public String name;
     public String id;
+    public String mImageUrl;
     public int tracks;
     public String owner;
     public Boolean selected = false;
 
-    public Playlist(String name, String id, int tracks, String owner) {
+    public Playlist(String name, String id, int tracks, String imageurl, String owner) {
         this.name = name;
         this.id = id;
         this.tracks = tracks;
+        mImageUrl = imageurl;
         this.owner = owner;
     }
 
@@ -22,6 +24,7 @@ public class Playlist implements Parcelable {
         this.name = in.readString();
         this.id = in.readString();
         this.tracks = in.readInt();
+        mImageUrl = in.readString();
         this.owner = in.readString();
         this.selected = in.readInt() == 1;
     }
@@ -36,6 +39,7 @@ public class Playlist implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.id);
         dest.writeInt(this.tracks);
+        dest.writeString(mImageUrl);
         dest.writeString(this.owner);
         dest.writeInt((this.selected) ? 1 : 0);
     }

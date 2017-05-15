@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.models.Playlist;
 
@@ -42,6 +44,14 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
 
         ((TextView)row.findViewById(R.id.playlist_name)).setText(pl.name);
         ((TextView)row.findViewById(R.id.playlist_info)).setText(pl.tracks + " kappaletta");
+
+        Picasso.with(context)
+                .load(pl.mImageUrl)
+                .resize(context.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
+                        context.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
+                .centerCrop()
+                .placeholder(R.drawable.ic_music_note_white_24dp)
+                .into(((ImageView)row.findViewById(R.id.playlist_image)));
 
         return row;
     }
