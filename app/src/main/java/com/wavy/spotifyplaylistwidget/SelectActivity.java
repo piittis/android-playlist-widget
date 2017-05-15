@@ -22,20 +22,18 @@ import java.util.HashSet;
 public class SelectActivity extends AppCompatActivity
         implements SpotifyApi.playlistsLoadedCallbackListener {
 
-    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
-    private ArrayList<Playlist> playlists;
-    private HashSet<String> selectedPlaylistIds = new HashSet<>();
-    private SpotifyApi spotifyApi = new SpotifyApi();
+    private ArrayList<Playlist> mPlaylists;
+    private HashSet<String> mSelectedPlaylistIds = new HashSet<>();
+    private SpotifyApi mSpotifyApi = new SpotifyApi();
 
     // view elements
-    private RecyclerView playlistsSelectionView;
-    private PlaylistSelectionAdapter playlistSelectionAdapter;
-    private Button nextButton;
-    private Toolbar toolbar;
-    private SwipeRefreshLayout swipeRefresh;
+    private RecyclerView mPlaylistsSelectionView;
+    private PlaylistSelectionAdapter mPlaylistSelectionAdapter;
+    private Button mNextButton;
+    private Toolbar mToolbar;
+    private SwipeRefreshLayout mSwipeRefresh;
 
-    final String toolbarDefaultTitle = "Select playlists";
-
+    final String mToolbarTitle = "Select mPlaylists";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,44 +44,44 @@ public class SelectActivity extends AppCompatActivity
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_select);
 
-        toolbar = (Toolbar) findViewById(R.id.selection_toolbar);
-        toolbar.setTitle(toolbarDefaultTitle);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.selection_toolbar);
+        mToolbar.setTitle(mToolbarTitle);
+        setSupportActionBar(mToolbar);
 
-        nextButton = (Button) findViewById(R.id.selection_next_button);
-        nextButton.setOnClickListener((v) -> goToArrangeScreen());
+        mNextButton = (Button) findViewById(R.id.selection_next_button);
+        mNextButton.setOnClickListener((v) -> goToArrangeScreen());
 
-        swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
-        swipeRefresh.setOnRefreshListener(this::loadPlaylists);
+        mSwipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+        mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
 
         if (savedInstanceState != null) {
-            this.playlists = savedInstanceState.getParcelableArrayList("playlists");
+            this.mPlaylists = savedInstanceState.getParcelableArrayList("mPlaylists");
         }
 
-        if (this.playlists == null) {
-            this.playlists = new ArrayList<>();
+        if (this.mPlaylists == null) {
+            this.mPlaylists = new ArrayList<>();
         }
 
         initializePlaylistSelectionList();
 
-        if (this.playlists.size() == 0) {
+        if (this.mPlaylists.size() == 0) {
             loadPlaylists();
         }
         updateSelectedPlaylists();
     }
 
     private void initializePlaylistSelectionList() {
-        playlistSelectionAdapter = new PlaylistSelectionAdapter(playlists, getApplicationContext());
-        playlistsSelectionView = (RecyclerView)this.findViewById(R.id.playlist_selection_list);
-        playlistsSelectionView.setAdapter(playlistSelectionAdapter);
-        playlistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
-        playlistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
+        mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, getApplicationContext());
+        mPlaylistsSelectionView = (RecyclerView)this.findViewById(R.id.playlist_selection_list);
+        mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
+        mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
+        mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("playlists", playlists);
+        outState.putParcelableArrayList("mPlaylists", mPlaylists);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class SelectActivity extends AppCompatActivity
                 selectAll(false);
                 return true;
             case R.id.refresh:
-                swipeRefresh.setRefreshing(true);
+                mSwipeRefresh.setRefreshing(true);
                 loadPlaylists();
                 return true;
             default:
@@ -114,22 +112,22 @@ public class SelectActivity extends AppCompatActivity
     }
 
     private void loadPlaylists() {
-        spotifyApi.getPlaylists(this);
+        mSpotifyApi.getPlaylists(this);
     }
 
     @Override
     public void onPlaylistsLoaded(ArrayList<Playlist> newPlaylists) {
-        playlists.clear();
-        playlists.addAll(newPlaylists);
+        mPlaylists.clear();
+        mPlaylists.addAll(newPlaylists);
 
         //restore selected status
-        for (Playlist pl : playlists) {
-            pl.selected = selectedPlaylistIds.contains(pl.id);
+        for (Playlist pl : mPlaylists) {
+            pl.selected = mSelectedPlaylistIds.contains(pl.id);
         }
 
-        playlistSelectionAdapter.notifyDataSetChanged();
+        mPlaylistSelectionAdapter.notifyDataSetChanged();
 
-        swipeRefresh.setRefreshing(false);
+        mSwipeRefresh.setRefreshing(false);
     }
 
     private void goToArrangeScreen() {
@@ -137,39 +135,39 @@ public class SelectActivity extends AppCompatActivity
         Intent intent = new Intent(getApplicationContext(), ArrangeActivity.class);
 
         ArrayList<Playlist> selected = new ArrayList<>();
-        for(Playlist pl : playlists)
+        for(Playlist pl : mPlaylists)
             if (pl.selected)
                 selected.add(pl);
 
-        intent.putParcelableArrayListExtra("playlists", selected);
+        intent.putParcelableArrayListExtra("mPlaylists", selected);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
     }
 
     private void selectAll(boolean selected) {
-        if (this.playlists != null && this.playlistSelectionAdapter != null) {
-            for (Playlist pl : this.playlists) {
+        if (this.mPlaylists != null && this.mPlaylistSelectionAdapter != null) {
+            for (Playlist pl : this.mPlaylists) {
                 pl.selected = selected;
             }
-            playlistSelectionAdapter.notifyDataSetChanged();
+            mPlaylistSelectionAdapter.notifyDataSetChanged();
             updateSelectedPlaylists();
         }
     }
 
     private void updateSelectedPlaylists() {
 
-        selectedPlaylistIds.clear();
+        mSelectedPlaylistIds.clear();
 
-        for (Playlist pl : this.playlists)
+        for (Playlist pl : this.mPlaylists)
             if (pl.selected)
-                selectedPlaylistIds.add(pl.id);
+                mSelectedPlaylistIds.add(pl.id);
 
-        if (selectedPlaylistIds.size() > 0) {
-            toolbar.setTitle(String.format("%d / %d valittu", selectedPlaylistIds.size(), this.playlists.size()));
-            nextButton.setEnabled(true);
+        if (mSelectedPlaylistIds.size() > 0) {
+            mToolbar.setTitle(String.format("%d / %d valittu", mSelectedPlaylistIds.size(), this.mPlaylists.size()));
+            mNextButton.setEnabled(true);
         } else {
-            toolbar.setTitle(this.toolbarDefaultTitle);
-            nextButton.setEnabled(false);
+            mToolbar.setTitle(this.mToolbarTitle);
+            mNextButton.setEnabled(false);
         }
     }
 }

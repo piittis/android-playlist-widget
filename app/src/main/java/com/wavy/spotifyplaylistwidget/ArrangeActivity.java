@@ -11,11 +11,11 @@ import java.util.ArrayList;
 
 public class ArrangeActivity extends AppCompatActivity {
 
-    private ArrayList<Playlist> playlists;
+    private ArrayList<Playlist> mPlaylists;
 
     // view elements
-    private DragSortListView playlistArrangeView;
-    private PlaylistArrangeAdapter playlistArrangeAdapter;
+    private DragSortListView mPlaylistArrangeView;
+    private PlaylistArrangeAdapter mPlaylistArrangeAdapter;
 
 
     @Override
@@ -23,15 +23,15 @@ public class ArrangeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arrange);
 
-        playlists = getIntent().getParcelableArrayListExtra("playlists");
+        mPlaylists = getIntent().getParcelableArrayListExtra("mPlaylists");
 
-        playlistArrangeView = (DragSortListView)this.findViewById(R.id.playlist_arrange_list);
-        playlistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, playlists);
-        playlistArrangeView.setAdapter(playlistArrangeAdapter);
+        mPlaylistArrangeView = (DragSortListView)this.findViewById(R.id.playlist_arrange_list);
+        mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists);
+        mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
 
-        playlistArrangeView.setDropListener(onDrop);
+        mPlaylistArrangeView.setDropListener(onDrop);
 
-        playlistArrangeView.setDragEnabled(true);
+        mPlaylistArrangeView.setDragEnabled(true);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class ArrangeActivity extends AppCompatActivity {
                 @Override
                 public void drop(int from, int to) {
                     if (from != to) {
-                        Playlist item = playlistArrangeAdapter.getItem(from);
-                        playlistArrangeAdapter.remove(item);
-                        playlistArrangeAdapter.insert(item, to);
+                        Playlist item = mPlaylistArrangeAdapter.getItem(from);
+                        mPlaylistArrangeAdapter.remove(item);
+                        mPlaylistArrangeAdapter.insert(item, to);
                     }
                 }
             };

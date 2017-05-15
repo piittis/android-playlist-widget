@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class PlaylistSelectionAdapter
         extends RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder>{
 
+    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     private final ArrayList<Playlist> playlists;
     private View view;
     private View.OnClickListener clickListener;

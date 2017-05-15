@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
 
+    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     private final ArrayList<Playlist> playlists;
     private int layoutResourceId;
     private Context context;

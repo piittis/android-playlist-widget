@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 public class Playlist implements Parcelable {
 
+    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     public String name;
     public String id;
     public String mImageUrl;
