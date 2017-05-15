@@ -4,7 +4,6 @@
 
 ### TODO ####
 * Use dimens.xml, strings.xml etc. and x-large versions
-* This README would normally document whatever steps are necessary to get your application up and running.
 
 ### What is this repository for? ###
 
