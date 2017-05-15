@@ -4,6 +4,8 @@
 
 ### TODO ####
 * Use dimens.xml, strings.xml etc. and x-large versions
+* Style buttons (https://github.com/medyo/Fancybuttons maybe)
+* Use spotify api (Retrofit, OkHttp, HttpUrlConnection maybe)
 
 ### What is this repository for? ###
 
