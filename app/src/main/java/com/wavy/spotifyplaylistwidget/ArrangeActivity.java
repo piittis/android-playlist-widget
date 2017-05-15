@@ -25,7 +25,7 @@ public class ArrangeActivity extends AppCompatActivity {
 
         mPlaylists = getIntent().getParcelableArrayListExtra("mPlaylists");
 
-        mPlaylistArrangeView = (DragSortListView)this.findViewById(R.id.playlist_arrange_list);
+        mPlaylistArrangeView = (DragSortListView) this.findViewById(R.id.playlist_arrange_list);
         mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists);
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
 

@@ -17,7 +17,7 @@ import com.wavy.spotifyplaylistwidget.models.Playlist;
 import java.util.ArrayList;
 
 public class PlaylistSelectionAdapter
-        extends RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder>{
+        extends RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder> {
 
     //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     private final ArrayList<Playlist> playlists;
@@ -80,7 +80,7 @@ public class PlaylistSelectionAdapter
         final View view;
         final ImageView mImageView;
 
-        public void setOnClickListener (View.OnClickListener listener) {
+        public void setOnClickListener(View.OnClickListener listener) {
             view.setOnClickListener(listener);
             // Checkbox needs it's own listener
             checkBox.setOnClickListener(listener);

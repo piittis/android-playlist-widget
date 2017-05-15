@@ -43,8 +43,8 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
         // Get the data item for this position
         Playlist pl = playlists.get(position);
 
-        ((TextView)row.findViewById(R.id.playlist_name)).setText(pl.name);
-        ((TextView)row.findViewById(R.id.playlist_info)).setText(pl.tracks + " kappaletta");
+        ((TextView) row.findViewById(R.id.playlist_name)).setText(pl.name);
+        ((TextView) row.findViewById(R.id.playlist_info)).setText(pl.tracks + " kappaletta");
 
         Picasso.with(context)
                 .load(pl.mImageUrl)
@@ -52,7 +52,7 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
                         context.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
                 .centerCrop()
                 .placeholder(R.drawable.ic_music_note_white_24dp)
-                .into(((ImageView)row.findViewById(R.id.playlist_image)));
+                .into(((ImageView) row.findViewById(R.id.playlist_image)));
 
         return row;
     }

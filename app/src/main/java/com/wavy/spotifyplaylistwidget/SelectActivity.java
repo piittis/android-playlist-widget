@@ -51,7 +51,7 @@ public class SelectActivity extends AppCompatActivity
         mNextButton = (Button) findViewById(R.id.selection_next_button);
         mNextButton.setOnClickListener((v) -> goToArrangeScreen());
 
-        mSwipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+        mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
 
         if (savedInstanceState != null) {
@@ -72,7 +72,7 @@ public class SelectActivity extends AppCompatActivity
 
     private void initializePlaylistSelectionList() {
         mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, getApplicationContext());
-        mPlaylistsSelectionView = (RecyclerView)this.findViewById(R.id.playlist_selection_list);
+        mPlaylistsSelectionView = (RecyclerView) this.findViewById(R.id.playlist_selection_list);
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
         mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
@@ -135,7 +135,7 @@ public class SelectActivity extends AppCompatActivity
         Intent intent = new Intent(getApplicationContext(), ArrangeActivity.class);
 
         ArrayList<Playlist> selected = new ArrayList<>();
-        for(Playlist pl : mPlaylists)
+        for (Playlist pl : mPlaylists)
             if (pl.selected)
                 selected.add(pl);
 
