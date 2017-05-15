@@ -19,35 +19,34 @@ import java.util.ArrayList;
 public class PlaylistSelectionAdapter
         extends RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder> {
 
-    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
-    private final ArrayList<Playlist> playlists;
-    private View view;
-    private View.OnClickListener clickListener;
+    private final ArrayList<Playlist> mPlaylists;
+    private View mView;
+    private View.OnClickListener mClickListener;
     private Context mContext;
 
     public PlaylistSelectionAdapter(ArrayList<Playlist> playlists, Context context) {
-        this.playlists = playlists;
+        mPlaylists = playlists;
         mContext = context;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.selectable_playlist, parent, false);
-        return new ViewHolder(view);
+        mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.selectable_playlist, parent, false);
+        return new ViewHolder(mView);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(PlaylistSelectionAdapter.ViewHolder holder, int position) {
 
-        Playlist list = playlists.get(position);
+        Playlist list = mPlaylists.get(position);
         //todo use resources and stuff
         holder.playlistName.setText(list.name);
         holder.playlistInfo.setText(list.tracks + " kappaletta");
         holder.checkBox.setChecked(list.selected);
 
         Picasso.with(mContext)
-                .load(list.mImageUrl)
+                .load(list.imageUrl)
                 .resize(mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
                         mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
                 .centerCrop()
@@ -59,17 +58,17 @@ public class PlaylistSelectionAdapter
             list.selected = !list.selected;
             holder.checkBox.setChecked(list.selected);
             notifyItemChanged(position);
-            clickListener.onClick(view);
+            mClickListener.onClick(mView);
         });
     }
 
     public void setOnClickListener(View.OnClickListener listener) {
-        clickListener = listener;
+        mClickListener = listener;
     }
 
     @Override
     public int getItemCount() {
-        return playlists.size();
+        return mPlaylists.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

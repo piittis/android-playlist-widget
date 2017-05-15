@@ -18,16 +18,15 @@ import java.util.ArrayList;
 
 public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
 
-    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
-    private final ArrayList<Playlist> playlists;
-    private int layoutResourceId;
-    private Context context;
+    private final ArrayList<Playlist> mPlaylists;
+    private int mLayoutResourceId;
+    private Context mContext;
 
     public PlaylistArrangeAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Playlist> playlists) {
         super(context, resource, playlists);
-        this.context = context;
-        this.layoutResourceId = resource;
-        this.playlists = playlists;
+        mContext = context;
+        mLayoutResourceId = resource;
+        mPlaylists = playlists;
 
     }
 
@@ -37,19 +36,19 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
         View row = convertView;
 
         if (row == null) {
-            row = LayoutInflater.from(context).inflate(layoutResourceId, parent, false);
+            row = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false);
         }
 
         // Get the data item for this position
-        Playlist pl = playlists.get(position);
+        Playlist pl = mPlaylists.get(position);
 
         ((TextView) row.findViewById(R.id.playlist_name)).setText(pl.name);
         ((TextView) row.findViewById(R.id.playlist_info)).setText(pl.tracks + " kappaletta");
 
-        Picasso.with(context)
-                .load(pl.mImageUrl)
-                .resize(context.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
-                        context.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
+        Picasso.with(mContext)
+                .load(pl.imageUrl)
+                .resize(mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
+                        mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
                 .centerCrop()
                 .placeholder(R.drawable.ic_music_note_white_24dp)
                 .into(((ImageView) row.findViewById(R.id.playlist_image)));
