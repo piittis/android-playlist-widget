@@ -33,7 +33,7 @@ public class SelectActivity extends AppCompatActivity
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefresh;
 
-    final String mToolbarTitle = "Select mPlaylists";
+    final String mToolbarTitle = "Select playlists";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

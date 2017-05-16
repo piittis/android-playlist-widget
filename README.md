@@ -6,6 +6,8 @@
 * Use dimens.xml, strings.xml etc. and x-large versions
 * Style buttons (https://github.com/medyo/Fancybuttons maybe)
 * Use spotify api (Retrofit, OkHttp, HttpUrlConnection maybe)
+* If possible, use same font as spotify app
+* localization
 
     #### ATTE ####
 * null
