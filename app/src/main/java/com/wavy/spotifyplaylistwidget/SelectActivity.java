@@ -13,8 +13,8 @@ import android.view.Window;
 import android.widget.Button;
 
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
-import com.wavy.spotifyplaylistwidget.models.Playlist;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
+import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import java.util.HashSet;
 public class SelectActivity extends AppCompatActivity
         implements SpotifyApi.playlistsLoadedCallbackListener {
 
-    private ArrayList<Playlist> mPlaylists;
+    private ArrayList<PlaylistViewModel> mPlaylists;
     private HashSet<String> mSelectedPlaylistIds = new HashSet<>();
     private SpotifyApi mSpotifyApi = new SpotifyApi();
 
@@ -38,10 +38,8 @@ public class SelectActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //todo log in with spotify, get access token, etc.
-
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_select);
 
         mToolbar = (Toolbar) findViewById(R.id.selection_toolbar);
@@ -55,16 +53,17 @@ public class SelectActivity extends AppCompatActivity
         mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
 
         if (savedInstanceState != null) {
-            this.mPlaylists = savedInstanceState.getParcelableArrayList("mPlaylists");
+            mPlaylists = savedInstanceState.getParcelableArrayList("mPlaylists");
         }
 
-        if (this.mPlaylists == null) {
-            this.mPlaylists = new ArrayList<>();
+        if (mPlaylists == null) {
+            mPlaylists = new ArrayList<>();
         }
 
         initializePlaylistSelectionList();
 
-        if (this.mPlaylists.size() == 0) {
+        if (mPlaylists.size() == 0) {
+            // todo show loader, hide on finish
             loadPlaylists();
         }
         updateSelectedPlaylists();
@@ -72,7 +71,7 @@ public class SelectActivity extends AppCompatActivity
 
     private void initializePlaylistSelectionList() {
         mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, getApplicationContext());
-        mPlaylistsSelectionView = (RecyclerView) this.findViewById(R.id.playlist_selection_list);
+        mPlaylistsSelectionView = (RecyclerView) findViewById(R.id.playlist_selection_list);
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
         mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
@@ -112,30 +111,29 @@ public class SelectActivity extends AppCompatActivity
     }
 
     private void loadPlaylists() {
+        // todo react to possible errors
         mSpotifyApi.getPlaylists(this);
     }
 
     @Override
-    public void onPlaylistsLoaded(ArrayList<Playlist> newPlaylists) {
+    public void onPlaylistsLoaded(ArrayList<PlaylistViewModel> newPlaylists) {
         mPlaylists.clear();
         mPlaylists.addAll(newPlaylists);
 
         //restore selected status
-        for (Playlist pl : mPlaylists) {
+        for (PlaylistViewModel pl : mPlaylists) {
             pl.selected = mSelectedPlaylistIds.contains(pl.id);
         }
 
         mPlaylistSelectionAdapter.notifyDataSetChanged();
-
         mSwipeRefresh.setRefreshing(false);
     }
 
     private void goToArrangeScreen() {
-
         Intent intent = new Intent(getApplicationContext(), ArrangeActivity.class);
 
-        ArrayList<Playlist> selected = new ArrayList<>();
-        for (Playlist pl : mPlaylists)
+        ArrayList<PlaylistViewModel> selected = new ArrayList<>();
+        for (PlaylistViewModel pl : mPlaylists)
             if (pl.selected)
                 selected.add(pl);
 
@@ -145,28 +143,28 @@ public class SelectActivity extends AppCompatActivity
     }
 
     private void selectAll(boolean selected) {
-        if (this.mPlaylists != null && this.mPlaylistSelectionAdapter != null) {
-            for (Playlist pl : this.mPlaylists) {
+        if (mPlaylists != null && mPlaylistSelectionAdapter != null) {
+            for (PlaylistViewModel pl : mPlaylists) {
                 pl.selected = selected;
             }
             mPlaylistSelectionAdapter.notifyDataSetChanged();
             updateSelectedPlaylists();
         }
+
     }
 
     private void updateSelectedPlaylists() {
-
         mSelectedPlaylistIds.clear();
 
-        for (Playlist pl : this.mPlaylists)
+        for (PlaylistViewModel pl : mPlaylists)
             if (pl.selected)
                 mSelectedPlaylistIds.add(pl.id);
 
         if (mSelectedPlaylistIds.size() > 0) {
-            mToolbar.setTitle(String.format("%d / %d valittu", mSelectedPlaylistIds.size(), this.mPlaylists.size()));
+            mToolbar.setTitle(String.format("%d / %d valittu", mSelectedPlaylistIds.size(), mPlaylists.size()));
             mNextButton.setEnabled(true);
         } else {
-            mToolbar.setTitle(this.mToolbarTitle);
+            mToolbar.setTitle(mToolbarTitle);
             mNextButton.setEnabled(false);
         }
     }

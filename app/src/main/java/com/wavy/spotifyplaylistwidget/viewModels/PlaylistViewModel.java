@@ -1,32 +1,32 @@
-package com.wavy.spotifyplaylistwidget.models;
+package com.wavy.spotifyplaylistwidget.viewModels;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Playlist implements Parcelable {
+public class PlaylistViewModel implements Parcelable {
 
     //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     public String name;
     public String id;
     public String imageUrl;
     public int tracks;
-    public String owner;
+    //public String owner;
     public Boolean selected = false;
 
-    public Playlist(String name, String id, int tracks, String imageUrl, String owner) {
+    public PlaylistViewModel(String name, String id, int tracks, String imageUrl/*, String owner*/) {
         this.name = name;
         this.id = id;
         this.tracks = tracks;
         this.imageUrl = imageUrl;
-        this.owner = owner;
+        //this.owner = owner;
     }
 
-    private Playlist(Parcel in) {
+    private PlaylistViewModel(Parcel in) {
         this.name = in.readString();
         this.id = in.readString();
         this.tracks = in.readInt();
         this.imageUrl = in.readString();
-        this.owner = in.readString();
+        //this.owner = in.readString();
         this.selected = in.readInt() == 1;
     }
 
@@ -41,18 +41,18 @@ public class Playlist implements Parcelable {
         dest.writeString(this.id);
         dest.writeInt(this.tracks);
         dest.writeString(this.imageUrl);
-        dest.writeString(this.owner);
+        //dest.writeString(this.owner);
         dest.writeInt((this.selected) ? 1 : 0);
     }
 
-    public static final Parcelable.Creator<Playlist> CREATOR
-            = new Parcelable.Creator<Playlist>() {
-        public Playlist createFromParcel(Parcel in) {
-            return new Playlist(in);
+    public static final Creator<PlaylistViewModel> CREATOR
+            = new Creator<PlaylistViewModel>() {
+        public PlaylistViewModel createFromParcel(Parcel in) {
+            return new PlaylistViewModel(in);
         }
 
-        public Playlist[] newArray(int size) {
-            return new Playlist[size];
+        public PlaylistViewModel[] newArray(int size) {
+            return new PlaylistViewModel[size];
         }
     };
 }

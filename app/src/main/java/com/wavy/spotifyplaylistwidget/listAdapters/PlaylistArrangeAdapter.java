@@ -12,17 +12,17 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
-import com.wavy.spotifyplaylistwidget.models.Playlist;
+import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
 
-public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
+public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
 
-    private final ArrayList<Playlist> mPlaylists;
+    private final ArrayList<PlaylistViewModel> mPlaylists;
     private int mLayoutResourceId;
     private Context mContext;
 
-    public PlaylistArrangeAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<Playlist> playlists) {
+    public PlaylistArrangeAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<PlaylistViewModel> playlists) {
         super(context, resource, playlists);
         mContext = context;
         mLayoutResourceId = resource;
@@ -40,7 +40,7 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<Playlist> {
         }
 
         // Get the data item for this position
-        Playlist pl = mPlaylists.get(position);
+        PlaylistViewModel pl = mPlaylists.get(position);
 
         ((TextView) row.findViewById(R.id.playlist_name)).setText(pl.name);
         ((TextView) row.findViewById(R.id.playlist_info)).setText(pl.tracks + " kappaletta");

@@ -5,13 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.mobeta.android.dslv.DragSortListView;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
-import com.wavy.spotifyplaylistwidget.models.Playlist;
+import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
 
 public class ArrangeActivity extends AppCompatActivity {
 
-    private ArrayList<Playlist> mPlaylists;
+    private ArrayList<PlaylistViewModel> mPlaylists;
 
     // view elements
     private DragSortListView mPlaylistArrangeView;
@@ -25,7 +25,7 @@ public class ArrangeActivity extends AppCompatActivity {
 
         mPlaylists = getIntent().getParcelableArrayListExtra("mPlaylists");
 
-        mPlaylistArrangeView = (DragSortListView) this.findViewById(R.id.playlist_arrange_list);
+        mPlaylistArrangeView = (DragSortListView) findViewById(R.id.playlist_arrange_list);
         mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists);
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
 
@@ -45,7 +45,7 @@ public class ArrangeActivity extends AppCompatActivity {
                 @Override
                 public void drop(int from, int to) {
                     if (from != to) {
-                        Playlist item = mPlaylistArrangeAdapter.getItem(from);
+                        PlaylistViewModel item = mPlaylistArrangeAdapter.getItem(from);
                         mPlaylistArrangeAdapter.remove(item);
                         mPlaylistArrangeAdapter.insert(item, to);
                     }

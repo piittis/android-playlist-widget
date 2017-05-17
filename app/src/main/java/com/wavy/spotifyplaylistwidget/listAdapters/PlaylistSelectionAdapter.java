@@ -12,19 +12,19 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
-import com.wavy.spotifyplaylistwidget.models.Playlist;
+import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
 
 public class PlaylistSelectionAdapter
         extends RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder> {
 
-    private final ArrayList<Playlist> mPlaylists;
+    private final ArrayList<PlaylistViewModel> mPlaylists;
     private View mView;
     private View.OnClickListener mClickListener;
     private Context mContext;
 
-    public PlaylistSelectionAdapter(ArrayList<Playlist> playlists, Context context) {
+    public PlaylistSelectionAdapter(ArrayList<PlaylistViewModel> playlists, Context context) {
         mPlaylists = playlists;
         mContext = context;
     }
@@ -39,7 +39,7 @@ public class PlaylistSelectionAdapter
     @Override
     public void onBindViewHolder(PlaylistSelectionAdapter.ViewHolder holder, int position) {
 
-        Playlist list = mPlaylists.get(position);
+        PlaylistViewModel list = mPlaylists.get(position);
         //todo use resources and stuff
         holder.playlistName.setText(list.name);
         holder.playlistInfo.setText(list.tracks + " kappaletta");
