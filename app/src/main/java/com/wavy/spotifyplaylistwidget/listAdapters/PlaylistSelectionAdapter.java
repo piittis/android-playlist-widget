@@ -3,15 +3,18 @@ package com.wavy.spotifyplaylistwidget.listAdapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
+import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
@@ -23,10 +26,12 @@ public class PlaylistSelectionAdapter
     private View mView;
     private View.OnClickListener mClickListener;
     private Context mContext;
+    private int mImageSize;
 
     public PlaylistSelectionAdapter(ArrayList<PlaylistViewModel> playlists, Context context) {
         mPlaylists = playlists;
         mContext = context;
+        mImageSize = mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
     }
 
     @Override
@@ -39,24 +44,28 @@ public class PlaylistSelectionAdapter
     @Override
     public void onBindViewHolder(PlaylistSelectionAdapter.ViewHolder holder, int position) {
 
-        PlaylistViewModel list = mPlaylists.get(position);
+        PlaylistViewModel playlist = mPlaylists.get(position);
         //todo use resources and stuff
-        holder.playlistName.setText(list.name);
-        holder.playlistInfo.setText(list.tracks + " kappaletta");
-        holder.checkBox.setChecked(list.selected);
+        holder.playlistName.setText(playlist.name);
+        holder.playlistInfo.setText(playlist.tracks + " kappaletta");
+        holder.checkBox.setChecked(playlist.selected);
 
-        Picasso.with(mContext)
-                .load(list.imageUrl)
-                .resize(mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
-                        mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
-                .centerCrop()
-                .placeholder(R.drawable.ic_music_note_white_24dp)
-                .into(holder.mImageView);
+        if (playlist.imageUrl != null) {
 
+            Picasso.with(mContext.getApplicationContext())
+                    .load(playlist.imageUrl)
+                    .tag(PicassoOnScrollListener.RECYCLVIEW_TAG)
+                    .resize(mImageSize,
+                            mImageSize)
+                    .centerCrop()
+                    //todo placeholder get stretched to 50dp... it should be 24dp
+                    .placeholder(R.drawable.ic_music_note_white_24dp)
+                    .into(holder.mImageView);
+        }
 
         holder.setOnClickListener((v) -> {
-            list.selected = !list.selected;
-            holder.checkBox.setChecked(list.selected);
+            playlist.selected = !playlist.selected;
+            holder.checkBox.setChecked(playlist.selected);
             notifyItemChanged(position);
             mClickListener.onClick(mView);
         });

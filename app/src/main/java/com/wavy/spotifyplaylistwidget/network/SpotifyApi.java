@@ -1,5 +1,8 @@
 package com.wavy.spotifyplaylistwidget.network;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.lang.reflect.Array;
@@ -14,13 +17,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SpotifyApi {
 
+    private static final String TAG = "SpotifyApi";
     private static String mAuthHeaderValue;
     private static final String mApiRoot = "https://api.spotify.com/v1/";
-
     private PlaylistService mPlaylistService;
 
     public interface playlistsLoadedCallbackListener {
-        void onPlaylistsLoaded(ArrayList<PlaylistViewModel> playlists);
+        void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> playlists);
     }
 
     public SpotifyApi() {
@@ -37,14 +40,32 @@ public class SpotifyApi {
         mAuthHeaderValue = "Bearer " + token;
     }
 
-    public void getPlaylists(playlistsLoadedCallbackListener callbackListener) {
+    public static Boolean isAccessTokenSet() {
+        return mAuthHeaderValue != null;
+    }
 
-        Call<PlaylistService.PlaylistResponseModel> call = mPlaylistService.getPlaylistsOfUser(mAuthHeaderValue, 0);
+    /**
+     * Load playlists in batches of 50. Callback will be called for each batch.
+     * @param offset The index of the first playlist to return.
+     * @param callbackListener Listener that will be called with results.
+     */
+    public void getPlaylists(int offset, playlistsLoadedCallbackListener callbackListener) {
+
+        Call<PlaylistService.PlaylistResponseModel> call = mPlaylistService.getPlaylistsOfUser(mAuthHeaderValue, offset);
+        Log.d(TAG, "getPlaylists, offset " + offset);
 
         call.enqueue(new Callback<PlaylistService.PlaylistResponseModel>() {
             @Override
-            public void onResponse(Call<PlaylistService.PlaylistResponseModel> call, Response<PlaylistService.PlaylistResponseModel> response) {
-                callbackListener.onPlaylistsLoaded(getPlaylistViewModels(response.body()));
+            public void onResponse(@NonNull Call<PlaylistService.PlaylistResponseModel> call,
+                                   @NonNull Response<PlaylistService.PlaylistResponseModel> response) {
+
+
+                callbackListener.onPlaylistsLoaded(offset, getPlaylistViewModels(response.body()));
+                int playlistsLoaded = offset + 50;
+                if (playlistsLoaded < response.body().total) {
+                    // Recursively get more playlists
+                    getPlaylists(offset + 50, callbackListener);
+                }
             }
 
             @Override
@@ -67,6 +88,8 @@ public class SpotifyApi {
 
     // use smallest image since they are only 50dp on screen
     private static String getSmallestImageUrl(List<PlaylistService.ImageModel> images) {
+        if (images.size() == 0) return null;
+
         PlaylistService.ImageModel smallest = images.get(0);
         for(PlaylistService.ImageModel i : images) {
             if (i.width < smallest.width) {

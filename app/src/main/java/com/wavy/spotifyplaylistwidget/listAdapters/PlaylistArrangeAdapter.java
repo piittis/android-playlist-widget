@@ -21,13 +21,14 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
     private final ArrayList<PlaylistViewModel> mPlaylists;
     private int mLayoutResourceId;
     private Context mContext;
+    private int mImageSize;
 
     public PlaylistArrangeAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<PlaylistViewModel> playlists) {
         super(context, resource, playlists);
         mContext = context;
         mLayoutResourceId = resource;
         mPlaylists = playlists;
-
+        mImageSize = mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
     }
 
     @Override
@@ -40,18 +41,21 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
         }
 
         // Get the data item for this position
-        PlaylistViewModel pl = mPlaylists.get(position);
+        PlaylistViewModel playlist = mPlaylists.get(position);
 
-        ((TextView) row.findViewById(R.id.playlist_name)).setText(pl.name);
-        ((TextView) row.findViewById(R.id.playlist_info)).setText(pl.tracks + " kappaletta");
+        ((TextView) row.findViewById(R.id.playlist_name)).setText(playlist.name);
+        ((TextView) row.findViewById(R.id.playlist_info)).setText(playlist.tracks + " kappaletta");
 
-        Picasso.with(mContext)
-                .load(pl.imageUrl)
-                .resize(mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size),
-                        mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size))
-                .centerCrop()
-                .placeholder(R.drawable.ic_music_note_white_24dp)
-                .into(((ImageView) row.findViewById(R.id.playlist_image)));
+        if (playlist.imageUrl != null) {
+            Picasso.with(mContext)
+                    .load(playlist.imageUrl)
+                    .resize(mImageSize,
+                            mImageSize)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_music_note_white_24dp)
+                    .into(((ImageView) row.findViewById(R.id.playlist_image)));
+        }
+
 
         return row;
     }

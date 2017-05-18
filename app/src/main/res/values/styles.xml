@@ -8,4 +8,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CustomAnimations.Activity" parent="@android:style/Animation.Activity">
+
+        <!-- When closing the current activity, this is the animation that is run on the next activity (which is entering the screen). -->
+        <item name="android:activityCloseEnterAnimation">@anim/fade_in_hard</item>
+        <!-- When closing the current activity, this is the animation that is run on the current activity (which is exiting the screen). -->
+        <item name="android:activityCloseExitAnimation">@anim/fade_out_hard</item>
+        <!-- When opening a new activity, this is the animation that is run on the next activity (which is entering the screen). -->
+        <item name="android:activityOpenEnterAnimation">@anim/fade_in_hard</item>
+        <!-- When opening a new activity, this is the animation that is run on the previous activity (which is exiting the screen). -->
+        <item name="android:activityOpenExitAnimation">@anim/fade_out_hard</item>
+
+    </style>
+
+    <style name="SpotifyWidgetTheme" parent="Theme.AppCompat.NoActionBar" >
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowAnimationStyle">@style/CustomAnimations.Activity</item>
+    </style>
+
 </resources>

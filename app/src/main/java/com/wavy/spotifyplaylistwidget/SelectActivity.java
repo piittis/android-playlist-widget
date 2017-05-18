@@ -7,80 +7,98 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Button;
 
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
+import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class SelectActivity extends AppCompatActivity
         implements SpotifyApi.playlistsLoadedCallbackListener {
 
-    private ArrayList<PlaylistViewModel> mPlaylists;
+    private static final String TAG = "SelectActivity";
+    private ArrayList<PlaylistViewModel> mPlaylists = new ArrayList<>();
     private HashSet<String> mSelectedPlaylistIds = new HashSet<>();
     private SpotifyApi mSpotifyApi = new SpotifyApi();
+    private Boolean isFirstLoad = true;
 
     // view elements
-    private RecyclerView mPlaylistsSelectionView;
-    private PlaylistSelectionAdapter mPlaylistSelectionAdapter;
-    private Button mNextButton;
-    private Toolbar mToolbar;
-    private SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.playlist_selection_list) RecyclerView mPlaylistsSelectionView;
+    @BindView(R.id.selection_next_button) Button mNextButton;
+    @BindView(R.id.selection_toolbar) Toolbar mToolbar;
+    @BindView(R.id.swiperefresh) SwipeRefreshLayout mSwipeRefresh;
 
+    private PlaylistSelectionAdapter mPlaylistSelectionAdapter;
     final String mToolbarTitle = "Select playlists";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_select);
+        ButterKnife.bind(this);
 
-        mToolbar = (Toolbar) findViewById(R.id.selection_toolbar);
         mToolbar.setTitle(mToolbarTitle);
         setSupportActionBar(mToolbar);
 
-        mNextButton = (Button) findViewById(R.id.selection_next_button);
-        mNextButton.setOnClickListener((v) -> goToArrangeScreen());
+        mNextButton.setOnClickListener((v) -> startArrangeActivity());
 
-        mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        //todo refresh throws exception if scrolling at the same time
         mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
 
+        // First try to get initial selections from saved state.
+        String[] initialSelections = null;
         if (savedInstanceState != null) {
-            mPlaylists = savedInstanceState.getParcelableArrayList("mPlaylists");
+            initialSelections = savedInstanceState.getStringArray("selectedPlaylistIds");
         }
-
-        if (mPlaylists == null) {
-            mPlaylists = new ArrayList<>();
+        // No saved state, try to get initial selections from intent.
+        if (initialSelections == null) {
+            initialSelections = getIntent().getStringArrayExtra("selectedPlaylistIds");
+        }
+        if (initialSelections != null) {
+            Collections.addAll(mSelectedPlaylistIds, initialSelections);
         }
 
         initializePlaylistSelectionList();
 
-        if (mPlaylists.size() == 0) {
-            // todo show loader, hide on finish
+        if (SpotifyApi.isAccessTokenSet()) {
             loadPlaylists();
+        } else {
+            // Go get access token first.
+            startAuthActivity();
         }
-        updateSelectedPlaylists();
     }
 
     private void initializePlaylistSelectionList() {
         mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, getApplicationContext());
-        mPlaylistsSelectionView = (RecyclerView) findViewById(R.id.playlist_selection_list);
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
+        mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener(getApplicationContext()));
         mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("mPlaylists", mPlaylists);
+        outState.putStringArray("selectedPlaylistIds",
+                mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));
     }
 
     @Override
@@ -111,35 +129,59 @@ public class SelectActivity extends AppCompatActivity
     }
 
     private void loadPlaylists() {
+        mPlaylists.clear();
         // todo react to possible errors
-        mSpotifyApi.getPlaylists(this);
+        mSpotifyApi.getPlaylists(0, this);
     }
 
     @Override
-    public void onPlaylistsLoaded(ArrayList<PlaylistViewModel> newPlaylists) {
-        mPlaylists.clear();
-        mPlaylists.addAll(newPlaylists);
+    public void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> newPlaylists) {
 
-        //restore selected status
-        for (PlaylistViewModel pl : mPlaylists) {
+        Log.d(TAG, "onPlaylistsLoaded, offset " + offset);
+        // Restore selected status
+        for (PlaylistViewModel pl : newPlaylists) {
             pl.selected = mSelectedPlaylistIds.contains(pl.id);
         }
 
-        mPlaylistSelectionAdapter.notifyDataSetChanged();
+        mPlaylists.addAll(newPlaylists);
+
+        if (isFirstLoad) {
+            isFirstLoad = false;
+            Log.d(TAG, "animate in");
+            mPlaylistsSelectionView.scheduleLayoutAnimation();
+        }
+
         mSwipeRefresh.setRefreshing(false);
+
+        if (offset == 0) {
+            // If this is first batch of playlists, update whole dataset.
+            mPlaylistSelectionAdapter.notifyDataSetChanged();
+        } else {
+            // Otherwise notify only about the added items to avoid stuttering.
+            int len = mPlaylists.size();
+            for(int i = offset; i < len; i++) {
+                mPlaylistSelectionAdapter.notifyItemChanged(i);
+            }
+        }
     }
 
-    private void goToArrangeScreen() {
+    private void startArrangeActivity() {
         Intent intent = new Intent(getApplicationContext(), ArrangeActivity.class);
 
-        ArrayList<PlaylistViewModel> selected = new ArrayList<>();
+        ArrayList<PlaylistViewModel> selected = new ArrayList<>(mSelectedPlaylistIds.size());
         for (PlaylistViewModel pl : mPlaylists)
             if (pl.selected)
                 selected.add(pl);
 
         intent.putParcelableArrayListExtra("mPlaylists", selected);
         startActivity(intent);
-        overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
+    }
+
+    private void startAuthActivity() {
+        // Authenticate and return back to this activity.
+        Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
+        intent.putExtra("returnToActivity", true);
+        startActivityForResult(intent, 99);
     }
 
     private void selectAll(boolean selected) {
@@ -150,7 +192,6 @@ public class SelectActivity extends AppCompatActivity
             mPlaylistSelectionAdapter.notifyDataSetChanged();
             updateSelectedPlaylists();
         }
-
     }
 
     private void updateSelectedPlaylists() {
@@ -166,6 +207,17 @@ public class SelectActivity extends AppCompatActivity
         } else {
             mToolbar.setTitle(mToolbarTitle);
             mNextButton.setEnabled(false);
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        // Authentication done.
+        if (requestCode == 99) {
+            loadPlaylists();
         }
     }
 }

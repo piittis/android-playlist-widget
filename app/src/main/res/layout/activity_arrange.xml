@@ -38,10 +38,11 @@
         dslv:slide_shuffle_speed="0.3"
         dslv:track_drag_sort="false"
         dslv:use_default_controller="true"
-        tools:listitem="@layout/arrangeable_playlist" />
+        tools:listitem="@layout/arrangeable_playlist"
+        />
 
     <Button
-        android:id="@+id/selection_next_button"
+        android:id="@+id/arrage_next_button"
         android:layout_width="100dp"
         android:layout_height="56dp"
         android:enabled="false"

@@ -1,7 +1,7 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,21 +21,26 @@ public class AuthActivity extends AppCompatActivity {
     //todo use resources
     private static final String FailMessage = "Spotify authentication error";
     private static final String cancelMessage = "Spotify authentication is required";
+    private Boolean mReturnToActivity = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
+
+        // This activity doesnt need any UI?
+        //setContentView(R.layout.activity_auth);
 
         if (!spotifyInstalled()) {
-            quitWithMessage("Please install the spotify app");
+            quitWithMessage("Please install the spotify app first");
+            //AuthenticationClient.openDownloadSpotifyActivity(this);
         }
 
+        mReturnToActivity = getIntent().getBooleanExtra("returnToActivity", false);
         doAuthentication();
     }
 
     private void doAuthentication() {
-        Log.d(TAG, "starting authentication");
 
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
@@ -46,12 +51,13 @@ public class AuthActivity extends AppCompatActivity {
 
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+
     }
 
     private void goToSelectActivity() {
         Intent intent = new Intent(getApplicationContext(), SelectActivity.class);
+        overridePendingTransition(R.anim.fade_in_hard_nodelay, R.anim.hide_delayed);
         startActivity(intent);
-        overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
     }
 
     private void authenticationFailed() {
@@ -76,9 +82,6 @@ public class AuthActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        Log.d("onActivityResult", "called with request code " + Integer.toString(requestCode));
-        Log.d("onActivityResult", "called with result code " + Integer.toString(resultCode));
-
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
 
@@ -89,8 +92,16 @@ public class AuthActivity extends AppCompatActivity {
                     // Get token and go to select view
                     String token = response.getAccessToken();
                     SpotifyApi.setAccessToken(token);
+
+                    setResult(RESULT_OK);
                     finish();
-                    goToSelectActivity();
+                    if (!mReturnToActivity) {
+                        // not returning to any previous activity, go to select activity
+                        goToSelectActivity();
+                    } else {
+                        //otherwise just let previous activity take over
+                        overridePendingTransition(R.anim.fade_in_hard_nodelay, 0);
+                    }
                     break;
 
                 // Auth flow returned an error
