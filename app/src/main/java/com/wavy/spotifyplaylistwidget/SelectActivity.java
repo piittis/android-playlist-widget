@@ -1,25 +1,20 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
 import android.widget.Button;
 
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
-import com.wavy.spotifyplaylistwidget.utils.WindowSizeHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
@@ -29,10 +24,11 @@ import java.util.HashSet;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SelectActivity extends AppCompatActivity
+public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         implements SpotifyApi.playlistsLoadedCallbackListener {
 
     private static final String TAG = "SelectActivity";
+    private static final int AUTH_REQUEST = 99;
     private ArrayList<PlaylistViewModel> mPlaylists = new ArrayList<>();
     private HashSet<String> mSelectedPlaylistIds = new HashSet<>();
     private SpotifyApi mSpotifyApi = new SpotifyApi();
@@ -56,7 +52,7 @@ public class SelectActivity extends AppCompatActivity
         /*this.getWindow().setLayout(WindowSizeHelper.getWindowWidthPx(this),
                 WindowSizeHelper.getWindowHeight(this));*/
 
-        Log.d(TAG, "onCreate " + this.getResources().getConfiguration().screenWidthDp);
+        Log.d(TAG, "onCreate");
 
         ButterKnife.bind(this);
 
@@ -142,7 +138,7 @@ public class SelectActivity extends AppCompatActivity
     @Override
     public void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> newPlaylists) {
 
-        Log.d(TAG, "onPlaylistsLoaded, offset " + offset);
+        //Log.d(TAG, "onPlaylistsLoaded, offset " + offset);
         // Restore selected status
         for (PlaylistViewModel pl : newPlaylists) {
             pl.selected = mSelectedPlaylistIds.contains(pl.id);
@@ -152,7 +148,7 @@ public class SelectActivity extends AppCompatActivity
 
         if (isFirstLoad) {
             isFirstLoad = false;
-            Log.d(TAG, "animate in");
+            this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.GONE);
             mPlaylistsSelectionView.scheduleLayoutAnimation();
         }
 
@@ -168,10 +164,6 @@ public class SelectActivity extends AppCompatActivity
                 mPlaylistSelectionAdapter.notifyItemChanged(i);
             }
         }
-
-      //  Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:user:piittis2:playlist:5PFpnK4yLyIlRZW8jEJXir:play"));
-       // startActivity(i);
-
     }
 
     private void startArrangeActivity() {
@@ -183,14 +175,14 @@ public class SelectActivity extends AppCompatActivity
                 selected.add(pl);
 
         intent.putParcelableArrayListExtra("mPlaylists", selected);
-        startActivity(intent);
+        startNextConfigurationActivity(intent);
     }
 
     private void startAuthActivity() {
         // Authenticate and return back to this activity.
         Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
         intent.putExtra("returnToActivity", true);
-        startActivityForResult(intent, 99);
+        startActivityForResult(intent, AUTH_REQUEST);
     }
 
     private void selectAll(boolean selected) {
@@ -222,10 +214,11 @@ public class SelectActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, intent);
 
         // Authentication done.
-        if (requestCode == 99) {
+        if (requestCode == AUTH_REQUEST) {
             loadPlaylists();
         }
     }

@@ -11,44 +11,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SpotifyWidgetTheme">
-
-        <activity
-            android:name=".AuthActivity">
-
-        </activity>
-
-        <activity
-            android:name=".SelectActivity">
-
-            <!--<intent-filter>-->
-                <!--<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />-->
-            <!--</intent-filter>-->
-
+        <activity android:name=".AuthActivity" />
+        <activity android:name=".SelectActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
 
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
-
-        <activity
-            android:name=".ArrangeActivity">
-
-        </activity>
+        <activity android:name=".ArrangeActivity" />
 
         <receiver
+            android:name=".widget.PlaylistWidgetProvider"
             android:icon="@mipmap/ic_launcher"
-            android:label="Spotify playlist widget"
-            android:name=".widget.PlaylistWidgetProvider">
-
-            <intent-filter >
+            android:label="Spotify playlist widget">
+            <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
-
         </receiver>
 
         <service
@@ -56,7 +42,5 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
-
-
 
 </manifest>

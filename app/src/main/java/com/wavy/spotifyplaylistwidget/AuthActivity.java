@@ -1,7 +1,6 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +11,10 @@ import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
+/**
+ * Activity without an UI whose only purpose is to fetch a Spotify access token and give it to
+ * SpotifyApi.
+ */
 public class AuthActivity extends AppCompatActivity {
 
     private static final String TAG = "AuthActivity";
@@ -95,13 +98,12 @@ public class AuthActivity extends AppCompatActivity {
 
                     setResult(RESULT_OK);
                     finish();
+                    overridePendingTransition(R.anim.fade_in_hard_nodelay, R.anim.hide_delayed);
                     if (!mReturnToActivity) {
                         // not returning to any previous activity, go to select activity
                         goToSelectActivity();
-                    } else {
-                        //otherwise just let previous activity take over
-                        overridePendingTransition(R.anim.fade_in_hard_nodelay, 0);
                     }
+
                     break;
 
                 // Auth flow returned an error

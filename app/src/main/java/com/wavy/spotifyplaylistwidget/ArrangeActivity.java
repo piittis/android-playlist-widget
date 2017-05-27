@@ -1,12 +1,10 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 
 import com.mobeta.android.dslv.DragSortListView;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
-import com.wavy.spotifyplaylistwidget.utils.WindowSizeHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArrangeActivity extends AppCompatActivity {
+public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
     private ArrayList<PlaylistViewModel> mPlaylists;
 
@@ -62,6 +60,7 @@ public class ArrangeActivity extends AppCompatActivity {
 
     private void addWidget() {
         //todo implement
+        finishWidgetConfiguration();
     }
 
 }
