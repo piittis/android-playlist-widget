@@ -26,19 +26,14 @@ public class PicassoOnScrollListener extends RecyclerView.OnScrollListener {
     private void resumeDelayed(RecyclerView recyclerView) {
 
         // Set a callback to resume image loading soon.
-        mSettlingResumeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                sPicasso.resumeTag(RECYCLVIEW_TAG);
-            }
-        };
+        mSettlingResumeRunnable = () -> sPicasso.resumeTag(RECYCLVIEW_TAG);
         recyclerView.postDelayed(mSettlingResumeRunnable, RESUME_DELAY);
     }
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
 
-        // Make sure we resume when scrolling stops
+        // Make sure to resume when scrolling stops.
         if(scrollState == RecyclerView.SCROLL_STATE_IDLE) {
             if (mPaused) {
                 mPaused = false;

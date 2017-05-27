@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import com.mobeta.android.dslv.DragSortListView;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
+import com.wavy.spotifyplaylistwidget.utils.WindowSizeHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ public class ArrangeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arrange);
+
+        /*this.getWindow().setLayout(WindowSizeHelper.getWindowWidthPx(this),
+                WindowSizeHelper.getWindowHeight(this));*/
+
         ButterKnife.bind(this);
 
         mPlaylists = getIntent().getParcelableArrayListExtra("mPlaylists");

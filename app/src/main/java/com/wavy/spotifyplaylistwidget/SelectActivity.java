@@ -1,6 +1,7 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
+import com.wavy.spotifyplaylistwidget.utils.WindowSizeHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
@@ -49,10 +51,13 @@ public class SelectActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_select);
+
+        /*this.getWindow().setLayout(WindowSizeHelper.getWindowWidthPx(this),
+                WindowSizeHelper.getWindowHeight(this));*/
+
+        Log.d(TAG, "onCreate " + this.getResources().getConfiguration().screenWidthDp);
+
         ButterKnife.bind(this);
 
         mToolbar.setTitle(mToolbarTitle);
@@ -60,7 +65,7 @@ public class SelectActivity extends AppCompatActivity
 
         mNextButton.setOnClickListener((v) -> startArrangeActivity());
 
-        //todo refresh throws exception if scrolling at the same time
+        //todo fix bug: refresh throws exception if scrolling at the same time
         mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
 
         // First try to get initial selections from saved state.
@@ -77,7 +82,7 @@ public class SelectActivity extends AppCompatActivity
         }
 
         initializePlaylistSelectionList();
-
+        updateSelectedPlaylists();
         if (SpotifyApi.isAccessTokenSet()) {
             loadPlaylists();
         } else {
@@ -163,6 +168,10 @@ public class SelectActivity extends AppCompatActivity
                 mPlaylistSelectionAdapter.notifyItemChanged(i);
             }
         }
+
+      //  Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:user:piittis2:playlist:5PFpnK4yLyIlRZW8jEJXir:play"));
+       // startActivity(i);
+
     }
 
     private void startArrangeActivity() {

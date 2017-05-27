@@ -3,6 +3,10 @@ package com.wavy.spotifyplaylistwidget.viewModels;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
+
+import java.util.ArrayList;
+
 public class PlaylistViewModel implements Parcelable {
 
     //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
@@ -29,6 +33,16 @@ public class PlaylistViewModel implements Parcelable {
         //this.owner = in.readString();
         this.selected = in.readInt() == 1;
     }
+
+    public static ArrayList<PlaylistViewModel> getListForDebug() {
+
+        ArrayList<PlaylistViewModel> playlists = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            playlists.add(new PlaylistViewModel("playlist" + i, "5PFpnK4yLyIlRZW8jEJXir", 100, "todo"));
+        }
+        return playlists;
+    }
+
 
     @Override
     public int describeContents() {

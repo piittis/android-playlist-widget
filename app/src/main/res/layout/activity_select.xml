@@ -30,9 +30,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0"
-            tools:listitem="@layout/selectable_playlist"
+            android:layoutAnimation="@anim/layout_fade_in_hard"
             android:scrollbars="vertical"
-            android:layoutAnimation="@anim/layout_fade_in_hard"/>
+            tools:listitem="@layout/selectable_playlist" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
