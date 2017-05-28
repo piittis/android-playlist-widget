@@ -29,6 +29,7 @@ public interface PlaylistService {
         public String name;
         public String id;
         public String uri;
+        public OwnerModel owner;
         public TracksModel tracks;
         public ArrayList<ImageModel> images;
     }
@@ -41,6 +42,10 @@ public interface PlaylistService {
         public int height;
         public int width;
         public String url;
+    }
+
+    class OwnerModel {
+        public String id;
     }
 
     @GET("me/playlists?limit=50")

@@ -52,7 +52,7 @@ public class PlaylistSelectionAdapter
 
         if (playlist.imageUrl != null) {
 
-            Picasso.with(mContext.getApplicationContext())
+            Picasso.with(mContext)
                     .load(playlist.imageUrl)
                     .tag(PicassoOnScrollListener.RECYCLVIEW_TAG)
                     .resize(mImageSize,
@@ -60,6 +60,7 @@ public class PlaylistSelectionAdapter
                     .centerCrop()
                     //todo placeholder get stretched to 50dp... it should be 24dp
                     .placeholder(R.drawable.ic_music_note_white_24dp)
+                    .error(R.drawable.ic_music_note_white_24dp)
                     .into(holder.mImageView);
         }
 

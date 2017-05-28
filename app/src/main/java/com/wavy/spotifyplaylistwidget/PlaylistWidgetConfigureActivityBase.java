@@ -11,6 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.wavy.spotifyplaylistwidget.persistence.FileHelper;
+import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
+import com.wavy.spotifyplaylistwidget.widget.PlaylistModel;
+import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
+import com.wavy.spotifyplaylistwidget.widget.WidgetConfigModel;
+
+import java.util.ArrayList;
+
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 /**
@@ -47,9 +55,9 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
         // todo quit and show message
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        /*if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
-        }
+        }*/
     }
 
     protected void startNextConfigurationActivity(Intent intent) {
@@ -77,11 +85,11 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     private void updateWidget() {
         Log.d(TAG, "updateWidget");
+        PlaylistWidgetProvider.updateWidgetId(this, mAppWidgetId);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, intent);
 
         // child activity finished because widget configuration is finished

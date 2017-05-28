@@ -53,6 +53,7 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
                             mImageSize)
                     .centerCrop()
                     .placeholder(R.drawable.ic_music_note_white_24dp)
+                    .error(R.drawable.ic_music_note_white_24dp)
                     .into(((ImageView) row.findViewById(R.id.playlist_image)));
         }
 

@@ -3,6 +3,8 @@ package com.wavy.spotifyplaylistwidget.network;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.lang.reflect.Array;
@@ -52,18 +54,18 @@ public class SpotifyApi {
     public void getPlaylists(int offset, playlistsLoadedCallbackListener callbackListener) {
 
         Call<PlaylistService.PlaylistResponseModel> call = mPlaylistService.getPlaylistsOfUser(mAuthHeaderValue, offset);
-        Log.d(TAG, "getPlaylists, offset " + offset);
 
         call.enqueue(new Callback<PlaylistService.PlaylistResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<PlaylistService.PlaylistResponseModel> call,
                                    @NonNull Response<PlaylistService.PlaylistResponseModel> response) {
 
-
+                // Notify callback listener.
                 callbackListener.onPlaylistsLoaded(offset, getPlaylistViewModels(response.body()));
+
                 int playlistsLoaded = offset + 50;
                 if (playlistsLoaded < response.body().total) {
-                    // Recursively get more playlists
+                    // More playlists to be had, recursively get more.
                     getPlaylists(offset + 50, callbackListener);
                 }
             }
@@ -79,23 +81,25 @@ public class SpotifyApi {
 
         ArrayList<PlaylistViewModel> list = new ArrayList<>(response.playlists.size());
         for (PlaylistService.PlaylistModel pl : response.playlists) {
-            PlaylistViewModel vm = new PlaylistViewModel(pl.name, pl.id, pl.tracks.total,
-                    getSmallestImageUrl(pl.images));
+            PlaylistViewModel vm = new PlaylistViewModel(pl.name, pl.id, pl.uri, getImageUrl(pl.images),
+                    pl.tracks.total, pl.owner.id);
             list.add(vm);
         }
         return list;
     }
 
-    // use smallest image since they are only 50dp on screen
-    private static String getSmallestImageUrl(List<PlaylistService.ImageModel> images) {
+    // Select the image the app should use
+    private static String getImageUrl(List<PlaylistService.ImageModel> images) {
         if (images.size() == 0) return null;
 
-        PlaylistService.ImageModel smallest = images.get(0);
+        // Get first image with at most 300px width.
+        PlaylistService.ImageModel imageToUse = images.get(0);
         for(PlaylistService.ImageModel i : images) {
-            if (i.width < smallest.width) {
-                smallest = i;
+            if (i.width <= 300) {
+                imageToUse = i;
+                break;
             }
         }
-        return smallest.url;
+        return imageToUse.url;
     }
 }

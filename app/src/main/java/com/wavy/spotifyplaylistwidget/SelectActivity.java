@@ -64,15 +64,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         //todo fix bug: refresh throws exception if scrolling at the same time
         mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
 
-        // First try to get initial selections from saved state.
-        String[] initialSelections = null;
-        if (savedInstanceState != null) {
-            initialSelections = savedInstanceState.getStringArray("selectedPlaylistIds");
-        }
-        // No saved state, try to get initial selections from intent.
-        if (initialSelections == null) {
-            initialSelections = getIntent().getStringArrayExtra("selectedPlaylistIds");
-        }
+        String[] initialSelections = getIntent().getStringArrayExtra("selectedPlaylistIds");
         if (initialSelections != null) {
             Collections.addAll(mSelectedPlaylistIds, initialSelections);
         }
@@ -88,18 +80,18 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     }
 
     private void initializePlaylistSelectionList() {
-        mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, getApplicationContext());
+        mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, this);
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
-        mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener(getApplicationContext()));
+        mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener(this));
         mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArray("selectedPlaylistIds",
-                mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));
+        /*outState.putStringArray("selectedPlaylistIds",
+                mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));*/
     }
 
     @Override
@@ -139,7 +131,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     public void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> newPlaylists) {
 
         //Log.d(TAG, "onPlaylistsLoaded, offset " + offset);
-        // Restore selected status
+        // Restore selected status.
         for (PlaylistViewModel pl : newPlaylists) {
             pl.selected = mSelectedPlaylistIds.contains(pl.id);
         }
