@@ -51,7 +51,6 @@ public class PlaylistSelectionAdapter
         holder.checkBox.setChecked(playlist.selected);
 
         if (playlist.imageUrl != null) {
-
             Picasso.with(mContext)
                     .load(playlist.imageUrl)
                     .tag(PicassoOnScrollListener.RECYCLVIEW_TAG)
@@ -62,6 +61,8 @@ public class PlaylistSelectionAdapter
                     .placeholder(R.drawable.ic_music_note_white_24dp)
                     .error(R.drawable.ic_music_note_white_24dp)
                     .into(holder.mImageView);
+        } else {
+            holder.mImageView.setImageResource(R.drawable.ic_music_note_white_24dp);
         }
 
         holder.setOnClickListener((v) -> {
