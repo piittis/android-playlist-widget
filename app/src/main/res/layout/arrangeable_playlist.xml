@@ -10,8 +10,9 @@
     <ImageView
         android:id="@id/playlist_drag_handle"
         android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
+        android:contentDescription="@string/playlist_image_content_description"
         android:scaleType="center"
         android:src="@drawable/ic_drag_handle_white_24dp" />
 

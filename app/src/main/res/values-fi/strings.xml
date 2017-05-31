@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Spotify playlist widget</string>
     <string name="select_playlists">Valitse soittolistat</string>
     <string name="arrange_playlists">Järjestä soittolistat</string>
     <string name="processing_text">prosessoidaan…</string>

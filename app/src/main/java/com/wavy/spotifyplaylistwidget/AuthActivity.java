@@ -1,6 +1,8 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,65 +21,72 @@ public class AuthActivity extends AppCompatActivity {
 
     private static final String TAG = "AuthActivity";
     private static final String CLIENT_ID = "a2277433f3ba4c9a9b0ae0859c30f808";
-    private static final String REDIRECT_URI = "spotifyquicklaunch://logincallback";
+    private static final String REDIRECT_URI = "app://logincallback";
     private static final int REQUEST_CODE = 1337;
-    //todo use resources
-    private static final String FailMessage = "Spotify authentication error";
-    private static final String cancelMessage = "Spotify authentication is required";
-    private Boolean mReturnToActivity = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null && savedInstanceState.getBoolean("authFlowStarted", false))
+            return;
+
         // This activity doesnt need any UI?
         //setContentView(R.layout.activity_auth);
-
+        Log.d(TAG, "on create");
         if (!spotifyInstalled()) {
-            quitWithMessage("Please install the spotify app first");
-            //AuthenticationClient.openDownloadSpotifyActivity(this);
+            AuthenticationClient.openDownloadSpotifyActivity(this);
+            quitWithMessage(getString(R.string.spotify_install_ap));
+        } else {
+
+            openAuthenticationActivity();
         }
-
-        mReturnToActivity = getIntent().getBooleanExtra("returnToActivity", false);
-        doAuthentication();
     }
 
-    private void doAuthentication() {
-
-        AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-
-        builder.setScopes(new String[]{"user-read-private",
-                "playlist-read-private",
-                "playlist-read-collaborative"});
-
-        AuthenticationRequest request = builder.build();
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState");
+        outState.putBoolean("authFlowStarted", true);
+        /*outState.putStringArray("selectedPlaylistIds",
+                mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));*/
     }
 
-    private void goToSelectActivity() {
-        Intent intent = new Intent(getApplicationContext(), SelectActivity.class);
-        overridePendingTransition(R.anim.fade_in_hard_nodelay, R.anim.hide_delayed);
-        startActivity(intent);
+    private void openAuthenticationActivity() {
+
+            AuthenticationRequest.Builder builder =
+                    new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+            builder.setScopes(new String[]{"user-read-private",
+                    "playlist-read-private",
+                    "playlist-read-collaborative"});
+
+            AuthenticationRequest request = builder.build();
+            AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
     private void authenticationFailed() {
-        quitWithMessage(FailMessage);
+        setResult(RESULT_CANCELED);
+        quitWithMessage(getString(R.string.spotify_auth_error));
     }
 
     private void authenticationCancelled() {
-        quitWithMessage(cancelMessage);
+        setResult(RESULT_CANCELED);
+        quitWithMessage(getString(R.string.spotify_auth_required));
     }
 
     private boolean spotifyInstalled() {
-        //todo implement
-        return true;
+        try {
+            this.getPackageManager().getPackageInfo("com.spotify.music", 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     private void quitWithMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        setResult(RESULT_CANCELED);
         this.finishAffinity();
     }
 
@@ -99,11 +108,6 @@ public class AuthActivity extends AppCompatActivity {
                     setResult(RESULT_OK);
                     finish();
                     overridePendingTransition(R.anim.fade_in_hard_nodelay, R.anim.hide_delayed);
-                    if (!mReturnToActivity) {
-                        // not returning to any previous activity, go to select activity
-                        goToSelectActivity();
-                    }
-
                     break;
 
                 // Auth flow returned an error
@@ -113,7 +117,7 @@ public class AuthActivity extends AppCompatActivity {
 
                 // Most likely auth flow was cancelled
                 default:
-                    Log.d("onActivityResult", "default");
+                    Log.d(TAG, "Cancelled");
                     authenticationCancelled();
                     // Handle other cases
             }

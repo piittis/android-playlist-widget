@@ -52,12 +52,11 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
                     .load(playlist.imageUrl)
                     .resize(mImageSize,
                             mImageSize)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_music_note_white_24dp)
-                    .error(R.drawable.ic_music_note_white_24dp)
+                    .placeholder(R.drawable.ic_music_note_white_48dp)
+                    .error(R.drawable.ic_music_note_white_48dp)
                     .into(((ImageView) row.findViewById(R.id.playlist_image)));
         } else {
-            ((ImageView) row.findViewById(R.id.playlist_image)).setImageResource(R.drawable.ic_music_note_white_24dp);
+            ((ImageView) row.findViewById(R.id.playlist_image)).setImageResource(R.drawable.ic_music_note_white_48dp);
         }
 
         return row;

@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorText">#ffffff</color>
     <color name="colorText2">#A0A0A0</color>
+    <color name="scrollbarColor">#A0A0A0</color>
     <color name="background">#121314</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>

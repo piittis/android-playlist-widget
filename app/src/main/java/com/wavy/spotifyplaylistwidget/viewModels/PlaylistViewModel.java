@@ -12,7 +12,6 @@ import java.util.ArrayList;
  */
 public class PlaylistViewModel implements Parcelable {
 
-    //TODO: https://source.android.com/source/code-style#follow-field-naming-conventions
     public String name;
     public String id;
     public String uri;

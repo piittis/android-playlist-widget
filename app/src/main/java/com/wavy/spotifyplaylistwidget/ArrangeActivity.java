@@ -1,6 +1,7 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -34,6 +35,7 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arrange);
 
+
         /*this.getWindow().setLayout(WindowSizeHelper.getWindowWidthPx(this),
                 WindowSizeHelper.getWindowHeight(this));*/
         ButterKnife.bind(this);
@@ -50,7 +52,6 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         mWidgetConfigRepository = new WidgetConfigFileRepository(this);
         mNextButton.setOnClickListener((v) -> addWidget());
     }
-
 
     private DragSortListView.DropListener onDrop =
             new DragSortListView.DropListener() {

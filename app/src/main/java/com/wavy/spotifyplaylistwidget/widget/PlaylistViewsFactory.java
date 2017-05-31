@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -21,18 +22,21 @@ import java.util.ArrayList;
 
 public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
+    private static final String TAG = "PlaylistViewsFactory";
     private WidgetConfigModel mWidgetConfig;
+
     private Context mContext;
     private int mAppWidgetId;
     private int mItemCount;
     private WidgetConfigRepository mConfigRepository;
+    private String mTrackCountString;
 
     public PlaylistViewsFactory(Context context, Intent intent) {
-
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mConfigRepository = new WidgetConfigFileRepository(mContext);
-        Log.d("PlaylistViewsFactory", "Constructor " +mAppWidgetId);
+        mTrackCountString = context.getString(R.string.track_count);
+        Log.d(TAG, "Constructor " +mAppWidgetId);
     }
 
     @Override
@@ -63,20 +67,19 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist);
         PlaylistModel pl = mWidgetConfig.getPlaylists().get(position);
         remoteView.setTextViewText(R.id.playlist_name, pl.name);
-        remoteView.setTextViewText(R.id.playlist_info, pl.tracks + " tracks");
+        remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.tracks));
 
         try {
             Bitmap map = Picasso.with(mContext)
-                .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.id + ".png"))
-                    .error(R.drawable.ic_music_note_white_24dp)
+                    .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.id + ".png"))
+                    .error(R.drawable.ic_music_note_white_48dp)
                     .get();
-
             remoteView.setImageViewBitmap(R.id.playlist_image, map);
-        } catch (IOException e) {
-            e.printStackTrace();
-            remoteView.setImageViewResource(R.id.playlist_image, R.drawable.ic_music_note_white_24dp);
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            remoteView.setImageViewResource(R.id.playlist_image, R.drawable.ic_music_note_white_48dp);
+        }
 
         Intent fillInIntent = new Intent();
         fillInIntent.putExtra("uri", pl.uri);

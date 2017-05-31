@@ -57,12 +57,11 @@ public class PlaylistSelectionAdapter
                     .tag(PicassoOnScrollListener.RECYCLVIEW_TAG)
                     .resize(mImageSize,
                             mImageSize)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_music_note_white_24dp)
-                    .error(R.drawable.ic_music_note_white_24dp)
+                    .placeholder(R.drawable.ic_music_note_white_48dp)
+                    .error(R.drawable.ic_music_note_white_48dp)
                     .into(holder.mImageView);
         } else {
-            holder.mImageView.setImageResource(R.drawable.ic_music_note_white_24dp);
+            holder.mImageView.setImageResource(R.drawable.ic_music_note_white_48dp);
         }
 
         holder.setOnClickListener((v) -> {

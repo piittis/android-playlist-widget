@@ -68,7 +68,6 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-        Log.d(TAG, "----onUpdate----");
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
@@ -101,16 +100,12 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
 
         if (intent.getAction().equals(OPEN_PLAYLIST_ACTION)) {
-            // todo listen to clicks and open playlists like so:
-            // Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:user:piittis2:playlist:5PFpnK4yLyIlRZW8jEJXir"));
-            // startActivity(i);
 
+            // Opens the given playlist.
             String uri = intent.getStringExtra("uri");
-
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
-            //Toast.makeText(context, uri, Toast.LENGTH_SHORT).show();
         }
 
         super.onReceive(context, intent);

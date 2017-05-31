@@ -64,6 +64,7 @@ public class FileHelper {
 
     /**
      * Persists the images for given playlists. File name will be the id of the playlist.
+     * Files will go the the root folder.
      */
     public static void persistPlaylistImages(Activity callingActivity, ArrayList<PlaylistViewModel> playlists,
                                              OnCompleteCallbackListener onCompleteCallbackListener) {

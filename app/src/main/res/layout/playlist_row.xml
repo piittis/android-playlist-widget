@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="64dp"
     android:gravity="center"
@@ -11,15 +12,16 @@
         android:layout_height="@dimen/playlist_image_size"
         android:layout_gravity="center"
         android:adjustViewBounds="false"
-        android:backgroundTint="@color/colorText2"
-        android:contentDescription="Playlist image"
-        android:cropToPadding="false" />
+        android:contentDescription="@string/playlist_image_content_description"
+        android:cropToPadding="false"
+        android:scaleType="center" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
         android:orientation="vertical">
 
         <TextView
@@ -28,11 +30,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:maxLines="2"
-            android:singleLine="false"
             android:text="Playlist name"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/colorText"
-            android:textSize="@dimen/playlist_name_size" />
+            android:textSize="@dimen/playlist_name_size"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/playlist_info"
@@ -40,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:maxLines="1"
-            android:text="100 tracks"
+            android:text="@string/track_count"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/colorText2"
             android:textSize="@dimen/playlist_additiona_info_size" />

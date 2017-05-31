@@ -32,32 +32,77 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private static final int RESULT_CONFIGURATION_DONE = 1234;
-    private static final String TAG = "ConfigureBase";
+    protected static final int AUTH_REQUEST = 99;
+    private static final String TAG = "ConfigureBaseClass";
     private Boolean mHasParent = false;
+    protected Boolean mIsAuthenticating = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            mIsAuthenticating = savedInstanceState.getBoolean("isAuthenticating", false);
+        }
+
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
+
             mHasParent = extras.getBoolean("hasParent", false);
             mAppWidgetId = extras.getInt(
                     AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
         if (!mHasParent) {
-            // Set the result to CANCELED.  This will cause the widget host to cancel
+            // Set the result to CANCELED. This will cause the widget host to cancel
             // out of the widget placement if the user presses the back button.
             setResult(RESULT_CANCELED);
         }
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
         // todo quit and show message
-        /*if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
-        }*/
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isAuthenticating", mIsAuthenticating);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (requestCode == 199 && resultCode == RESULT_CONFIGURATION_DONE) {
+            // Child activity finished because widget configuration is finished.
+            // Finish this activity also.
+            finishWidgetConfiguration();
+        }
+
+        else if (requestCode == AUTH_REQUEST) {
+            Log.d(TAG, "ending authentication");
+            // Authentication done.
+            mIsAuthenticating = false;
+        }
+    }
+
+    /**
+     * Starts the authentication activity if not started already.
+     * Extending activity can react to authentication finishing in its onActivityResult.
+     */
+    protected void doAuthentication() {
+        if (mIsAuthenticating)
+            return;
+
+        Log.d(TAG, "starting authentication");
+        // Authenticate and return back to this activity.
+        Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
+        mIsAuthenticating = true;
+        startActivityForResult(intent, AUTH_REQUEST);
     }
 
     protected void startNextConfigurationActivity(Intent intent) {
@@ -67,9 +112,9 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
     }
 
     protected void finishWidgetConfiguration() {
-        Log.d(TAG, "finishWidgetConfiguration");
+
         if (mHasParent) {
-            // We have a parent activity, let it handle rest.
+            // We have a parent activity, let it handle it.
             setResult(RESULT_CONFIGURATION_DONE);
         } else {
             // No parent to return to, update widged and set RESULT_OK.
@@ -87,16 +132,4 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         Log.d(TAG, "updateWidget");
         PlaylistWidgetProvider.updateWidgetId(this, mAppWidgetId);
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-
-        // child activity finished because widget configuration is finished
-        // finish this activity also
-        if (requestCode == 199 && resultCode == RESULT_CONFIGURATION_DONE) {
-            finishWidgetConfiguration();
-        }
-    }
-
 }
