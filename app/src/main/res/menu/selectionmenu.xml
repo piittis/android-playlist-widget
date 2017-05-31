@@ -6,21 +6,17 @@
     <item
         android:id="@+id/select_all"
         app:showAsAction="never"
-        android:title="select all" />
+        android:title="@string/select_all" />
 
     <item
         android:id="@+id/remove_selections"
         app:showAsAction="never"
-        android:title="remove selections" />
+        android:title="@string/remove_selections" />
 
     <item
         android:id="@+id/refresh"
         app:showAsAction="never"
-        android:title="refresh" />
+        android:title="@string/refresh_playlists" />
 
-    <item
-        android:id="@+id/change_user"
-        app:showAsAction="never"
-        android:title="change user" />
 
 </menu>

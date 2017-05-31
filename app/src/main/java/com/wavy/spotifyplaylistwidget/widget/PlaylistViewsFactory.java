@@ -25,7 +25,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private Context mContext;
     private int mAppWidgetId;
     private int mItemCount;
-    WidgetConfigRepository mConfigRepository;
+    private WidgetConfigRepository mConfigRepository;
 
     public PlaylistViewsFactory(Context context, Intent intent) {
 
@@ -68,15 +68,15 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         try {
             Bitmap map = Picasso.with(mContext)
                 .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.id + ".png"))
-                .get();
+                    .error(R.drawable.ic_music_note_white_24dp)
+                    .get();
+
             remoteView.setImageViewBitmap(R.id.playlist_image, map);
         } catch (IOException e) {
             e.printStackTrace();
             remoteView.setImageViewResource(R.id.playlist_image, R.drawable.ic_music_note_white_24dp);
         }
 
-        /*Bundle extras = new Bundle();
-        extras.putString("uri", pl.uri);*/
 
         Intent fillInIntent = new Intent();
         fillInIntent.putExtra("uri", pl.uri);

@@ -26,7 +26,7 @@
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:title="Arrange playlists" />
+            app:title="@string/arrange_playlists" />
 
         <com.mobeta.android.dslv.DragSortListView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:dslv="http://schemas.android.com/apk/res-auto"
@@ -54,7 +54,7 @@
             android:layout_width="100dp"
             android:layout_height="56dp"
             android:enabled="true"
-            android:text="Add widget" />
+            android:text="@string/add_widget" />
 
     </LinearLayout>
 

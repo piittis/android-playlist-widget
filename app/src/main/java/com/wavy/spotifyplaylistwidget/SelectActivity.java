@@ -41,10 +41,12 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     @BindView(R.id.swiperefresh) SwipeRefreshLayout mSwipeRefresh;
 
     private PlaylistSelectionAdapter mPlaylistSelectionAdapter;
-    final String mToolbarTitle = "Select playlists";
+    private String mToolbarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mToolbarTitle = getString(R.string.select_playlists);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
@@ -195,7 +197,9 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
                 mSelectedPlaylistIds.add(pl.id);
 
         if (mSelectedPlaylistIds.size() > 0) {
-            mToolbar.setTitle(String.format("%d / %d valittu", mSelectedPlaylistIds.size(), mPlaylists.size()));
+            mToolbar.setTitle(String.format(getString(R.string.playlists_selected_count),
+                    mSelectedPlaylistIds.size(), mPlaylists.size()));
+
             mNextButton.setEnabled(true);
         } else {
             mToolbar.setTitle(mToolbarTitle);

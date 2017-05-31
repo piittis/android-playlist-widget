@@ -22,12 +22,14 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
     private int mLayoutResourceId;
     private Context mContext;
     private int mImageSize;
+    private String mTrackCountString;
 
     public PlaylistArrangeAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<PlaylistViewModel> playlists) {
         super(context, resource, playlists);
         mContext = context;
         mLayoutResourceId = resource;
         mPlaylists = playlists;
+        mTrackCountString = context.getString(R.string.track_count);
         mImageSize = mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
     }
 
@@ -40,11 +42,10 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
             row = LayoutInflater.from(mContext).inflate(mLayoutResourceId, parent, false);
         }
 
-        // Get the data item for this position
         PlaylistViewModel playlist = mPlaylists.get(position);
 
         ((TextView) row.findViewById(R.id.playlist_name)).setText(playlist.name);
-        ((TextView) row.findViewById(R.id.playlist_info)).setText(playlist.tracks + " kappaletta");
+        ((TextView) row.findViewById(R.id.playlist_info)).setText(String.format(mTrackCountString, playlist.tracks));
 
         if (playlist.imageUrl != null) {
             Picasso.with(mContext)
@@ -58,7 +59,6 @@ public class PlaylistArrangeAdapter extends ArrayAdapter<PlaylistViewModel> {
         } else {
             ((ImageView) row.findViewById(R.id.playlist_image)).setImageResource(R.drawable.ic_music_note_white_24dp);
         }
-
 
         return row;
     }

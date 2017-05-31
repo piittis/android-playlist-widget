@@ -27,10 +27,12 @@ public class PlaylistSelectionAdapter
     private View.OnClickListener mClickListener;
     private Context mContext;
     private int mImageSize;
+    private String mTrackCountString;
 
     public PlaylistSelectionAdapter(ArrayList<PlaylistViewModel> playlists, Context context) {
         mPlaylists = playlists;
         mContext = context;
+        mTrackCountString = context.getString(R.string.track_count);
         mImageSize = mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
     }
 
@@ -40,14 +42,13 @@ public class PlaylistSelectionAdapter
         return new ViewHolder(mView);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(PlaylistSelectionAdapter.ViewHolder holder, int position) {
 
         PlaylistViewModel playlist = mPlaylists.get(position);
-        //todo use resources and stuff
+
         holder.playlistName.setText(playlist.name);
-        holder.playlistInfo.setText(playlist.tracks + " kappaletta");
+        holder.playlistInfo.setText(String.format(mTrackCountString, playlist.tracks));
         holder.checkBox.setChecked(playlist.selected);
 
         if (playlist.imageUrl != null) {
@@ -57,7 +58,6 @@ public class PlaylistSelectionAdapter
                     .resize(mImageSize,
                             mImageSize)
                     .centerCrop()
-                    //todo placeholder get stretched to 50dp... it should be 24dp
                     .placeholder(R.drawable.ic_music_note_white_24dp)
                     .error(R.drawable.ic_music_note_white_24dp)
                     .into(holder.mImageView);

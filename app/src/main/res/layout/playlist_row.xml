@@ -27,20 +27,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:maxLines="2"
+            android:singleLine="false"
             android:text="Playlist name"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/colorText"
-            android:textSize="14dp" />
+            android:textSize="@dimen/playlist_name_size" />
 
         <TextView
             android:id="@+id/playlist_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:maxLines="1"
             android:text="100 tracks"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/colorText2"
-            android:textSize="12dp" />
+            android:textSize="@dimen/playlist_additiona_info_size" />
 
     </LinearLayout>
 

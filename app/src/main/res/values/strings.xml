@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Spotify playlist widget</string>
+    <string name="select_playlists">Select playlists</string>
+    <string name="arrange_playlists">Arrange playlists</string>
+    <string name="processing_text">processing…</string>
+    <string name="playlists_selected_count">%1$d / %2$d selected</string>
+    <string name="select_all">select all</string>
+    <string name="remove_selections">remove selections</string>
+    <string name="refresh_playlists">refresh</string>
+    <string name="selection_next_button">next</string>
+    <string name="track_count">%1$d tracks</string>
+    <string name="add_widget">Add widget</string>
 </resources>
