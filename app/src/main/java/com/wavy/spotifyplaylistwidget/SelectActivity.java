@@ -44,10 +44,10 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        super.onCreate(savedInstanceState);
         mToolbarTitle = getString(R.string.select_playlists);
 
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_select);
 
         Log.d(TAG, "onCreate");

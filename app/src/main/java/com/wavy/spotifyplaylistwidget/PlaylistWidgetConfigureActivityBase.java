@@ -62,9 +62,9 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
         // todo quit and show message
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+       /* if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
-        }
+        }*/
     }
 
     @Override

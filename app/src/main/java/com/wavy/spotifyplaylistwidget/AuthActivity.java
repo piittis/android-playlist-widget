@@ -38,7 +38,6 @@ public class AuthActivity extends AppCompatActivity {
             AuthenticationClient.openDownloadSpotifyActivity(this);
             quitWithMessage(getString(R.string.spotify_install_ap));
         } else {
-
             openAuthenticationActivity();
         }
     }
@@ -96,7 +95,7 @@ public class AuthActivity extends AppCompatActivity {
 
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
-
+            Log.d("auth result", "token");
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
                 // Response was successful and contains auth token
@@ -112,12 +111,12 @@ public class AuthActivity extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
-                    Log.d("onActivityResult", "error");
+                    Log.d("auth result", "error");
                     authenticationFailed();
 
                 // Most likely auth flow was cancelled
                 default:
-                    Log.d(TAG, "Cancelled");
+                    Log.d("auth result", "cancelled");
                     authenticationCancelled();
                     // Handle other cases
             }
