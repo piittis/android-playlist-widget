@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
 public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
     private ArrayList<PlaylistViewModel> mPlaylists;
@@ -35,12 +34,12 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arrange);
 
-
-        /*this.getWindow().setLayout(WindowSizeHelper.getWindowWidthPx(this),
-                WindowSizeHelper.getWindowHeight(this));*/
         ButterKnife.bind(this);
 
         mPlaylists = getIntent().getParcelableArrayListExtra("mPlaylists");
+        if (mPlaylists == null) {
+            mPlaylists = new ArrayList<>();
+        }
 
         mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists);
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
