@@ -5,7 +5,9 @@ import java.util.Date;
 
 public class WidgetConfigModel {
 
+    // Contains multiple playlist.
     public static final int TYPE_MULTI = 1;
+    // Contains a single playlist.
     public static final int TYPE_SINGLE = 1;
 
     private int widgetType;

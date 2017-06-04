@@ -35,7 +35,6 @@ public class FileHelper {
             writer.write(fileContent);
             writer.close();
         } catch (Exception e) {
-            // todo handle errors better
             e.printStackTrace();
         }
     }
@@ -54,7 +53,6 @@ public class FileHelper {
             return sb.toString();
 
         } catch (Exception e) {
-            // todo handle errors better
             e.printStackTrace();
         }
 
@@ -83,7 +81,6 @@ public class FileHelper {
                         Bitmap image = Picasso.with(callingActivity).load(pl.imageUrl).resize(imageSize, imageSize).get();
                         savePng(callingActivity, pl.id, image);
                     } catch (IOException e) {
-                        // todo recover from this
                         e.printStackTrace();
                     }
                 }));

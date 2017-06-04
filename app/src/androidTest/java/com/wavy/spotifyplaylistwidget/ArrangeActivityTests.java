@@ -1,7 +1,10 @@
 package com.wavy.spotifyplaylistwidget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -21,9 +24,11 @@ import org.mockito.quality.Strictness;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -62,6 +67,7 @@ public class ArrangeActivityTests {
 
 
         Intent intent = new Intent();
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
         intent.putParcelableArrayListExtra("mPlaylists", getTestPlaylists(5));
 
         mActivityTestRule.launchActivity(intent);
@@ -70,11 +76,12 @@ public class ArrangeActivityTests {
     }
 
     @Test
-    public void clickingRowTogglesCheckboxStatus() {
-
-
+    public void dragArrangeWorks() {
+        interactor.moveDown("Playlist0");
+        onView(withText("Playlist1")).check(isAbove(withText("Playlist0")));
+        interactor.moveUp("Playlist0");
+        onView(withText("Playlist0")).check(isAbove(withText("Playlist1")));
     }
-
 
     private ArrayList<PlaylistViewModel> getTestPlaylists(int count) {
         ArrayList<PlaylistViewModel> models = new ArrayList<>(count);

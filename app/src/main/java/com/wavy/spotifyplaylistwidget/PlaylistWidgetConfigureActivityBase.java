@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.wavy.spotifyplaylistwidget.persistence.FileHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
@@ -48,7 +49,6 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
-
             mHasParent = extras.getBoolean("hasParent", false);
             mAppWidgetId = extras.getInt(
                     AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -61,10 +61,9 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         }
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
-        // todo quit and show message
-       /* if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-            finish();
-        }*/
+        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            quitWithError("invalid widget id");
+        }
     }
 
     @Override
@@ -84,10 +83,21 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         }
 
         else if (requestCode == AUTH_REQUEST) {
-            Log.d(TAG, "ending authentication");
             // Authentication done.
             mIsAuthenticating = false;
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
+    }
+
+    protected void quitWithError(String reason) {
+        this.setResult(RESULT_CANCELED);
+        Toast.makeText(getApplicationContext(), R.string.configuration_error + " (" + reason + ")", Toast.LENGTH_LONG).show();
+        finishAffinity();
     }
 
     /**
@@ -109,6 +119,7 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         intent.putExtra("hasParent", true);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         startActivityForResult(intent, 199);
+        overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
     }
 
     protected void finishWidgetConfiguration() {

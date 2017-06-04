@@ -14,4 +14,7 @@
     <string name="spotify_auth_error">Ongelma sisäänkirjautumisesssa</string>
     <string name="widget_name">Spotify soittolistat</string>
     <string name="spotify_auth_required">Spotify sisäänkirjautuminen vaaditaan</string>
+    <string name="configuration_error">Virhe, yritä uudelleen</string>
+    <string name="spotify_api_error">Datan lataus ei onnistunut</string>
+    <string name="widget_error_msg">Konfiguraation lukeminen ei onnistu.</string>
 </resources>

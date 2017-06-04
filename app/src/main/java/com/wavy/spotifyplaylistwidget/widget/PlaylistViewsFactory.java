@@ -30,20 +30,25 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private int mItemCount;
     private WidgetConfigRepository mConfigRepository;
     private String mTrackCountString;
+    private Boolean Error = false;
 
     public PlaylistViewsFactory(Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mConfigRepository = new WidgetConfigFileRepository(mContext);
         mTrackCountString = context.getString(R.string.track_count);
-        Log.d(TAG, "Constructor " +mAppWidgetId);
     }
 
     @Override
     public void onCreate() {
-        Log.d("PlaylistViewsFactory", "onCreate " +mAppWidgetId);
-        mWidgetConfig = mConfigRepository.get(mAppWidgetId);
-        mItemCount = mWidgetConfig.getPlaylists().size();
+        try {
+            mWidgetConfig = mConfigRepository.get(mAppWidgetId);
+            mItemCount = mWidgetConfig.getPlaylists().size();
+        } catch(Exception e) {
+            mItemCount = 1;
+            Error = true;
+        }
+
     }
 
     @Override
@@ -63,6 +68,10 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public RemoteViews getViewAt(int position) {
+
+        if (Error) {
+            return new RemoteViews(mContext.getPackageName(), R.layout.widget_error);
+        }
 
         final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist);
         PlaylistModel pl = mWidgetConfig.getPlaylists().get(position);

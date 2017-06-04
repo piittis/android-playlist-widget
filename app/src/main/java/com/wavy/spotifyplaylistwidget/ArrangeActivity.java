@@ -66,22 +66,27 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
     private void addWidget() {
 
-        findViewById(R.id.arrange_activity_elements).setVisibility(View.GONE);
-        findViewById(R.id.processing_indicator).setVisibility(View.VISIBLE);
+        try {
+            findViewById(R.id.arrange_activity_elements).setVisibility(View.GONE);
+            findViewById(R.id.processing_indicator).setVisibility(View.VISIBLE);
 
-        FileHelper.persistPlaylistImages(this, mPlaylists, () -> {
+            FileHelper.persistPlaylistImages(this, mPlaylists, () -> {
 
-            WidgetConfigModel newWidgetConfig = new WidgetConfigModel(WidgetConfigModel.TYPE_MULTI);
-            ArrayList<PlaylistModel> widgetPlaylists = new ArrayList<>(mPlaylists.size());
+                WidgetConfigModel newWidgetConfig = new WidgetConfigModel(WidgetConfigModel.TYPE_MULTI);
+                ArrayList<PlaylistModel> widgetPlaylists = new ArrayList<>(mPlaylists.size());
 
-            for (PlaylistViewModel pl : mPlaylists) {
-                widgetPlaylists.add(new PlaylistModel(pl.name, pl.id, pl.uri, pl.tracks, "", pl.owner));
-            }
-            newWidgetConfig.setPlaylists(widgetPlaylists);
+                for (PlaylistViewModel pl : mPlaylists) {
+                    widgetPlaylists.add(new PlaylistModel(pl.name, pl.id, pl.uri, pl.tracks, "", pl.owner));
+                }
+                newWidgetConfig.setPlaylists(widgetPlaylists);
 
-            mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
+                mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
 
-            finishWidgetConfiguration();
-        });
+                finishWidgetConfiguration();
+            });
+        } catch (Exception e) {
+            quitWithError(e.getMessage());
+        }
+
     }
 }

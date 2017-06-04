@@ -15,4 +15,7 @@
     <string name="spotify_auth_required">Spotify authentication is required</string>
     <string name="spotify_auth_error">Problem with spotify authentication</string>
     <string name="spotify_install_ap">Please install the Spotify app first</string>
+    <string name="configuration_error">An error occured, please try again</string>
+    <string name="spotify_api_error">Can\'t access spotify api</string>
+    <string name="widget_error_msg">Can\'t read config, please remove this widget.</string>
 </resources>

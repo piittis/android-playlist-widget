@@ -89,7 +89,7 @@ public class SelectActivityInteractor {
         while (System.currentTimeMillis() < timeout) {
             if (m.findViewByPosition(position) != null)
                 return true;
-            SystemClock.sleep(100);
+            SystemClock.sleep(16);
         }
         return false;
     }

@@ -1,21 +1,14 @@
 package com.wavy.spotifyplaylistwidget;
 
 
-import android.app.Activity;
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
-import android.view.View;
-import android.widget.CheckBox;
 
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
@@ -28,29 +21,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import static android.support.test.espresso.matcher.ViewMatchers.withChild;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.*;
 
 @RunWith(AndroidJUnit4.class)
@@ -77,7 +57,9 @@ public class SelectActivityTests {
         when(spotifyApiMock.isAccessTokenSet()).thenReturn(true);
         setSpotifyApiResultDefault();
 
-        mActivityTestRule.launchActivity(new Intent());
+        Intent intent = new Intent();
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
+        mActivityTestRule.launchActivity(intent);
         interactor = new SelectActivityInteractor(mActivityTestRule.getActivity());
 
         Assert.assertTrue(interactor.waitForPlaylistsDataLoaded(5000));
