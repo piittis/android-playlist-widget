@@ -77,15 +77,17 @@ public class FileHelper {
         // Make a callable for each image operation
         ArrayList<Callable<Object>> callables = new ArrayList<>(playlists.size());
         for (PlaylistViewModel pl : playlists) {
-            callables.add(Executors.callable(() -> {
-                try {
-                    Bitmap image = Picasso.with(callingActivity).load(pl.imageUrl).resize(imageSize, imageSize).get();
-                    savePng(callingActivity, pl.id, image);
-                } catch (IOException e) {
-                    // todo recover from this
-                    e.printStackTrace();
-                }
-            }));
+            if (pl.imageUrl != null) {
+                callables.add(Executors.callable(() -> {
+                    try {
+                        Bitmap image = Picasso.with(callingActivity).load(pl.imageUrl).resize(imageSize, imageSize).get();
+                        savePng(callingActivity, pl.id, image);
+                    } catch (IOException e) {
+                        // todo recover from this
+                        e.printStackTrace();
+                    }
+                }));
+            }
         }
 
         // Execute in AsyncTask to not block the UI thread.

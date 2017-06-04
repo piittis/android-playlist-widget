@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Homescreen Playlists for Spotify</string>
-    <string name="widget_name">Playlists</string>
+    <string name="app_name" translatable="false">Homescreen Playlists for Spotify</string>
+    <string name="widget_name">Spotify playlists</string>
     <string name="select_playlists">Select playlists</string>
     <string name="arrange_playlists">Arrange playlists</string>
     <string name="processing_text">processing…</string>
@@ -13,6 +13,6 @@
     <string name="add_widget">Add widget</string>
     <string name="playlist_image_content_description">playlist image</string>
     <string name="spotify_auth_required">Spotify authentication is required</string>
-    <string name="spotify_auth_error">Spotify authentication is required</string>
-    <string name="spotify_install_ap">Please install the spotify app first</string>
+    <string name="spotify_auth_error">Problem with spotify authentication</string>
+    <string name="spotify_install_ap">Please install the Spotify app first</string>
 </resources>

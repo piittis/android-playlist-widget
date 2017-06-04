@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -101,14 +102,28 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
 
         if (intent.getAction().equals(OPEN_PLAYLIST_ACTION)) {
 
-            // Opens the given playlist.
-            String uri = intent.getStringExtra("uri");
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
+            if (spotifyInstalled(context)) {
+                // Opens the given playlist.
+                String uri = intent.getStringExtra("uri");
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i);
+            } else {
+                Toast.makeText(context, "Please install the Spotify app", Toast.LENGTH_LONG).show();
+            }
+
         }
 
         super.onReceive(context, intent);
+    }
+
+    private boolean spotifyInstalled(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo("com.spotify.music", 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
 }

@@ -9,4 +9,9 @@
     <string name="selection_next_button">Jatka</string>
     <string name="track_count">%1$d kappaletta</string>
     <string name="add_widget">Lisää widget</string>
+    <string name="spotify_install_ap">Asenna ensin Spotify sovellus</string>
+    <string name="playlist_image_content_description">playlist kuva</string>
+    <string name="spotify_auth_error">Ongelma sisäänkirjautumisesssa</string>
+    <string name="widget_name">Spotify soittolistat</string>
+    <string name="spotify_auth_required">Spotify sisäänkirjautuminen vaaditaan</string>
 </resources>

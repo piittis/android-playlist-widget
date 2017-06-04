@@ -83,6 +83,5 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
             finishWidgetConfiguration();
         });
-
     }
 }

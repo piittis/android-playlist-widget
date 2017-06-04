@@ -19,17 +19,38 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SpotifyApi {
 
+
     private static final String TAG = "SpotifyApi";
     private static String mAuthHeaderValue;
     private static final String mApiRoot = "https://api.spotify.com/v1/";
+
     private PlaylistService mPlaylistService;
+    private spotifyApiErrorListener mErrorListener;
 
     public interface playlistsLoadedCallbackListener {
         void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> playlists);
     }
 
-    public SpotifyApi() {
+    public interface spotifyApiErrorListener {
+        void onSpotifyApiError(String reason);
+    }
 
+    // Singleton
+    private static SpotifyApi instance;
+
+    public static SpotifyApi getInstance() {
+        if (instance == null) {
+            instance = new SpotifyApi();
+        }
+        return instance;
+    }
+
+    // Allow setting a mock instance from tests
+    public static void setInstance(SpotifyApi newInstance) {
+        instance = newInstance;
+    }
+
+    private SpotifyApi() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mApiRoot)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -38,12 +59,16 @@ public class SpotifyApi {
         mPlaylistService = retrofit.create(PlaylistService.class);
     }
 
-    public static void setAccessToken(String token) {
+    public void setAccessToken(String token) {
         mAuthHeaderValue = "Bearer " + token;
     }
 
-    public static Boolean isAccessTokenSet() {
+    public Boolean isAccessTokenSet() {
         return mAuthHeaderValue != null;
+    }
+
+    public void setErrorListener(spotifyApiErrorListener listener) {
+        mErrorListener = listener;
     }
 
     /**
@@ -60,19 +85,24 @@ public class SpotifyApi {
             public void onResponse(@NonNull Call<PlaylistService.PlaylistResponseModel> call,
                                    @NonNull Response<PlaylistService.PlaylistResponseModel> response) {
 
-                // Notify callback listener.
-                callbackListener.onPlaylistsLoaded(offset, getPlaylistViewModels(response.body()));
+               if (response.isSuccessful()) {
+                   callbackListener.onPlaylistsLoaded(offset, getPlaylistViewModels(response.body()));
 
-                int playlistsLoaded = offset + 50;
-                if (playlistsLoaded < response.body().total) {
-                    // More playlists to be had, recursively get more.
-                    getPlaylists(offset + 50, callbackListener);
-                }
+                   int playlistsLoaded = offset + 50;
+                   if (playlistsLoaded < response.body().total) {
+                       // More playlists to be had, recursively get more.
+                       getPlaylists(offset + 50, callbackListener);
+                   }
+               } else {
+                   callbackListener.onPlaylistsLoaded(offset, new ArrayList<>());
+                   reportError(response.message());
+               }
             }
 
             @Override
             public void onFailure(Call<PlaylistService.PlaylistResponseModel> call, Throwable t) {
-                //todo handle somehow
+                callbackListener.onPlaylistsLoaded(offset, new ArrayList<>());
+                reportError(t.getMessage());
             }
         });
     }
@@ -101,5 +131,11 @@ public class SpotifyApi {
             }
         }
         return imageToUse.url;
+    }
+
+    private void reportError(String reason) {
+        if (mErrorListener != null) {
+            mErrorListener.onSpotifyApiError(reason);
+        }
     }
 }

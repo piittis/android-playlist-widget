@@ -28,11 +28,9 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null && savedInstanceState.getBoolean("authFlowStarted", false))
-            return;
-
-        // This activity doesnt need any UI?
+        //This activity doesnt need any UI?
         //setContentView(R.layout.activity_auth);
+
         Log.d(TAG, "on create");
         if (!spotifyInstalled()) {
             AuthenticationClient.openDownloadSpotifyActivity(this);
@@ -45,28 +43,22 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
-        outState.putBoolean("authFlowStarted", true);
-        /*outState.putStringArray("selectedPlaylistIds",
-                mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));*/
     }
 
     private void openAuthenticationActivity() {
 
-            AuthenticationRequest.Builder builder =
-                    new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+            AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
+                    .setScopes(new String[]{"user-read-private",
+                            "playlist-read-private",
+                            "playlist-read-collaborative"})
+                    .build();
 
-            builder.setScopes(new String[]{"user-read-private",
-                    "playlist-read-private",
-                    "playlist-read-collaborative"});
-
-            AuthenticationRequest request = builder.build();
             AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
-    private void authenticationFailed() {
+    private void authenticationFailed(String reason) {
         setResult(RESULT_CANCELED);
-        quitWithMessage(getString(R.string.spotify_auth_error));
+        quitWithMessage(getString(R.string.spotify_auth_error) + ": " + reason);
     }
 
     private void authenticationCancelled() {
@@ -102,7 +94,7 @@ public class AuthActivity extends AppCompatActivity {
                 case TOKEN:
                     // Get token and go to select view
                     String token = response.getAccessToken();
-                    SpotifyApi.setAccessToken(token);
+                    SpotifyApi.getInstance().setAccessToken(token);
 
                     setResult(RESULT_OK);
                     finish();
@@ -112,8 +104,8 @@ public class AuthActivity extends AppCompatActivity {
                 // Auth flow returned an error
                 case ERROR:
                     Log.d("auth result", "error");
-                    authenticationFailed();
-
+                    authenticationFailed(response.getError());
+                    break;
                 // Most likely auth flow was cancelled
                 default:
                     Log.d("auth result", "cancelled");

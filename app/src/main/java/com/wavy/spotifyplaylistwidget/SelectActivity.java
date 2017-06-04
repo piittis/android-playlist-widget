@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
@@ -21,17 +22,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SelectActivity extends PlaylistWidgetConfigureActivityBase
-        implements SpotifyApi.playlistsLoadedCallbackListener {
+        implements SpotifyApi.playlistsLoadedCallbackListener, SpotifyApi.spotifyApiErrorListener {
 
     private static final String TAG = "SelectActivity";
     private ArrayList<PlaylistViewModel> mPlaylists;
     private HashSet<String> mSelectedPlaylistIds = new HashSet<>();
-    private SpotifyApi mSpotifyApi = new SpotifyApi();
-    private Boolean isFirstLoad = true;
 
     // view elements
     @BindView(R.id.playlist_selection_list) RecyclerView mPlaylistsSelectionView;
@@ -79,8 +79,9 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
         initializePlaylistSelectionList();
         updateSelectedPlaylists();
+        SpotifyApi.getInstance().setErrorListener(this);
 
-        if (!SpotifyApi.isAccessTokenSet()) {
+        if (!SpotifyApi.getInstance().isAccessTokenSet()) {
             // Go get access token first.
             doAuthentication();
         } else if (mPlaylists.size() == 0) {
@@ -99,7 +100,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
         outState.putStringArray("selectedPlaylistIds",
                 mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));
         outState.putParcelableArrayList("playlists", mPlaylists);
@@ -137,10 +137,8 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
             this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.VISIBLE);
             mPlaylistsSelectionView.scheduleLayoutAnimation();
         }
-        Log.d(TAG, "loadPlaylists");
         mPlaylists.clear();
-        // todo react to possible errors
-        mSpotifyApi.getPlaylists(0, this);
+        SpotifyApi.getInstance().getPlaylists(0, this);
     }
 
     @Override
@@ -218,9 +216,13 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         super.onActivityResult(requestCode, resultCode, intent);
 
         // Authentication done.
-        if (requestCode == AUTH_REQUEST) {
-            mIsAuthenticating = false;
+        if (requestCode == AUTH_REQUEST && resultCode == RESULT_OK) {
             loadPlaylists();
         }
+    }
+
+    @Override
+    public void onSpotifyApiError(String reason) {
+        Toast.makeText(getApplicationContext(), reason, Toast.LENGTH_LONG).show();
     }
 }
