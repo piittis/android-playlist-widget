@@ -56,6 +56,7 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
             new DragSortListView.DropListener() {
                 @Override
                 public void drop(int from, int to) {
+                    logEvent("playlist_drag_drop");
                     if (from != to) {
                         PlaylistViewModel item = mPlaylistArrangeAdapter.getItem(from);
                         mPlaylistArrangeAdapter.remove(item);
@@ -82,6 +83,7 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
                 mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
 
+                logEvent("new_widget_created");
                 finishWidgetConfiguration();
             });
         } catch (Exception e) {

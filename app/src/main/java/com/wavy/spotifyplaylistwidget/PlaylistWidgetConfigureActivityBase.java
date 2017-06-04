@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wavy.spotifyplaylistwidget.persistence.FileHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistModel;
@@ -38,9 +39,13 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
     private Boolean mHasParent = false;
     protected Boolean mIsAuthenticating = false;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (savedInstanceState != null) {
             mIsAuthenticating = savedInstanceState.getBoolean("isAuthenticating", false);
@@ -143,4 +148,9 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         Log.d(TAG, "updateWidget");
         PlaylistWidgetProvider.updateWidgetId(this, mAppWidgetId);
     }
+
+    protected void logEvent(String event) {
+        mFirebaseAnalytics.logEvent(event, new Bundle());
+    }
+
 }

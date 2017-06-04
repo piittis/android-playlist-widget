@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
@@ -60,7 +61,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         mNextButton.setOnClickListener((v) -> startArrangeActivity());
 
         //todo fix bug: refresh throws exception if scrolling at the same time
-        mSwipeRefresh.setOnRefreshListener(this::loadPlaylists);
+        mSwipeRefresh.setOnRefreshListener(this::manualUpdate);
 
         String[] initialSelections = null;
         if (savedInstanceState != null) {
@@ -122,7 +123,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
                 return true;
             case R.id.refresh:
                 mSwipeRefresh.setRefreshing(true);
-                loadPlaylists();
+                manualUpdate();
                 return true;
             default:
                 // If we got here, the user's action was not recognized.
@@ -169,6 +170,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     }
 
     private void startArrangeActivity() {
+
         Intent intent = new Intent(getApplicationContext(), ArrangeActivity.class);
 
         ArrayList<PlaylistViewModel> selected = new ArrayList<>(mSelectedPlaylistIds.size());
@@ -180,8 +182,19 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         startNextConfigurationActivity(intent);
     }
 
+    private void manualUpdate() {
+        logEvent("manual_data_refresh");
+        loadPlaylists();
+    }
 
     private void selectAll(boolean selected) {
+
+        if (selected) {
+            logEvent("select_all");
+        } else {
+            logEvent("remove_selections");
+        }
+
         if (mPlaylists != null && mPlaylistSelectionAdapter != null) {
             for (PlaylistViewModel pl : mPlaylists) {
                 pl.selected = selected;
@@ -223,6 +236,8 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
     @Override
     public void onSpotifyApiError(String reason) {
-        Toast.makeText(getApplicationContext(), reason, Toast.LENGTH_LONG).show();
+        logEvent("api_error");
+        Toast.makeText(getApplicationContext(), R.string.spotify_api_error + " (" + reason + ")"
+                , Toast.LENGTH_LONG).show();
     }
 }

@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
 
@@ -22,6 +24,7 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
 
     private static final String TAG = "PlaylistWidgetProvider";
     public static final String OPEN_PLAYLIST_ACTION = "com.wavy.spotifyplaylistwidget.TOAST_ACTION";
+
 
     public static void updateWidgetId(Context context, int appWidgetId) {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
@@ -80,6 +83,7 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
 
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
+            logEvent(context, "widget_remove");
             new WidgetConfigFileRepository(context).remove(appWidgetId);
         }
     }
@@ -103,6 +107,8 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
         if (intent.getAction().equals(OPEN_PLAYLIST_ACTION)) {
 
             if (spotifyInstalled(context)) {
+
+                logEvent(context, "playlist_open");
                 // Opens the given playlist.
                 String uri = intent.getStringExtra("uri");
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
@@ -124,6 +130,11 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    private void logEvent(Context context, String event) {
+        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+        mFirebaseAnalytics.logEvent("playlist_open", new Bundle());
     }
 
 }

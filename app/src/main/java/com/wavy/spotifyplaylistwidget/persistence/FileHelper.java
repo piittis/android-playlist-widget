@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
@@ -35,6 +36,7 @@ public class FileHelper {
             writer.write(fileContent);
             writer.close();
         } catch (Exception e) {
+            FirebaseCrash.log("writeString");
             e.printStackTrace();
         }
     }
@@ -53,6 +55,7 @@ public class FileHelper {
             return sb.toString();
 
         } catch (Exception e) {
+            FirebaseCrash.log("readString");
             e.printStackTrace();
         }
 
@@ -108,6 +111,7 @@ public class FileHelper {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.close();
         } catch (Exception e) {
+            FirebaseCrash.log("savePng");
             e.printStackTrace();
         }
     }

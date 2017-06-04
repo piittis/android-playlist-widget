@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "821937782032",
+    "firebase_url": "https://spotify-widget.firebaseio.com",
+    "project_id": "spotify-widget",
+    "storage_bucket": "spotify-widget.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:821937782032:android:229f8f8f061f2411",
+        "android_client_info": {
+          "package_name": "com.wavy.spotifyplaylistwidget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "821937782032-k2r4pjmb5i1s31crbncurn0oa7um1gij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaIVZTjRhyAoHFlsiI9C5IYjNwvey3u0w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

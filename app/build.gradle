@@ -56,4 +56,9 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     testCompile 'junit:junit:4.12'
 
+    compile 'com.google.firebase:firebase-core:10.2.6'
+    compile 'com.google.firebase:firebase-crash:10.2.6'
+
 }
+
+apply plugin: 'com.google.gms.google-services'

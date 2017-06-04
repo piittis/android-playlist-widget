@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -23,6 +24,7 @@ public class AuthActivity extends AppCompatActivity {
     private static final String CLIENT_ID = "a2277433f3ba4c9a9b0ae0859c30f808";
     private static final String REDIRECT_URI = "app://logincallback";
     private static final int REQUEST_CODE = 1337;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +33,10 @@ public class AuthActivity extends AppCompatActivity {
         //This activity doesnt need any UI?
         //setContentView(R.layout.activity_auth);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Log.d(TAG, "on create");
         if (!spotifyInstalled()) {
+            mFirebaseAnalytics.logEvent("spotify_not_installed", new Bundle());
             AuthenticationClient.openDownloadSpotifyActivity(this);
             quitWithMessage(getString(R.string.spotify_install_ap));
         } else {
@@ -96,6 +100,7 @@ public class AuthActivity extends AppCompatActivity {
                     String token = response.getAccessToken();
                     SpotifyApi.getInstance().setAccessToken(token);
 
+                    mFirebaseAnalytics.logEvent("auth_success", new Bundle());
                     setResult(RESULT_OK);
                     finish();
                     overridePendingTransition(R.anim.fade_in_hard_nodelay, R.anim.hide_delayed);
@@ -104,11 +109,13 @@ public class AuthActivity extends AppCompatActivity {
                 // Auth flow returned an error
                 case ERROR:
                     Log.d("auth result", "error");
+                    mFirebaseAnalytics.logEvent("auth_error", new Bundle());
                     authenticationFailed(response.getError());
                     break;
                 // Most likely auth flow was cancelled
                 default:
                     Log.d("auth result", "cancelled");
+                    mFirebaseAnalytics.logEvent("auth_cancel", new Bundle());
                     authenticationCancelled();
                     // Handle other cases
             }
