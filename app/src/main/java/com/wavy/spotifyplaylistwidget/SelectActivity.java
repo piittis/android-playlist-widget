@@ -138,20 +138,16 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
             this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.VISIBLE);
             mPlaylistsSelectionView.scheduleLayoutAnimation();
         }
-        mPlaylists.clear();
         SpotifyApi.getInstance().getPlaylists(0, this);
     }
 
     @Override
     public void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> newPlaylists) {
 
-        //Log.d(TAG, "onPlaylistsLoaded, offset " + offset);
         // Restore selected status.
         for (PlaylistViewModel pl : newPlaylists) {
             pl.selected = mSelectedPlaylistIds.contains(pl.id);
         }
-
-        mPlaylists.addAll(newPlaylists);
 
         this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.GONE);
 
@@ -159,9 +155,12 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
         if (offset == 0) {
             // If this is first batch of playlists, update whole dataset.
+            mPlaylists = newPlaylists;
+            mPlaylistSelectionAdapter.setPlaylists(mPlaylists);
             mPlaylistSelectionAdapter.notifyDataSetChanged();
         } else {
-            // Otherwise notify only about the added items to avoid stuttering.
+            mPlaylists.addAll(newPlaylists);
+            // Notify only about the added items to avoid stuttering..
             int len = mPlaylists.size();
             for(int i = offset; i < len; i++) {
                 mPlaylistSelectionAdapter.notifyItemChanged(i);

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class PlaylistSelectionAdapter
         extends RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder> {
 
-    private final ArrayList<PlaylistViewModel> mPlaylists;
+    private ArrayList<PlaylistViewModel> mPlaylists;
     private View mView;
     private View.OnClickListener mClickListener;
     private Context mContext;
@@ -34,6 +34,10 @@ public class PlaylistSelectionAdapter
         mContext = context;
         mTrackCountString = context.getString(R.string.track_count);
         mImageSize = mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
+    }
+
+    public void setPlaylists(ArrayList<PlaylistViewModel> playlists) {
+        mPlaylists = playlists;
     }
 
     @Override
