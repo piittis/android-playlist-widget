@@ -12,10 +12,11 @@
     <string name="track_count">%1$d tracks</string>
     <string name="add_widget">Add widget</string>
     <string name="playlist_image_content_description">playlist image</string>
-    <string name="spotify_auth_required">Spotify authentication is required</string>
-    <string name="spotify_auth_error">Problem with spotify authentication</string>
-    <string name="spotify_install_ap">Please install the Spotify app first</string>
-    <string name="configuration_error">An error occured, please try again</string>
-    <string name="spotify_api_error">Can\'t access spotify api</string>
-    <string name="widget_error_msg">Can\'t read config, please remove this widget.</string>
+    <string name="spotify_auth_required">Spotify authentication is required.</string>
+    <string name="spotify_auth_error">Can\'t authenticate, please try again.</string>
+    <string name="spotify_install_ap">Please install the Spotify app first.</string>
+    <string name="configuration_error">An error occurred, please try again.</string>
+    <string name="spotify_api_error">Can\'t load spotify data, try again later.</string>
+    <string name="widget_error_msg">Can\'t read config.</string>
+    <string name="loading_text">Loading…</string>
 </resources>
