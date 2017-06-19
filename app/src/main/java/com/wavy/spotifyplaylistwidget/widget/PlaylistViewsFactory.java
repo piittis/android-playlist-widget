@@ -31,12 +31,14 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private WidgetConfigRepository mConfigRepository;
     private String mTrackCountString;
     private Boolean Error = false;
+    private RemoteViews mLoadingView;
 
     public PlaylistViewsFactory(Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mConfigRepository = new WidgetConfigFileRepository(mContext);
         mTrackCountString = context.getString(R.string.track_count);
+        mLoadingView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist_loading_placeholder);
     }
 
     @Override
@@ -99,7 +101,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public RemoteViews getLoadingView() {
-        return null;
+        return mLoadingView;
     }
 
     @Override
