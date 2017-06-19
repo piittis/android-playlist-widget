@@ -120,7 +120,7 @@ public class SpotifyApi {
 
     // Select the image the app should use
     private static String getImageUrl(List<PlaylistService.ImageModel> images) {
-        if (images.size() == 0) return null;
+        if (images == null || images.size() == 0) return null;
 
         // Get first image with at most 300px width.
         PlaylistService.ImageModel imageToUse = images.get(0);
