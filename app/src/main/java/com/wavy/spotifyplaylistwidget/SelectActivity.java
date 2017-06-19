@@ -42,6 +42,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
     private PlaylistSelectionAdapter mPlaylistSelectionAdapter;
     private String mToolbarTitle;
+    private Boolean firstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +135,8 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     }
 
     private void loadPlaylists() {
-        if (mPlaylists.size() == 0) {
+        if (firstLoad || mPlaylists.size() == 0) {
+            firstLoad = false;
             this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.VISIBLE);
             mPlaylistsSelectionView.scheduleLayoutAnimation();
         }
@@ -236,7 +238,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     @Override
     public void onSpotifyApiError(String reason) {
         logEvent("api_error");
-        Toast.makeText(getApplicationContext(), R.string.spotify_api_error + " (" + reason + ")"
+        Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + reason + ")"
                 , Toast.LENGTH_LONG).show();
     }
 }

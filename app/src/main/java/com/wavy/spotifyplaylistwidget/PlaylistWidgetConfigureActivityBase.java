@@ -59,11 +59,10 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
                     AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
-        if (!mHasParent) {
-            // Set the result to CANCELED. This will cause the widget host to cancel
-            // out of the widget placement if the user presses the back button.
-            setResult(RESULT_CANCELED);
-        }
+        // Set result to ok when widged configuration is done succesfully.
+        Intent resultValue = new Intent();
+        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+        setResult(RESULT_CANCELED, resultValue);
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {

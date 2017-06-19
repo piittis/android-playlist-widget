@@ -62,7 +62,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void authenticationFailed(String reason) {
         setResult(RESULT_CANCELED);
-        quitWithMessage(getString(R.string.spotify_auth_error) + ": " + reason);
+        quitWithMessage(getString(R.string.spotify_auth_error) + " (" + reason + ")");
     }
 
     private void authenticationCancelled() {
