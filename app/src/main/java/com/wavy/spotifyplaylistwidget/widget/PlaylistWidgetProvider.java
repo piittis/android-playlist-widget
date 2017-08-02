@@ -99,8 +99,6 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
     }
 
     // Called when the BroadcastReceiver receives an Intent broadcast.
-    // Checks to see whether the intent's action is TOAST_ACTION. If it is, the app widget
-    // displays a Toast message for the current item.
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -134,7 +132,7 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
 
     private void logEvent(Context context, String event) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        mFirebaseAnalytics.logEvent("playlist_open", new Bundle());
+        mFirebaseAnalytics.logEvent(event, new Bundle());
     }
 
 }
