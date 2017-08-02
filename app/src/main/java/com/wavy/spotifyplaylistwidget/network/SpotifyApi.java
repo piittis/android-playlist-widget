@@ -111,11 +111,23 @@ public class SpotifyApi {
 
         ArrayList<PlaylistViewModel> list = new ArrayList<>(response.playlists.size());
         for (PlaylistService.PlaylistModel pl : response.playlists) {
-            PlaylistViewModel vm = new PlaylistViewModel(pl.name, pl.id, pl.uri, getImageUrl(pl.images),
-                    pl.tracks.total, pl.owner.id);
-            list.add(vm);
+            if (pl.name != null && pl.id != null) {
+                list.add(getPlaylistViewModel(pl));
+            }
         }
         return list;
+    }
+
+    private static PlaylistViewModel getPlaylistViewModel(PlaylistService.PlaylistModel response) {
+        PlaylistViewModel vm = new PlaylistViewModel();
+        vm.name = response.name;
+        vm.id = response.id;
+        vm.uri = response.uri;
+        vm.imageUrl = getImageUrl(response.images);
+        vm.tracks = (response.tracks != null) ? response.tracks.total : 0;
+        vm.owner = (response.owner != null) ? response.owner.id : "";
+
+        return vm;
     }
 
     // Select the image the app should use
