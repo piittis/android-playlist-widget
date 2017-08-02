@@ -8,7 +8,7 @@ public class WidgetConfigModel {
     // Contains multiple playlist.
     public static final int TYPE_MULTI = 1;
     // Contains a single playlist.
-    public static final int TYPE_SINGLE = 1;
+    public static final int TYPE_SINGLE = 2;
 
     private int widgetType;
     private Boolean showImages = true;

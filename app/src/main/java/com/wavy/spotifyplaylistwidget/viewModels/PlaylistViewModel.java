@@ -20,6 +20,8 @@ public class PlaylistViewModel implements Parcelable {
     public String owner;
     public Boolean selected = false;
 
+    public PlaylistViewModel() { }
+
     public PlaylistViewModel(String name, String id, String uri, String imageUrl, int tracks, String owner) {
         this.name = name;
         this.id = id;
