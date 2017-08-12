@@ -34,7 +34,9 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private static final int RESULT_CONFIGURATION_DONE = 1234;
+    private static final int RESULT_CONFIGURATION_CANCELLED = 2345;
     protected static final int AUTH_REQUEST = 99;
+    protected static final int CHILD_ACTIVITY = 199;
     private static final String TAG = "ConfigureBaseClass";
     private Boolean mHasParent = false;
     protected Boolean mIsAuthenticating = false;
@@ -80,15 +82,21 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        if (requestCode == 199 && resultCode == RESULT_CONFIGURATION_DONE) {
-            // Child activity finished because widget configuration is finished.
-            // Finish this activity also.
-            finishWidgetConfiguration();
+        if (requestCode == CHILD_ACTIVITY) {
+            if (resultCode == RESULT_CONFIGURATION_DONE) {
+                // Child activity finished because widget configuration is finished.
+                // Finish this activity also.
+                finishWidgetConfiguration();
+            } else if (resultCode == RESULT_CONFIGURATION_CANCELLED) {
+                cancelWidgetConfiguration();
+            }
         }
-
         else if (requestCode == AUTH_REQUEST) {
-            // Authentication done.
             mIsAuthenticating = false;
+            if (resultCode == RESULT_CANCELED) {
+                // Could not authenticate, no point in continuing with the configuration.
+                cancelWidgetConfiguration();
+            }
         }
     }
 
@@ -100,8 +108,8 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     protected void quitWithError(String reason) {
         this.setResult(RESULT_CANCELED);
-        Toast.makeText(getApplicationContext(), R.string.configuration_error + " (" + reason + ")", Toast.LENGTH_LONG).show();
-        finishAffinity();
+        Toast.makeText(getApplicationContext(), getString(R.string.configuration_error) + " (" + reason + ")", Toast.LENGTH_LONG).show();
+        cancelWidgetConfiguration();
     }
 
     /**
@@ -122,10 +130,31 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
     protected void startNextConfigurationActivity(Intent intent) {
         intent.putExtra("hasParent", true);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-        startActivityForResult(intent, 199);
+        startActivityForResult(intent, CHILD_ACTIVITY);
         overridePendingTransition(R.anim.fade_in_hard, R.anim.fade_out_hard);
     }
 
+    /**
+     * finishAndRemoveTask() is api level >= 21. FinishAffinity causes a crash.
+     * Thats why when quitting, each activity has to finish one after the other in this way.
+     */
+    protected void cancelWidgetConfiguration() {
+        if (mHasParent) {
+            // We have a parent activity, let it handle it.
+            setResult(RESULT_CONFIGURATION_CANCELLED);
+        } else {
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            setResult(RESULT_CANCELED, resultValue);
+        }
+
+        finish();
+    }
+
+    /**
+     * To support arbitrary amount of configuration activities, the last activity should call this
+     * when it decides configuration is done.
+     */
     protected void finishWidgetConfiguration() {
 
         if (mHasParent) {

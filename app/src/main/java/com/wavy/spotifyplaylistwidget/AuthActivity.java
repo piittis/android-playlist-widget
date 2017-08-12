@@ -51,13 +51,13 @@ public class AuthActivity extends AppCompatActivity {
 
     private void openAuthenticationActivity() {
 
-            AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
-                    .setScopes(new String[]{"user-read-private",
-                            "playlist-read-private",
-                            "playlist-read-collaborative"})
-                    .build();
+        AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
+                .setScopes(new String[]{"user-read-private",
+                        "playlist-read-private",
+                        "playlist-read-collaborative"})
+                .build();
 
-            AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
     private void authenticationFailed(String reason) {
@@ -82,7 +82,7 @@ public class AuthActivity extends AppCompatActivity {
     private void quitWithMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
         setResult(RESULT_CANCELED);
-        this.finishAffinity();
+        finish();
     }
 
     @Override

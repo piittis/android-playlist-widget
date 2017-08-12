@@ -49,7 +49,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         super.onCreate(savedInstanceState);
         mToolbarTitle = getString(R.string.select_playlists);
 
-
         setContentView(R.layout.activity_select);
 
         Log.d(TAG, "onCreate");
@@ -61,7 +60,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
         mNextButton.setOnClickListener((v) -> startArrangeActivity());
 
-        //todo fix bug: refresh throws exception if scrolling at the same time
         mSwipeRefresh.setOnRefreshListener(this::manualUpdate);
 
         String[] initialSelections = null;
