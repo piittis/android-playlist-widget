@@ -21,7 +21,6 @@ import butterknife.ButterKnife;
 
 public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
-    private ArrayList<PlaylistViewModel> mPlaylists;
     private WidgetConfigRepository mWidgetConfigRepository;
     // view elements
     @BindView(R.id.playlist_arrange_list) DragSortListView mPlaylistArrangeView;
@@ -36,12 +35,7 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
         ButterKnife.bind(this);
 
-        mPlaylists = getIntent().getParcelableArrayListExtra("mPlaylists");
-        if (mPlaylists == null) {
-            mPlaylists = new ArrayList<>();
-        }
-
-        mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists);
+        mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists.getSelectedPlaylists());
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
 
         mPlaylistArrangeView.setDropListener(onDrop);
@@ -71,24 +65,25 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
             findViewById(R.id.arrange_activity_elements).setVisibility(View.GONE);
             findViewById(R.id.processing_indicator).setVisibility(View.VISIBLE);
 
-            FileHelper.persistPlaylistImages(this, mPlaylists, () -> {
-
-                WidgetConfigModel newWidgetConfig = new WidgetConfigModel(WidgetConfigModel.TYPE_MULTI);
-                ArrayList<PlaylistModel> widgetPlaylists = new ArrayList<>(mPlaylists.size());
-
-                for (PlaylistViewModel pl : mPlaylists) {
-                    widgetPlaylists.add(new PlaylistModel(pl.name, pl.id, pl.uri, pl.tracks, "", pl.owner));
-                }
-                newWidgetConfig.setPlaylists(widgetPlaylists);
-
-                mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
-
+            FileHelper.persistPlaylistImages(this, mPlaylists.getSelectedPlaylists(), () -> {
+                saveNewWidgetConfig();
                 logEvent("new_widget_created");
                 finishWidgetConfiguration();
             });
         } catch (Exception e) {
             quitWithError(e.getMessage());
         }
+    }
 
+    private void saveNewWidgetConfig() {
+        WidgetConfigModel newWidgetConfig = new WidgetConfigModel(WidgetConfigModel.TYPE_MULTI);
+        ArrayList<PlaylistModel> widgetPlaylists = new ArrayList<>(mPlaylists.getSelectedPlaylistsCount());
+
+        for (PlaylistViewModel pl : mPlaylists.getSelectedPlaylists()) {
+            widgetPlaylists.add(new PlaylistModel(pl.name, pl.id, pl.uri, pl.tracks, "", pl.owner));
+        }
+        newWidgetConfig.setPlaylists(widgetPlaylists);
+
+        mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
     }
 }

@@ -7,9 +7,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
+import org.joda.time.DateTime;
+
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,13 +25,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SpotifyApi {
 
-
     private static final String TAG = "SpotifyApi";
     private static String mAuthHeaderValue;
+    private static String mAccessToken;
+    private static DateTime mAccessTokenExpiresIn;
     private static final String mApiRoot = "https://api.spotify.com/v1/";
 
     private PlaylistService mPlaylistService;
-    private spotifyApiErrorListener mErrorListener;
+    private WeakReference<spotifyApiErrorListener> mErrorListener;
 
     public interface playlistsLoadedCallbackListener {
         void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> playlists);
@@ -35,22 +42,7 @@ public class SpotifyApi {
         void onSpotifyApiError(String reason);
     }
 
-    // Singleton
-    private static SpotifyApi instance;
-
-    public static SpotifyApi getInstance() {
-        if (instance == null) {
-            instance = new SpotifyApi();
-        }
-        return instance;
-    }
-
-    // Allow setting a mock instance from tests
-    public static void setInstance(SpotifyApi newInstance) {
-        instance = newInstance;
-    }
-
-    private SpotifyApi() {
+    public SpotifyApi() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mApiRoot)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -59,22 +51,27 @@ public class SpotifyApi {
         mPlaylistService = retrofit.create(PlaylistService.class);
     }
 
-    public void setAccessToken(String token) {
+    public void setAccessToken(String token, int expiresInSeconds) {
+        mAccessToken = token;
+        mAccessTokenExpiresIn = DateTime.now().plusSeconds(expiresInSeconds);
         mAuthHeaderValue = "Bearer " + token;
     }
 
-    public Boolean isAccessTokenSet() {
-        return mAuthHeaderValue != null;
+    /**
+     * Check if we have access token that is not expiring soon.
+     */
+    public Boolean isAccessTokenValid() {
+        return mAccessToken != null && DateTime.now().plusMinutes(5).isBefore(mAccessTokenExpiresIn);
     }
 
     public void setErrorListener(spotifyApiErrorListener listener) {
-        mErrorListener = listener;
+        mErrorListener = new WeakReference<>(listener);
     }
 
     /**
      * Load playlists in batches of 50. Callback will be called for each batch.
      * @param offset The index of the first playlist to return.
-     * @param callbackListener Listener that will be called with results.
+     * @param callbackListener Callback is called multiple times if user has more than 50 playlists.
      */
     public void getPlaylists(int offset, playlistsLoadedCallbackListener callbackListener) {
 
@@ -146,8 +143,9 @@ public class SpotifyApi {
     }
 
     private void reportError(String reason) {
-        if (mErrorListener != null) {
-            mErrorListener.onSpotifyApiError(reason);
+        if (mErrorListener.get() != null) {
+            mErrorListener.get().onSpotifyApiError(reason);
         }
     }
+
 }

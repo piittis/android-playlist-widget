@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -34,39 +33,29 @@ import java.util.ArrayList;
 import static org.mockito.Mockito.*;
 
 @RunWith(AndroidJUnit4.class)
-public class SelectActivityTests {
+public class SelectActivityTests extends ActivityTestBase {
 
     @Rule
     public ActivityTestRule<SelectActivity> mActivityTestRule = new ActivityTestRule<>(SelectActivity.class, true, false);
 
-    @Mock
-    SpotifyApi spotifyApiMock;
-
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private CountingIdlingResource networkIdlingResource = new CountingIdlingResource("apiCall");
-
     private SelectActivityInteractor interactor;
 
     @Before
     public void setup() {
+        super.initialize();
+
         Espresso.registerIdlingResources(networkIdlingResource);
-        spotifyApiMock = mock(SpotifyApi.class);
-        SpotifyApi.setInstance(spotifyApiMock);
 
-        when(spotifyApiMock.isAccessTokenSet()).thenReturn(true);
-        setSpotifyApiResultDefault();
-
-        Intent intent = new Intent();
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
-        mActivityTestRule.launchActivity(intent);
-        interactor = new SelectActivityInteractor(mActivityTestRule.getActivity());
-
-        Assert.assertTrue(interactor.waitForPlaylistsDataLoaded(5000));
+        when(mockSpotifyApi.isAccessTokenValid()).thenReturn(true);
+        setSpotifyApiResult(50);
     }
 
     @Test
     public void clickingRowTogglesCheckboxStatus() {
+        openActivity();
 
         interactor.clickRow(0);
         interactor.clickRow(2);
@@ -87,6 +76,7 @@ public class SelectActivityTests {
 
     @Test
     public void selectAllAndRemoveSelectionMenuActionsWork() {
+        openActivity();
 
         int itemCount = interactor.getRowCount();
 
@@ -105,6 +95,7 @@ public class SelectActivityTests {
 
     @Test
     public void newDataLoadDoesNotClearSelections() {
+        openActivity();
 
         interactor.clickRow(0);
         interactor.clickRow(2);
@@ -120,6 +111,8 @@ public class SelectActivityTests {
 
     @Test
     public void transitionToArrangeActivityWorks() {
+        openActivity();
+
         interactor.clickRow(0);
         interactor.clickRow(2);
         interactor.clickRow(4);
@@ -136,10 +129,39 @@ public class SelectActivityTests {
                 ));
     }
 
+    @Test
+    public void transitionToArrangeActivityWorksWith100kPlaylists() {
+
+        setSpotifyApiResult(100000);
+        openActivity();
+
+        interactor.selectAll();
+
+        interactor.clickNext();
+
+        onView(withId(R.id.playlist_arrange_list))
+                .check(ViewAssertions.matches(
+                        allOf(
+                                hasDescendant(withText("Playlist0")),
+                                hasDescendant(withText("Playlist2")),
+                                hasDescendant(withText("Playlist4"))
+                        )
+                ));
+    }
+
+    private void openActivity() {
+        Intent intent = new Intent();
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
+        mActivityTestRule.launchActivity(intent);
+        interactor = new SelectActivityInteractor(mActivityTestRule.getActivity());
+
+        Assert.assertTrue(interactor.waitForPlaylistsDataLoaded(5000));
+    }
+
     /**
      * Set the mock api to return a default set of playlists
      */
-    private void setSpotifyApiResultDefault() {
+    private void setSpotifyApiResult(int playlistCount) {
         doAnswer(invocationOnMock -> {
             SpotifyApi.playlistsLoadedCallbackListener listener = invocationOnMock.getArgument(1);
             networkIdlingResource.increment();
@@ -147,11 +169,11 @@ public class SelectActivityTests {
             // Simulate some network delay before calling callback.
             new Handler(getTargetContext().getMainLooper()).postDelayed(() -> {
                 networkIdlingResource.decrement();
-                listener.onPlaylistsLoaded(0, getTestPlaylists(50));
+                listener.onPlaylistsLoaded(0, getTestPlaylists(playlistCount));
             }, 1000);
 
             return null;
-        }).when(spotifyApiMock).getPlaylists(anyInt(), any());
+        }).when(mockSpotifyApi).getPlaylists(anyInt(), any());
     }
 
     /**
@@ -169,7 +191,7 @@ public class SelectActivityTests {
             }, 1000);
 
             return null;
-        }).when(spotifyApiMock).getPlaylists(anyInt(), any());
+        }).when(mockSpotifyApi).getPlaylists(anyInt(), any());
     }
 
     /**

@@ -14,6 +14,8 @@ import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
+import javax.inject.Inject;
+
 /**
  * Activity without an UI whose only purpose is to fetch a Spotify access token and give it to
  * SpotifyApi.
@@ -26,8 +28,12 @@ public class AuthActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1337;
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    @Inject
+    SpotifyApi mSpotifyApi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        IoC.getComponent().inject(this);
         super.onCreate(savedInstanceState);
 
         //This activity doesnt need any UI?
@@ -98,7 +104,9 @@ public class AuthActivity extends AppCompatActivity {
                 case TOKEN:
                     // Get token and go to select view
                     String token = response.getAccessToken();
-                    SpotifyApi.getInstance().setAccessToken(token);
+                    int expiresInSeconds = response.getExpiresIn();
+
+                    mSpotifyApi.setAccessToken(token, expiresInSeconds);
 
                     mFirebaseAnalytics.logEvent("auth_success", new Bundle());
                     setResult(RESULT_OK);

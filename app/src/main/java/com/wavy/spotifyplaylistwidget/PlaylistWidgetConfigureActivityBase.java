@@ -21,6 +21,8 @@ import com.wavy.spotifyplaylistwidget.widget.WidgetConfigModel;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 /**
@@ -43,8 +45,12 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    @Inject
+    PlaylistsContainer mPlaylists;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        IoC.getComponent().inject(this);
         super.onCreate(savedInstanceState);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);

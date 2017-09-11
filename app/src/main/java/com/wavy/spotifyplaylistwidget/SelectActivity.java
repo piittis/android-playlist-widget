@@ -13,16 +13,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.firebase.crash.FirebaseCrash;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,8 +29,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         implements SpotifyApi.playlistsLoadedCallbackListener, SpotifyApi.spotifyApiErrorListener {
 
     private static final String TAG = "SelectActivity";
-    private ArrayList<PlaylistViewModel> mPlaylists;
-    private HashSet<String> mSelectedPlaylistIds = new HashSet<>();
 
     // view elements
     @BindView(R.id.playlist_selection_list) RecyclerView mPlaylistsSelectionView;
@@ -44,14 +40,17 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     private String mToolbarTitle;
     private Boolean firstLoad = true;
 
+    @Inject
+    SpotifyApi mSpotifyApi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        IoC.getComponent().inject(this);
         super.onCreate(savedInstanceState);
+
         mToolbarTitle = getString(R.string.select_playlists);
 
         setContentView(R.layout.activity_select);
-
-        Log.d(TAG, "onCreate");
 
         ButterKnife.bind(this);
 
@@ -62,35 +61,21 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
         mSwipeRefresh.setOnRefreshListener(this::manualUpdate);
 
-        String[] initialSelections = null;
-        if (savedInstanceState != null) {
-            initialSelections = savedInstanceState.getStringArray("selectedPlaylistIds");
-            mPlaylists = savedInstanceState.getParcelableArrayList("playlists");
-        }
-        if (initialSelections == null){
-            initialSelections = getIntent().getStringArrayExtra("selectedPlaylistIds");
-        }
-        if (initialSelections != null) {
-            Collections.addAll(mSelectedPlaylistIds, initialSelections);
-        }
-        if (mPlaylists == null) {
-            mPlaylists = new ArrayList<>();
-        }
-
         initializePlaylistSelectionList();
-        updateSelectedPlaylists();
-        SpotifyApi.getInstance().setErrorListener(this);
 
-        if (!SpotifyApi.getInstance().isAccessTokenSet()) {
-            // Go get access token first.
-            doAuthentication();
-        } else if (mPlaylists.size() == 0) {
+        mSpotifyApi.setErrorListener(this);
+
+        mPlaylists.clearAll();
+        if (mSpotifyApi.isAccessTokenValid()) {
             loadPlaylists();
+        } else {
+            // Do authentication first, playlists will be loaded in onActivityResult instead.
+            doAuthentication();
         }
     }
 
     private void initializePlaylistSelectionList() {
-        mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists, this);
+        mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists.getPlaylists(), this);
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
         mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener(this));
@@ -100,9 +85,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArray("selectedPlaylistIds",
-                mSelectedPlaylistIds.toArray(new String[mSelectedPlaylistIds.size()]));
-        outState.putParcelableArrayList("playlists", mPlaylists);
     }
 
     @Override
@@ -128,26 +110,20 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
     private void loadPlaylists() {
-        if (firstLoad || mPlaylists.size() == 0) {
+        if (firstLoad || mPlaylists.getPlaylistsCount() == 0) {
             firstLoad = false;
             this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.VISIBLE);
             mPlaylistsSelectionView.scheduleLayoutAnimation();
         }
-        SpotifyApi.getInstance().getPlaylists(0, this);
+        mSpotifyApi.getPlaylists(0, this);
     }
 
     @Override
     public void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> newPlaylists) {
-
-        // Restore selected status.
-        for (PlaylistViewModel pl : newPlaylists) {
-            pl.selected = mSelectedPlaylistIds.contains(pl.id);
-        }
 
         this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.GONE);
 
@@ -155,13 +131,12 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
         if (offset == 0) {
             // If this is first batch of playlists, update whole dataset.
-            mPlaylists = newPlaylists;
-            mPlaylistSelectionAdapter.setPlaylists(mPlaylists);
+            mPlaylists.initializePlaylists(newPlaylists);
             mPlaylistSelectionAdapter.notifyDataSetChanged();
         } else {
-            mPlaylists.addAll(newPlaylists);
+            mPlaylists.addPlaylists(newPlaylists);
             // Notify only about the added items to avoid stuttering..
-            int len = mPlaylists.size();
+            int len = mPlaylists.getPlaylistsCount();
             for(int i = offset; i < len; i++) {
                 mPlaylistSelectionAdapter.notifyItemChanged(i);
             }
@@ -169,15 +144,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     }
 
     private void startArrangeActivity() {
-
         Intent intent = new Intent(getApplicationContext(), ArrangeActivity.class);
-
-        ArrayList<PlaylistViewModel> selected = new ArrayList<>(mSelectedPlaylistIds.size());
-        for (PlaylistViewModel pl : mPlaylists)
-            if (pl.selected)
-                selected.add(pl);
-
-        intent.putParcelableArrayListExtra("mPlaylists", selected);
         startNextConfigurationActivity(intent);
     }
 
@@ -187,15 +154,10 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     }
 
     private void selectAll(boolean selected) {
-
-        if (selected) {
-            logEvent("select_all");
-        } else {
-            logEvent("remove_selections");
-        }
+        logEvent((selected) ? "select_all" : "remove_selections");
 
         if (mPlaylists != null && mPlaylistSelectionAdapter != null) {
-            for (PlaylistViewModel pl : mPlaylists) {
+            for (PlaylistViewModel pl : mPlaylists.getPlaylists()) {
                 pl.selected = selected;
             }
             mPlaylistSelectionAdapter.notifyDataSetChanged();
@@ -204,15 +166,11 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
     }
 
     private void updateSelectedPlaylists() {
-        mSelectedPlaylistIds.clear();
 
-        for (PlaylistViewModel pl : mPlaylists)
-            if (pl.selected)
-                mSelectedPlaylistIds.add(pl.id);
-
-        if (mSelectedPlaylistIds.size() > 0) {
+        mPlaylists.updateSelectedPlaylists();
+        if (mPlaylists.getSelectedPlaylistsCount() > 0) {
             mToolbar.setTitle(String.format(getString(R.string.playlists_selected_count),
-                    mSelectedPlaylistIds.size(), mPlaylists.size()));
+                    mPlaylists.getSelectedPlaylistsCount(), mPlaylists.getPlaylistsCount()));
 
             mNextButton.setEnabled(true);
         } else {
@@ -220,7 +178,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
             mNextButton.setEnabled(false);
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
