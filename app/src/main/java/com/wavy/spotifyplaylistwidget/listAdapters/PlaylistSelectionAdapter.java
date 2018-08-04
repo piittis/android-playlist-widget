@@ -1,13 +1,10 @@
 package com.wavy.spotifyplaylistwidget.listAdapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,15 +22,13 @@ public class PlaylistSelectionAdapter
     private ArrayList<PlaylistViewModel> mPlaylists;
     private View mView;
     private View.OnClickListener mClickListener;
-    private Context mContext;
     private int mImageSize;
     private String mTrackCountString;
 
     public PlaylistSelectionAdapter(ArrayList<PlaylistViewModel> playlists, Context context) {
         mPlaylists = playlists;
-        mContext = context;
         mTrackCountString = context.getString(R.string.track_count);
-        mImageSize = mContext.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
+        mImageSize = context.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
     }
 
     public void setPlaylists(ArrayList<PlaylistViewModel> playlists) {
@@ -43,7 +38,18 @@ public class PlaylistSelectionAdapter
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.selectable_playlist, parent, false);
-        return new ViewHolder(mView);
+        ViewHolder viewHolder = new ViewHolder(mView);
+
+        viewHolder.setOnClickListener((v) -> {
+            int pos = viewHolder.getAdapterPosition();
+            PlaylistViewModel playlist = mPlaylists.get(pos);
+            playlist.selected = !playlist.selected;
+            viewHolder.checkBox.setChecked(playlist.selected);
+            mClickListener.onClick(mView);
+            notifyItemChanged(pos);
+        });
+
+        return viewHolder;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class PlaylistSelectionAdapter
         holder.checkBox.setChecked(playlist.selected);
 
         if (playlist.imageUrl != null) {
-            Picasso.with(mContext)
+            Picasso.get()
                     .load(playlist.imageUrl)
                     .tag(PicassoOnScrollListener.RECYCLVIEW_TAG)
                     .resize(mImageSize,
@@ -67,13 +73,6 @@ public class PlaylistSelectionAdapter
         } else {
             holder.mImageView.setImageResource(R.drawable.ic_music_note_white_48dp);
         }
-
-        holder.setOnClickListener((v) -> {
-            playlist.selected = !playlist.selected;
-            holder.checkBox.setChecked(playlist.selected);
-            notifyItemChanged(position);
-            mClickListener.onClick(mView);
-        });
     }
 
     public void setOnClickListener(View.OnClickListener listener) {
@@ -103,10 +102,10 @@ public class PlaylistSelectionAdapter
 
             super(view);
             this.view = view;
-            playlistName = (TextView) view.findViewById(R.id.playlist_name);
-            playlistInfo = (TextView) view.findViewById(R.id.playlist_info);
-            checkBox = (CheckBox) view.findViewById(R.id.playlist_checkbox);
-            mImageView = (ImageView) view.findViewById(R.id.playlist_image);
+            playlistName = view.findViewById(R.id.playlist_name);
+            playlistInfo = view.findViewById(R.id.playlist_info);
+            checkBox = view.findViewById(R.id.playlist_checkbox);
+            mImageView = view.findViewById(R.id.playlist_image);
         }
     }
 }

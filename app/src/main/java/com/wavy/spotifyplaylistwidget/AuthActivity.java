@@ -2,9 +2,8 @@ package com.wavy.spotifyplaylistwidget;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,7 +32,7 @@ public class AuthActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        IoC.getComponent().inject(this);
+        IoC.getInjector().inject(this);
         super.onCreate(savedInstanceState);
 
         //This activity doesnt need any UI?
@@ -116,7 +115,7 @@ public class AuthActivity extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
-                    Log.d("auth result", "error");
+                    Log.d("auth result", response.getError());
                     mFirebaseAnalytics.logEvent("auth_error", new Bundle());
                     authenticationFailed(response.getError());
                     break;

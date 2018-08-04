@@ -81,7 +81,7 @@ public class FileHelper {
             if (pl.imageUrl != null) {
                 callables.add(Executors.callable(() -> {
                     try {
-                        Bitmap image = Picasso.with(callingActivity).load(pl.imageUrl).resize(imageSize, imageSize).get();
+                        Bitmap image = Picasso.get().load(pl.imageUrl).resize(imageSize, imageSize).get();
                         savePng(callingActivity, pl.id, image);
                     } catch (IOException e) {
                         e.printStackTrace();

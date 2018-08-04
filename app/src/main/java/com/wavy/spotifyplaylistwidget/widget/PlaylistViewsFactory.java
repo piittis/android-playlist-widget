@@ -81,7 +81,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.tracks));
 
         try {
-            Bitmap map = Picasso.with(mContext)
+            Bitmap map = Picasso.get()
                     .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.id + ".png"))
                     .error(R.drawable.ic_music_note_white_48dp)
                     .get();

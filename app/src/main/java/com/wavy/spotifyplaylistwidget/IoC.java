@@ -18,11 +18,11 @@ public class IoC {
                 .build();
     }
 
-    public static AppInjector getComponent() {
+    public static AppInjector getInjector() {
         return injector;
     }
 
-    public static void setTestCompoinent(AppInjector testComponent) {
+    public static void setTestComponent(AppInjector testComponent) {
         injector = testComponent;
     }
 

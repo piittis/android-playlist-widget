@@ -1,8 +1,6 @@
 package com.wavy.spotifyplaylistwidget.utils;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
@@ -15,12 +13,12 @@ public class PicassoOnScrollListener extends RecyclerView.OnScrollListener {
     private static final int RESUME_DELAY = 333;
     private static final int RESUME_SPEED_THRESHOLD = 50;
 
-    private Picasso sPicasso = null;
+    private Picasso sPicasso;
     private Runnable mSettlingResumeRunnable = null;
     private Boolean mPaused = false;
 
-    public PicassoOnScrollListener(Context context) {
-        sPicasso = Picasso.with(context.getApplicationContext());
+    public PicassoOnScrollListener() {
+        sPicasso = Picasso.get();
     }
 
     private void resumeDelayed(RecyclerView recyclerView) {
@@ -47,13 +45,13 @@ public class PicassoOnScrollListener extends RecyclerView.OnScrollListener {
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
         if (Math.abs(dy) <= RESUME_SPEED_THRESHOLD) {
-            // Scrolling is settling down... resume loading images soom
+            // Scrolling is settling down... resume loading images soon.
             if (mPaused) {
                 mPaused = false;
                 resumeDelayed(recyclerView);
             }
         } else {
-            // Scrolling fast, pause if not already
+            // Scrolling fast, pause if not already.
             if (!mPaused) {
                 mPaused = true;
                 sPicasso.pauseTag(RECYCLVIEW_TAG);

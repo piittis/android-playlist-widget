@@ -1,7 +1,5 @@
 package com.wavy.spotifyplaylistwidget.network;
 
-import android.media.Image;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;

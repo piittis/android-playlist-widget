@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.rule.ActivityTestRule;
@@ -29,6 +30,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
 
 import static org.mockito.Mockito.*;
 
@@ -47,7 +51,7 @@ public class SelectActivityTests extends ActivityTestBase {
     public void setup() {
         super.initialize();
 
-        Espresso.registerIdlingResources(networkIdlingResource);
+        IdlingRegistry.getInstance().register(networkIdlingResource);
 
         when(mockSpotifyApi.isAccessTokenValid()).thenReturn(true);
         setSpotifyApiResult(50);
@@ -162,45 +166,21 @@ public class SelectActivityTests extends ActivityTestBase {
      * Set the mock api to return a default set of playlists
      */
     private void setSpotifyApiResult(int playlistCount) {
-        doAnswer(invocationOnMock -> {
-            SpotifyApi.playlistsLoadedCallbackListener listener = invocationOnMock.getArgument(1);
-            networkIdlingResource.increment();
 
-            // Simulate some network delay before calling callback.
-            new Handler(getTargetContext().getMainLooper()).postDelayed(() -> {
-                networkIdlingResource.decrement();
-                listener.onPlaylistsLoaded(0, getTestPlaylists(playlistCount));
-            }, 1000);
-
-            return null;
-        }).when(mockSpotifyApi).getPlaylists(anyInt(), any());
+        doAnswer(invocationOnMock -> Observable.fromArray(getTestPlaylists(playlistCount))
+                                            .doOnEach(e -> networkIdlingResource.increment())
+                                            .delay(1000, TimeUnit.MILLISECONDS)
+                                            .doOnEach(e -> networkIdlingResource.decrement())).when(mockSpotifyApi).getPlaylists();
     }
 
     /**
      * Set the mock api to return specific set of playlists
      */
     private void setSpotifyApiResult(ArrayList<PlaylistViewModel> models) {
-        doAnswer(invocationOnMock -> {
-            SpotifyApi.playlistsLoadedCallbackListener listener = invocationOnMock.getArgument(1);
-            networkIdlingResource.increment();
-
-            // Simulate some network delay before calling callback.
-            new Handler(getTargetContext().getMainLooper()).postDelayed(() -> {
-                networkIdlingResource.decrement();
-                listener.onPlaylistsLoaded(0, models);
-            }, 1000);
-
-            return null;
-        }).when(mockSpotifyApi).getPlaylists(anyInt(), any());
-    }
-
-    /**
-     * Set the mock api to return a specific playlist
-     */
-    private void setSpotifyApiResult(PlaylistViewModel model) {
-        ArrayList<PlaylistViewModel> models = new ArrayList<>();
-        models.add(model);
-        setSpotifyApiResult(models);
+        doAnswer(invocationOnMock -> Observable.fromArray(models)
+                                            .doOnEach(e -> networkIdlingResource.increment())
+                                            .delay(1000, TimeUnit.MILLISECONDS)
+                                            .doOnEach(e -> networkIdlingResource.decrement())).when(mockSpotifyApi).getPlaylists();
     }
 
     private ArrayList<PlaylistViewModel> getTestPlaylists(int count) {

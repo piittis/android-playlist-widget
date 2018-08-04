@@ -1,15 +1,15 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
-import com.mobeta.android.dslv.DragSortListView;
+import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
 import com.wavy.spotifyplaylistwidget.persistence.FileHelper;
 import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
 import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigRepository;
-import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistModel;
 import com.wavy.spotifyplaylistwidget.widget.WidgetConfigModel;
@@ -23,41 +23,25 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
     private WidgetConfigRepository mWidgetConfigRepository;
     // view elements
-    @BindView(R.id.playlist_arrange_list) DragSortListView mPlaylistArrangeView;
+    @BindView(R.id.playlist_arrange_list) RecyclerView mPlaylistArrangeView;
     @BindView(R.id.arrage_next_button) Button mNextButton;
-
-    private PlaylistArrangeAdapter mPlaylistArrangeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_arrange);
+        IoC.getInjector().inject(this);
 
+        setContentView(R.layout.activity_arrange);
         ButterKnife.bind(this);
 
-        mPlaylistArrangeAdapter = new PlaylistArrangeAdapter(this, R.layout.arrangeable_playlist, mPlaylists.getSelectedPlaylists());
+        PlaylistArrangeAdapter mPlaylistArrangeAdapter =
+                new PlaylistArrangeAdapter(mPlaylistArrangeView, mPlaylists.getSelectedPlaylists(), this);
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
-
-        mPlaylistArrangeView.setDropListener(onDrop);
-
-        mPlaylistArrangeView.setDragEnabled(true);
+        mPlaylistArrangeView.setLayoutManager(new LinearLayoutManager(this));
 
         mWidgetConfigRepository = new WidgetConfigFileRepository(this);
         mNextButton.setOnClickListener((v) -> addWidget());
     }
-
-    private DragSortListView.DropListener onDrop =
-            new DragSortListView.DropListener() {
-                @Override
-                public void drop(int from, int to) {
-                    logEvent("playlist_drag_drop");
-                    if (from != to) {
-                        PlaylistViewModel item = mPlaylistArrangeAdapter.getItem(from);
-                        mPlaylistArrangeAdapter.remove(item);
-                        mPlaylistArrangeAdapter.insert(item, to);
-                    }
-                }
-            };
 
     private void addWidget() {
 
@@ -86,4 +70,5 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
         mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
     }
+
 }

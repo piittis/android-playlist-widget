@@ -3,8 +3,6 @@ package com.wavy.spotifyplaylistwidget.DI;
 import com.wavy.spotifyplaylistwidget.PlaylistsContainer;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
-import java.lang.annotation.Retention;
-
 import javax.inject.Singleton;
 
 import dagger.Module;

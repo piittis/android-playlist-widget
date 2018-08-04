@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Some people might have massive amounts of playlists. Passing them around in intents will not work
- * in that case (too many bytes). So instead playlists are kept in here. Dagger will provide a singleton
- * of this. No need to worry about saving state, since widget configuration cannot be returned to if exited.
+ * Container for user playlists that any activity can use instead on passing stuff in intents or
+ * someting like that.
  */
 public class PlaylistsContainer {
 
@@ -26,9 +25,13 @@ public class PlaylistsContainer {
      * Dagger @Singleton injection keeps the instance alive as long as the app is in memory.
      * Data needs to be cleared explicitly just to make sure its gone.
      */
-    public void clearAll() {
+    public void clearPlaylists() {
         mPlaylists.clear();
         mSelectedPlaylists.clear();
+        mSelectedPlaylistIds.clear();
+    }
+
+    public void clearSelectedStatus() {
         mSelectedPlaylistIds.clear();
     }
 
@@ -78,7 +81,6 @@ public class PlaylistsContainer {
                 mSelectedPlaylistIds.add(pl.id);
                 mSelectedPlaylists.add(pl);
             }
-
         }
     }
 

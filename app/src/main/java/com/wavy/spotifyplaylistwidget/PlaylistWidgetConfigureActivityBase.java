@@ -1,38 +1,25 @@
 package com.wavy.spotifyplaylistwidget;
 
-import android.app.Activity;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.wavy.spotifyplaylistwidget.persistence.FileHelper;
-import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
-import com.wavy.spotifyplaylistwidget.widget.PlaylistModel;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
-import com.wavy.spotifyplaylistwidget.widget.WidgetConfigModel;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
-
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 /**
  * Since the widget configuration might span multiple activities, all activities in the
  * widget configuration flow should extend this class. This will handle propagating the appWidgetId
- * across the activities. When some activity decides that widget creation/updating is done, it should
- * call finishWidgetConfiguration. That will unwind all the activities. Last activity to be finished
- * will update the widget.
+ * and playlists across the activities. When some activity decides that widget creation/updating is
+ * done, it should call finishWidgetConfiguration. That will unwind all the activities.
+ * Last activity to be finished will update the widget.
  */
-public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
+public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private static final int RESULT_CONFIGURATION_DONE = 1234;
@@ -42,6 +29,10 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
     private static final String TAG = "ConfigureBaseClass";
     private Boolean mHasParent = false;
     protected Boolean mIsAuthenticating = false;
+    // We might want to do something the first time activity is opened, but not after that.
+    protected Boolean isFirstCreate = true;
+    // We might want to prevent certain (async) operations from finishing if activity is being stopped.
+    protected Boolean activityStopped = false;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -50,12 +41,13 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        IoC.getComponent().inject(this);
+        IoC.getInjector().inject(this);
         super.onCreate(savedInstanceState);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         if (savedInstanceState != null) {
+            isFirstCreate = savedInstanceState.getBoolean("isFirstCreate", true);
             mIsAuthenticating = savedInstanceState.getBoolean("isAuthenticating", false);
         }
 
@@ -72,6 +64,8 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         setResult(RESULT_CANCELED, resultValue);
 
+        // mAppWidgetId = 999; // FOR DEBUGGING ONLY
+
         // If this activity was started with an intent without an app widget ID, finish with an error.
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             quitWithError("invalid widget id");
@@ -79,9 +73,22 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        activityStopped = false;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        activityStopped = true;
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isAuthenticating", mIsAuthenticating);
+        outState.putBoolean("isFirstCreate", false);
     }
 
     @Override
@@ -187,4 +194,8 @@ public class PlaylistWidgetConfigureActivityBase extends AppCompatActivity {
         mFirebaseAnalytics.logEvent(event, new Bundle());
     }
 
+    // Makes toasts when debugging
+    protected void dToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
 }

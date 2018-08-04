@@ -3,20 +3,15 @@ package com.wavy.spotifyplaylistwidget.network;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import org.joda.time.DateTime;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,15 +27,6 @@ public class SpotifyApi {
     private static final String mApiRoot = "https://api.spotify.com/v1/";
 
     private PlaylistService mPlaylistService;
-    private WeakReference<spotifyApiErrorListener> mErrorListener;
-
-    public interface playlistsLoadedCallbackListener {
-        void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> playlists);
-    }
-
-    public interface spotifyApiErrorListener {
-        void onSpotifyApiError(String reason);
-    }
 
     public SpotifyApi() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -64,45 +50,53 @@ public class SpotifyApi {
         return mAccessToken != null && DateTime.now().plusMinutes(5).isBefore(mAccessTokenExpiresIn);
     }
 
-    public void setErrorListener(spotifyApiErrorListener listener) {
-        mErrorListener = new WeakReference<>(listener);
+    /**
+     * Get an observable that will emit all user playlists 50 at a time.
+     */
+    public Observable<ArrayList<PlaylistViewModel>> getPlaylists() {
+        return Observable.create(emitter -> emitPlaylists(0, emitter));
     }
 
-    /**
-     * Load playlists in batches of 50. Callback will be called for each batch.
-     * @param offset The index of the first playlist to return.
-     * @param callbackListener Callback is called multiple times if user has more than 50 playlists.
-     */
-    public void getPlaylists(int offset, playlistsLoadedCallbackListener callbackListener) {
+    private void emitPlaylists(int offset, ObservableEmitter<ArrayList<PlaylistViewModel>> emitter) {
 
+        Log.d("API", Integer.toString(offset));
+
+        // Load some playlists.
         Call<PlaylistService.PlaylistResponseModel> call = mPlaylistService.getPlaylistsOfUser(mAuthHeaderValue, offset);
-
         call.enqueue(new Callback<PlaylistService.PlaylistResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<PlaylistService.PlaylistResponseModel> call,
                                    @NonNull Response<PlaylistService.PlaylistResponseModel> response) {
+                if (emitter.isDisposed()) return;
 
-               if (response.isSuccessful()) {
-                   callbackListener.onPlaylistsLoaded(offset, getPlaylistViewModels(response.body()));
+                if (response.isSuccessful()) {
 
-                   int playlistsLoaded = offset + 50;
-                   if (playlistsLoaded < response.body().total) {
-                       // More playlists to be had, recursively get more.
-                       getPlaylists(offset + 50, callbackListener);
-                   }
-               } else {
-                   callbackListener.onPlaylistsLoaded(offset, new ArrayList<>());
-                   reportError(response.message());
-               }
+                    emitter.onNext(getPlaylistViewModels(response.body()));
+                    int playlistsLoaded = offset + 50;
+                    if (playlistsLoaded < response.body().total) {
+                        // More playlists to be had, recursively emit more.
+                        emitPlaylists(offset + 50, emitter);
+                    } else {
+                        emitter.onComplete();
+                    }
+                } else {
+                    emitter.onNext(new ArrayList<>());
+                    emitter.onComplete();
+                    emitter.onError(new Error(response.message()));
+                }
             }
 
             @Override
             public void onFailure(Call<PlaylistService.PlaylistResponseModel> call, Throwable t) {
-                callbackListener.onPlaylistsLoaded(offset, new ArrayList<>());
-                reportError(t.getMessage());
+                if (emitter.isDisposed()) return;
+
+                emitter.onNext(new ArrayList<>());
+                emitter.onComplete();
+                emitter.onError(t);
             }
         });
     }
+
 
     private static ArrayList<PlaylistViewModel> getPlaylistViewModels(PlaylistService.PlaylistResponseModel response) {
 
@@ -142,10 +136,5 @@ public class SpotifyApi {
         return imageToUse.url;
     }
 
-    private void reportError(String reason) {
-        if (mErrorListener.get() != null) {
-            mErrorListener.get().onSpotifyApiError(reason);
-        }
-    }
 
 }

@@ -9,8 +9,6 @@ import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
 import javax.inject.Inject;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-
 /**
  * This should set up all mocking and any boiler plate needed for testing.
  */
@@ -31,6 +29,6 @@ public class ActivityTestBase {
         ((TestAppComponent)testAppComponent).inject(this);
 
         // Set component so activities under test receive same mocks
-        IoC.setTestCompoinent(testAppComponent);
+        IoC.setTestComponent(testAppComponent);
     }
 }

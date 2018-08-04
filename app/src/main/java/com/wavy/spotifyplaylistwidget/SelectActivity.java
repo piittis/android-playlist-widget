@@ -24,9 +24,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observables.ConnectableObservable;
 
-public class SelectActivity extends PlaylistWidgetConfigureActivityBase
-        implements SpotifyApi.playlistsLoadedCallbackListener, SpotifyApi.spotifyApiErrorListener {
+public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
 
     private static final String TAG = "SelectActivity";
 
@@ -38,22 +40,21 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
     private PlaylistSelectionAdapter mPlaylistSelectionAdapter;
     private String mToolbarTitle;
-    private Boolean firstLoad = true;
+
+    private CompositeDisposable playlistSubscriptions;
 
     @Inject
     SpotifyApi mSpotifyApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        IoC.getComponent().inject(this);
         super.onCreate(savedInstanceState);
-
-        mToolbarTitle = getString(R.string.select_playlists);
+        IoC.getInjector().inject(this);
 
         setContentView(R.layout.activity_select);
 
         ButterKnife.bind(this);
-
+        mToolbarTitle = getResources().getString(R.string.select_playlists);
         mToolbar.setTitle(mToolbarTitle);
         setSupportActionBar(mToolbar);
 
@@ -61,16 +62,24 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
         mSwipeRefresh.setOnRefreshListener(this::manualUpdate);
 
+        if (isFirstCreate) {
+            mPlaylists.clearPlaylists();
+        } else if (mPlaylists.getSelectedPlaylistsCount() > 0) {
+            mNextButton.setEnabled(true);
+        }
+
         initializePlaylistSelectionList();
 
-        mSpotifyApi.setErrorListener(this);
+        if (isFirstCreate) {
+            LoadPlaylistsAfterAuth();
+        }
+    }
 
-        mPlaylists.clearAll();
-        if (mSpotifyApi.isAccessTokenValid()) {
-            loadPlaylists();
-        } else {
-            // Do authentication first, playlists will be loaded in onActivityResult instead.
-            doAuthentication();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (playlistSubscriptions != null && !playlistSubscriptions.isDisposed()) {
+            playlistSubscriptions.dispose();
         }
     }
 
@@ -78,7 +87,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         mPlaylistSelectionAdapter = new PlaylistSelectionAdapter(mPlaylists.getPlaylists(), this);
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
-        mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener(this));
+        mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener());
         mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
     }
 
@@ -113,34 +122,60 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         }
     }
 
-    private void loadPlaylists() {
-        if (firstLoad || mPlaylists.getPlaylistsCount() == 0) {
-            firstLoad = false;
-            this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.VISIBLE);
-            mPlaylistsSelectionView.scheduleLayoutAnimation();
+    private void LoadPlaylistsAfterAuth() {
+        if (mSpotifyApi.isAccessTokenValid()) {
+            loadPlaylists();
+        } else {
+            // Do authentication first, playlists will be loaded in onActivityResult instead.
+            doAuthentication();
         }
-        mSpotifyApi.getPlaylists(0, this);
     }
 
-    @Override
-    public void onPlaylistsLoaded(int offset, ArrayList<PlaylistViewModel> newPlaylists) {
+    private void loadPlaylists() {
 
-        this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.GONE);
-
-        mSwipeRefresh.setRefreshing(false);
-
-        if (offset == 0) {
-            // If this is first batch of playlists, update whole dataset.
-            mPlaylists.initializePlaylists(newPlaylists);
-            mPlaylistSelectionAdapter.notifyDataSetChanged();
-        } else {
-            mPlaylists.addPlaylists(newPlaylists);
-            // Notify only about the added items to avoid stuttering..
-            int len = mPlaylists.getPlaylistsCount();
-            for(int i = offset; i < len; i++) {
-                mPlaylistSelectionAdapter.notifyItemChanged(i);
-            }
+        dToast("start loading");
+        if (mPlaylists.getPlaylistsCount() == 0) {
+            showSpinner();
+            mPlaylistsSelectionView.scheduleLayoutAnimation();
         }
+
+        // Dispose any ongoing playlist loading.
+        if (playlistSubscriptions != null && !playlistSubscriptions.isDisposed()) {
+            playlistSubscriptions.dispose();
+        }
+
+        ConnectableObservable<ArrayList<PlaylistViewModel>> playlistObservable = mSpotifyApi.getPlaylists()
+                .observeOn(AndroidSchedulers.mainThread()).publish();
+
+        playlistSubscriptions = new CompositeDisposable(
+
+                // Handle first results.
+                playlistObservable.first(new ArrayList<>())
+                        .subscribe(result -> {
+                            mSwipeRefresh.setRefreshing(false);
+                            hideSpinner();
+
+                            mPlaylists.initializePlaylists(result);
+                            mPlaylistSelectionAdapter.notifyDataSetChanged();
+
+                        }, this::onSpotifyApiError),
+
+                // Handle rest of the results.
+                playlistObservable.skip(1)
+                        .subscribe(result -> {
+
+                            int firstNewItem = mPlaylists.getPlaylistsCount();
+                            mPlaylists.addPlaylists(result);
+
+                            for(int i = firstNewItem; i < firstNewItem + result.size(); i++) {
+                                mPlaylistSelectionAdapter.notifyItemChanged(i);
+                            }
+
+                        }, this::onSpotifyApiError)
+        );
+
+        // Start the data fetch.
+        playlistObservable.connect();
     }
 
     private void startArrangeActivity() {
@@ -150,7 +185,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
 
     private void manualUpdate() {
         logEvent("manual_data_refresh");
-        loadPlaylists();
+        LoadPlaylistsAfterAuth();
     }
 
     private void selectAll(boolean selected) {
@@ -179,6 +214,14 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         }
     }
 
+    private void showSpinner() {
+        this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.VISIBLE);
+    }
+
+    private void hideSpinner() {
+        this.findViewById(R.id.playlists_loading_indicator).setVisibility(View.GONE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.d(TAG, "onActivityResult " + requestCode);
@@ -190,10 +233,9 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase
         }
     }
 
-    @Override
-    public void onSpotifyApiError(String reason) {
+    public void onSpotifyApiError(Throwable error) {
         logEvent("api_error");
-        Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + reason + ")"
+        Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + error.getMessage() + ")"
                 , Toast.LENGTH_LONG).show();
     }
 }
