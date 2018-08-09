@@ -4,21 +4,23 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
+import android.graphics.Color;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.wavy.spotifyplaylistwidget.IoC;
 import com.wavy.spotifyplaylistwidget.R;
+import com.wavy.spotifyplaylistwidget.db.AppDatabase;
+import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
 import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigRepository;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
@@ -33,7 +35,17 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private Boolean Error = false;
     private RemoteViews mLoadingView;
 
+    private WidgetEntity mWidget;
+    private List<PlaylistEntity> mPlaylists;
+
+    private int mPrimaryTextColor;
+    private int mSecondaryTetxtColor;
+
+    @Inject
+    AppDatabase mAppDatabase;
+
     public PlaylistViewsFactory(Context context, Intent intent) {
+
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mConfigRepository = new WidgetConfigFileRepository(mContext);
@@ -43,9 +55,17 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public void onCreate() {
+        IoC.getInjector().inject(this);
+
         try {
-            mWidgetConfig = mConfigRepository.get(mAppWidgetId);
-            mItemCount = mWidgetConfig.getPlaylists().size();
+
+            mWidget = mAppDatabase.widgetDao().getById(mAppWidgetId);
+            mPlaylists = mAppDatabase.widgetPlaylistDao().getWidgetPlaylists(mAppWidgetId);
+            mItemCount = mPlaylists.size();
+
+            mPrimaryTextColor = Color.parseColor(mWidget.options.primaryTextColor);
+            mSecondaryTetxtColor = Color.parseColor(mWidget.options.secondaryTextColor);
+
         } catch(Exception e) {
             mItemCount = 1;
             Error = true;
@@ -76,13 +96,18 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         }
 
         final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist);
-        PlaylistModel pl = mWidgetConfig.getPlaylists().get(position);
+
+        PlaylistEntity pl = mPlaylists.get(position);
+
         remoteView.setTextViewText(R.id.playlist_name, pl.name);
-        remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.tracks));
+        remoteView.setTextColor(R.id.playlist_name, mPrimaryTextColor);
+
+        remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.trackCount));
+        remoteView.setTextColor(R.id.playlist_info, mSecondaryTetxtColor);
 
         try {
             Bitmap map = Picasso.get()
-                    .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.id + ".png"))
+                    .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.spotifyId + ".png"))
                     .error(R.drawable.ic_music_note_white_48dp)
                     .get();
             remoteView.setImageViewBitmap(R.id.playlist_image, map);

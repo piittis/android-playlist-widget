@@ -133,7 +133,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
 
     private void loadPlaylists() {
 
-        dToast("start loading");
         if (mPlaylists.getPlaylistsCount() == 0) {
             showSpinner();
             mPlaylistsSelectionView.scheduleLayoutAnimation();

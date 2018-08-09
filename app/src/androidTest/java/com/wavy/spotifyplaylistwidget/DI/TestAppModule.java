@@ -1,6 +1,9 @@
 package com.wavy.spotifyplaylistwidget.DI;
 
+import android.support.test.InstrumentationRegistry;
+
 import com.wavy.spotifyplaylistwidget.PlaylistsContainer;
+import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
 
@@ -24,5 +27,11 @@ public class TestAppModule {
     @Singleton
     PlaylistsContainer providePlaylistsContainer() {
         return new PlaylistsContainer();
+    }
+
+    @Singleton
+    @Provides
+    AppDatabase provideAppDatabase() {
+        return AppDatabase.getInMemoryDatabse(InstrumentationRegistry.getTargetContext());
     }
 }

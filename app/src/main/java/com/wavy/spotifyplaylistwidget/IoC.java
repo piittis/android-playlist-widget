@@ -1,20 +1,23 @@
 package com.wavy.spotifyplaylistwidget;
 
+import android.content.Context;
+
 import com.wavy.spotifyplaylistwidget.DI.AppInjector;
 import com.wavy.spotifyplaylistwidget.DI.AppModule;
 import com.wavy.spotifyplaylistwidget.DI.DaggerAppComponent;
 
 /**
  * Tutorials mostly put these in an class extending Application.
- * I think this is just as good and more easily accessed.
+ * I think its more nice to call IoC.getInjector than ((PlaylistWidgetApplication) getApplication).getInjector()
  */
 public class IoC {
 
     private static AppInjector injector;
 
-    static {
+    // This must be called by the app before any activities are launched!
+    public static void Initialize(Context applicationContext) {
         injector = DaggerAppComponent.builder()
-                .appModule(new AppModule())
+                .appModule(new AppModule(applicationContext))
                 .build();
     }
 
@@ -22,8 +25,7 @@ public class IoC {
         return injector;
     }
 
-    public static void setTestComponent(AppInjector testComponent) {
-        injector = testComponent;
+    public static void setTestInjector(AppInjector testInjector) {
+        injector = testInjector;
     }
-
 }

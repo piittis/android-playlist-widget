@@ -43,11 +43,11 @@ public class ArrangeActivityTests extends ActivityTestBase {
         interactor.moveDown("Playlist0");
 
         onView(withText("Playlist1")).check(isAbove(withText("Playlist0")));
-        Assert.assertEquals("id1", playlistsContainer.getSelectedPlaylists().get(0).id);
+        Assert.assertEquals("id1", mockPlaylistContainer.getSelectedPlaylists().get(0).id);
 
         interactor.moveUp("Playlist0");
 
-        Assert.assertEquals("id0", playlistsContainer.getSelectedPlaylists().get(0).id);
+        Assert.assertEquals("id0", mockPlaylistContainer.getSelectedPlaylists().get(0).id);
         onView(withText("Playlist0")).check(isAbove(withText("Playlist1")));
     }
 
@@ -60,11 +60,11 @@ public class ArrangeActivityTests extends ActivityTestBase {
         interactor.moveDown("Playlist0");
 
         onView(withText("Playlist1")).check(isAbove(withText("Playlist0")));
-        Assert.assertEquals("id1", playlistsContainer.getSelectedPlaylists().get(0).id);
+        Assert.assertEquals("id1", mockPlaylistContainer.getSelectedPlaylists().get(0).id);
 
         interactor.moveUp("Playlist0");
 
-        Assert.assertEquals("id0", playlistsContainer.getSelectedPlaylists().get(0).id);
+        Assert.assertEquals("id0", mockPlaylistContainer.getSelectedPlaylists().get(0).id);
         onView(withText("Playlist0")).check(isAbove(withText("Playlist1")));
     }
 
@@ -83,7 +83,7 @@ public class ArrangeActivityTests extends ActivityTestBase {
             model.selected = true;
             models.add(model);
         }
-        playlistsContainer.initializePlaylists(models);
-        playlistsContainer.updateSelectedPlaylists();
+        mockPlaylistContainer.initializePlaylists(models);
+        mockPlaylistContainer.updateSelectedPlaylists();
     }
 }

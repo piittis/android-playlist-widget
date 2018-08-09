@@ -1,17 +1,18 @@
 package com.wavy.spotifyplaylistwidget.network;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
-import org.joda.time.DateTime;
+import org.threeten.bp.Instant;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,14 +24,21 @@ public class SpotifyApi {
     private static final String TAG = "SpotifyApi";
     private static String mAuthHeaderValue;
     private static String mAccessToken;
-    private static DateTime mAccessTokenExpiresIn;
+
+    private static Instant mAccessTokenExpiresIn;
     private static final String mApiRoot = "https://api.spotify.com/v1/";
 
     private PlaylistService mPlaylistService;
 
     public SpotifyApi() {
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mApiRoot)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -39,7 +47,7 @@ public class SpotifyApi {
 
     public void setAccessToken(String token, int expiresInSeconds) {
         mAccessToken = token;
-        mAccessTokenExpiresIn = DateTime.now().plusSeconds(expiresInSeconds);
+        mAccessTokenExpiresIn = Instant.now().plusSeconds(expiresInSeconds);
         mAuthHeaderValue = "Bearer " + token;
     }
 
@@ -47,7 +55,7 @@ public class SpotifyApi {
      * Check if we have access token that is not expiring soon.
      */
     public Boolean isAccessTokenValid() {
-        return mAccessToken != null && DateTime.now().plusMinutes(5).isBefore(mAccessTokenExpiresIn);
+        return mAccessToken != null && Instant.now().plusSeconds(5 * 60).isBefore(mAccessTokenExpiresIn);
     }
 
     /**
@@ -58,8 +66,6 @@ public class SpotifyApi {
     }
 
     private void emitPlaylists(int offset, ObservableEmitter<ArrayList<PlaylistViewModel>> emitter) {
-
-        Log.d("API", Integer.toString(offset));
 
         // Load some playlists.
         Call<PlaylistService.PlaylistResponseModel> call = mPlaylistService.getPlaylistsOfUser(mAuthHeaderValue, offset);
@@ -121,7 +127,7 @@ public class SpotifyApi {
         return vm;
     }
 
-    // Select the image the app should use
+    // Select the image the app should use,
     private static String getImageUrl(List<PlaylistService.ImageModel> images) {
         if (images == null || images.size() == 0) return null;
 

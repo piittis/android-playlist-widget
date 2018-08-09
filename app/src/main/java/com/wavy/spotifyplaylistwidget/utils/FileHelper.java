@@ -1,4 +1,4 @@
-package com.wavy.spotifyplaylistwidget.persistence;
+package com.wavy.spotifyplaylistwidget.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,12 +23,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
+
 public class FileHelper {
 
-    public interface OnCompleteCallbackListener {
-        void onComplete();
-    }
-
+    // todo: get rid of this when all users are on dqlite
     public static void writeString(Context context, String fileName, String fileContent) {
         try {
             FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -62,46 +65,23 @@ public class FileHelper {
         return null;
     }
 
-
     /**
      * Persists the images for given playlists. File name will be the id of the playlist.
      * Files will go the the root folder.
      */
-    public static void persistPlaylistImages(Activity callingActivity, ArrayList<PlaylistViewModel> playlists,
-                                             OnCompleteCallbackListener onCompleteCallbackListener) {
-
-        // Process images in parallel using ExecutorService.
-        ExecutorService threadPoolExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+    public Completable persistPlaylistImages(Activity callingActivity, ArrayList<PlaylistViewModel> playlists) {
 
         int imageSize = callingActivity.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
 
-        // Make a callable for each image operation
-        ArrayList<Callable<Object>> callables = new ArrayList<>(playlists.size());
-        for (PlaylistViewModel pl : playlists) {
-            if (pl.imageUrl != null) {
-                callables.add(Executors.callable(() -> {
-                    try {
-                        Bitmap image = Picasso.get().load(pl.imageUrl).resize(imageSize, imageSize).get();
-                        savePng(callingActivity, pl.id, image);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }));
-            }
-        }
-
-        // Execute in AsyncTask to not block the UI thread.
-        AsyncTask.execute(() -> {
-            try {
-                // Execute callables in parallel.
-                threadPoolExecutor.invokeAll(callables);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            callingActivity.runOnUiThread(onCompleteCallbackListener::onComplete);
-            Log.d("runnable", "done");
-        });
-
+        return Flowable.fromIterable(playlists)
+                .parallel()
+                .runOn(Schedulers.computation())
+                .doOnNext(pl -> {
+                    Bitmap image = Picasso.get().load(pl.imageUrl).resize(imageSize, imageSize).get();
+                    savePng(callingActivity, pl.id, image);
+                })
+                .sequential()
+                .ignoreElements();
     }
 
     private static void savePng(Context context, String fileName, Bitmap bitmap) {

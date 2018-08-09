@@ -4,11 +4,9 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
 
 import javax.inject.Inject;
 
@@ -133,7 +131,6 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
         if (mIsAuthenticating)
             return;
 
-        Log.d(TAG, "starting authentication");
         // Authenticate and return back to this activity.
         Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
         mIsAuthenticating = true;
@@ -174,9 +171,8 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
             // We have a parent activity, let it handle it.
             setResult(RESULT_CONFIGURATION_DONE);
         } else {
-            // No parent to return to, update widged and set RESULT_OK.
+            // No parent to return to, set RESULT_OK.
             updateWidget();
-
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult(RESULT_OK, resultValue);
@@ -186,15 +182,18 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
     }
 
     private void updateWidget() {
-        Log.d(TAG, "updateWidget");
-        PlaylistWidgetProvider.updateWidgetId(this, mAppWidgetId);
+
+        // Send widget update broadcast, it is handled in PlaylistWidgetProvider
+        Intent updateIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[]{mAppWidgetId});
+        sendBroadcast(updateIntent);
     }
 
     protected void logEvent(String event) {
         mFirebaseAnalytics.logEvent(event, new Bundle());
     }
 
-    // Makes toasts when debugging
+    // Makes toasts when debugging.
     protected void dToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }

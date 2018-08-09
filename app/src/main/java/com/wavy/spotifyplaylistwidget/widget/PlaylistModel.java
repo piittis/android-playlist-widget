@@ -1,5 +1,6 @@
 package com.wavy.spotifyplaylistwidget.widget;
 
+// TODO: remove when all users are on sqlite
 public class PlaylistModel {
 
     public String id;

@@ -1,30 +1,46 @@
 package com.wavy.spotifyplaylistwidget;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
+import com.wavy.spotifyplaylistwidget.db.AppDatabase;
+import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
-import com.wavy.spotifyplaylistwidget.persistence.FileHelper;
 import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
-import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigRepository;
+import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistModel;
 import com.wavy.spotifyplaylistwidget.widget.WidgetConfigModel;
 
+import org.threeten.bp.Instant;
+
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
-    private WidgetConfigRepository mWidgetConfigRepository;
     // view elements
     @BindView(R.id.playlist_arrange_list) RecyclerView mPlaylistArrangeView;
     @BindView(R.id.arrage_next_button) Button mNextButton;
+
+    @Inject
+    AppDatabase mAppDatabase;
+
+    @Inject
+    FileHelper mFileHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,36 +55,55 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
         mPlaylistArrangeView.setLayoutManager(new LinearLayoutManager(this));
 
-        mWidgetConfigRepository = new WidgetConfigFileRepository(this);
         mNextButton.setOnClickListener((v) -> addWidget());
     }
 
+    @SuppressLint("CheckResult")
     private void addWidget() {
 
-        try {
-            findViewById(R.id.arrange_activity_elements).setVisibility(View.GONE);
-            findViewById(R.id.processing_indicator).setVisibility(View.VISIBLE);
+        findViewById(R.id.arrange_activity_elements).setVisibility(View.GONE);
+        findViewById(R.id.processing_indicator).setVisibility(View.VISIBLE);
 
-            FileHelper.persistPlaylistImages(this, mPlaylists.getSelectedPlaylists(), () -> {
-                saveNewWidgetConfig();
-                logEvent("new_widget_created");
-                finishWidgetConfiguration();
-            });
-        } catch (Exception e) {
-            quitWithError(e.getMessage());
-        }
+        Completable.concatArray(
+                mFileHelper.persistPlaylistImages(this, mPlaylists.getSelectedPlaylists()),
+                this.saveWidgetConfig())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(() -> {
+            logEvent("new_widget_created");
+            finishWidgetConfiguration();
+        }, e -> quitWithError(e.getMessage()));
     }
 
-    private void saveNewWidgetConfig() {
-        WidgetConfigModel newWidgetConfig = new WidgetConfigModel(WidgetConfigModel.TYPE_MULTI);
-        ArrayList<PlaylistModel> widgetPlaylists = new ArrayList<>(mPlaylists.getSelectedPlaylistsCount());
+    // TODO: is there a better place for this logic?
+    @SuppressLint("CheckResult")
+    private Completable saveWidgetConfig() {
 
+        // Create entities.
+        ArrayList<PlaylistEntity> playlists = new ArrayList<>();
+        ArrayList<WidgetPlaylist> widgetplaylists = new ArrayList<>();
+
+        int position = 1;
         for (PlaylistViewModel pl : mPlaylists.getSelectedPlaylists()) {
-            widgetPlaylists.add(new PlaylistModel(pl.name, pl.id, pl.uri, pl.tracks, "", pl.owner));
+            playlists.add(new PlaylistEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks));
+            widgetplaylists.add(new WidgetPlaylist(mAppWidgetId, pl.id, position));
+            position++;
         }
-        newWidgetConfig.setPlaylists(widgetPlaylists);
 
-        mWidgetConfigRepository.put(mAppWidgetId, newWidgetConfig);
+        WidgetEntity widgetEntity = new WidgetEntity(mAppWidgetId, Instant.now(), WidgetOptions.getDefaultOptions());
+
+        return Completable.fromRunnable(() -> {
+            // Persist them
+            mAppDatabase.beginTransaction();
+            try {
+                mAppDatabase.widgetDao().upsert(widgetEntity);
+                mAppDatabase.playlistDao().upsertAll(playlists);
+                mAppDatabase.widgetPlaylistDao().setWidgetsPlaylists(mAppWidgetId, widgetplaylists);
+                mAppDatabase.setTransactionSuccessful();
+            }
+            finally {
+                mAppDatabase.endTransaction();
+            }
+        });
     }
 
 }

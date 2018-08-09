@@ -6,7 +6,6 @@ import android.widget.RemoteViewsService;
 
 public class PlaylistWidgetService extends RemoteViewsService {
 
-
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         Log.d("PlaylistWidgetService", "onGetViewFactory");

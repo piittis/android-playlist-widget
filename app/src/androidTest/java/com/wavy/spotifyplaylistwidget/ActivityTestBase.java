@@ -18,7 +18,7 @@ public class ActivityTestBase {
     protected SpotifyApi mockSpotifyApi;
 
     @Inject
-    protected PlaylistsContainer playlistsContainer;
+    protected PlaylistsContainer mockPlaylistContainer;
 
     public void initialize() {
 
@@ -29,6 +29,6 @@ public class ActivityTestBase {
         ((TestAppComponent)testAppComponent).inject(this);
 
         // Set component so activities under test receive same mocks
-        IoC.setTestComponent(testAppComponent);
+        IoC.setTestInjector(testAppComponent);
     }
 }

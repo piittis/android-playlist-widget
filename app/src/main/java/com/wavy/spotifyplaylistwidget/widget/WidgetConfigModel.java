@@ -3,6 +3,7 @@ package com.wavy.spotifyplaylistwidget.widget;
 import java.util.ArrayList;
 import java.util.Date;
 
+// TODO: remove when all users are on sqlite
 public class WidgetConfigModel {
 
     // Contains multiple playlist.
