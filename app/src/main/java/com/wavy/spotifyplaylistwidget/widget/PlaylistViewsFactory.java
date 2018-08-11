@@ -25,12 +25,10 @@ import javax.inject.Inject;
 public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = "PlaylistViewsFactory";
-    private WidgetConfigModel mWidgetConfig;
 
     private Context mContext;
     private int mAppWidgetId;
     private int mItemCount;
-    private WidgetConfigRepository mConfigRepository;
     private String mTrackCountString;
     private String mImageBasePath;
     private Boolean Error = false;
@@ -49,7 +47,6 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         mContext = context;
         mImageBasePath = mContext.getFilesDir().getAbsolutePath() + File.separator;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        mConfigRepository = new WidgetConfigFileRepository(mContext);
         mTrackCountString = context.getString(R.string.track_count);
         mLoadingView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist_loading_placeholder);
     }
