@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
@@ -233,6 +234,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
     }
 
     public void onSpotifyApiError(Throwable error) {
+        Crashlytics.logException(error);
         logEvent("api_error");
         Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + error.getMessage() + ")"
                 , Toast.LENGTH_LONG).show();

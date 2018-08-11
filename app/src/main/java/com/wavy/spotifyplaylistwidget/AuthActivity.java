@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -67,11 +68,13 @@ public class AuthActivity extends AppCompatActivity {
 
     private void authenticationFailed(String reason) {
         setResult(RESULT_CANCELED);
+        Crashlytics.log("Authentication failed");
         quitWithMessage(getString(R.string.spotify_auth_error) + " (" + reason + ")");
     }
 
     private void authenticationCancelled() {
         setResult(RESULT_CANCELED);
+        Crashlytics.log("Authentication cancelled");
         quitWithMessage(getString(R.string.spotify_auth_required));
     }
 
@@ -96,7 +99,6 @@ public class AuthActivity extends AppCompatActivity {
 
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
-            Log.d("auth result", "token");
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
                 // Response was successful and contains auth token

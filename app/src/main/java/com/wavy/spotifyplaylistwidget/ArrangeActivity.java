@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
+import com.crashlytics.android.Crashlytics;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
@@ -71,7 +72,11 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         .subscribe(() -> {
             logEvent("new_widget_created");
             finishWidgetConfiguration();
-        }, e -> quitWithError(e.getMessage()));
+        }, e -> {
+            Crashlytics.log("Error saving widget information");
+            Crashlytics.logException(e);
+            quitWithError(e.getMessage());
+        });
     }
 
     // TODO: is there a better place for this logic?

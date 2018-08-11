@@ -32,6 +32,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private int mItemCount;
     private WidgetConfigRepository mConfigRepository;
     private String mTrackCountString;
+    private String mImageBasePath;
     private Boolean Error = false;
     private RemoteViews mLoadingView;
 
@@ -45,8 +46,8 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     AppDatabase mAppDatabase;
 
     public PlaylistViewsFactory(Context context, Intent intent) {
-
         mContext = context;
+        mImageBasePath = mContext.getFilesDir().getAbsolutePath() + File.separator;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mConfigRepository = new WidgetConfigFileRepository(mContext);
         mTrackCountString = context.getString(R.string.track_count);
@@ -107,7 +108,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
         try {
             Bitmap map = Picasso.get()
-                    .load(new File(mContext.getFilesDir().getAbsolutePath() + File.separator +  pl.spotifyId + ".png"))
+                    .load(new File(mImageBasePath +  pl.spotifyId + ".png"))
                     .error(R.drawable.ic_music_note_white_48dp)
                     .get();
             remoteView.setImageViewBitmap(R.id.playlist_image, map);

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wavy.spotifyplaylistwidget.IoC;
 import com.wavy.spotifyplaylistwidget.R;
@@ -138,6 +139,7 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
                     context.startActivity(i);
                     logEvent(context, "playlist_open");
                 } catch(Exception e) {
+                    Crashlytics.logException(e);
                     Toast.makeText(context, "Can't open playlist (" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
                 }
 

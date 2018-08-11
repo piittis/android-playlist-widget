@@ -3,10 +3,8 @@ package com.wavy.spotifyplaylistwidget.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.util.Log;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
@@ -15,18 +13,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 public class FileHelper {
@@ -39,8 +31,7 @@ public class FileHelper {
             writer.write(fileContent);
             writer.close();
         } catch (Exception e) {
-            FirebaseCrash.log("writeString");
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
     }
 
@@ -58,8 +49,7 @@ public class FileHelper {
             return sb.toString();
 
         } catch (Exception e) {
-            FirebaseCrash.log("readString");
-            e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         return null;
@@ -91,8 +81,8 @@ public class FileHelper {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.close();
         } catch (Exception e) {
-            FirebaseCrash.log("savePng");
-            e.printStackTrace();
+            Crashlytics.log("Error saving playlist image");
+            Crashlytics.logException(e);
         }
     }
 

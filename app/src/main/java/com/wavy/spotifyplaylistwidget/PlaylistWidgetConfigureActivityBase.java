@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
 
 import javax.inject.Inject;
 
@@ -184,8 +185,9 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
     private void updateWidget() {
 
         // Send widget update broadcast, it is handled in PlaylistWidgetProvider
-        Intent updateIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[]{mAppWidgetId});
+        Intent updateIntent = new Intent(this, PlaylistWidgetProvider.class);
+        updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[]{ mAppWidgetId });
         sendBroadcast(updateIntent);
     }
 
