@@ -11,7 +11,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,13 +30,14 @@ public class SpotifyApi {
 
     public SpotifyApi() {
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                //.addNetworkInterceptor(new StethoInterceptor())
-                .build();
+        // Inly use custom client for debugging! stick with default for release.
+       /* OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();*/
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mApiRoot)
-                .client(okHttpClient)
+                //.client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

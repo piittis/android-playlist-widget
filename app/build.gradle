@@ -8,8 +8,8 @@ android {
         applicationId "com.wavy.spotifyplaylistwidget"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 5
-        versionName "1.4"
+        versionCode 7
+        versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {

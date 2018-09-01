@@ -68,7 +68,7 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         Completable.concatArray(
                 mFileHelper.persistPlaylistImages(this, mPlaylists.getSelectedPlaylists()),
                 this.saveWidgetConfig())
-        .subscribeOn(AndroidSchedulers.mainThread())
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe(() -> {
             logEvent("new_widget_created");
             finishWidgetConfiguration();

@@ -67,8 +67,13 @@ public class FileHelper {
                 .parallel()
                 .runOn(Schedulers.computation())
                 .doOnNext(pl -> {
-                    Bitmap image = Picasso.get().load(pl.imageUrl).resize(imageSize, imageSize).get();
-                    savePng(callingActivity, pl.id, image);
+                    try {
+                        Bitmap image = Picasso.get().load(pl.imageUrl).resize(imageSize, imageSize).get();
+                        savePng(callingActivity, pl.id, image);
+                    } catch(Exception e) {
+                        Crashlytics.log("Error loading playlist image");
+                        Crashlytics.logException(e);
+                    }
                 })
                 .sequential()
                 .ignoreElements();
