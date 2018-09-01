@@ -28,6 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 "spotify-playlist-widget-db")
                 // Widget must do synchronous main thread queries.
                 .allowMainThreadQueries()
+                //.addMigrations(MIGRATION_1_2)
                 .build();
 
         db.query("PRAGMA recursive_triggers = false", null);
@@ -39,10 +40,20 @@ public abstract class AppDatabase extends RoomDatabase {
 
         AppDatabase db = Room.inMemoryDatabaseBuilder(context.getApplicationContext(),
                 AppDatabase.class)
+                //.addMigrations(MIGRATION_1_2)
                 .build();
 
         db.query("PRAGMA recursive_triggers = false", null);
         return db;
     }
+
+    // This is how you do migrations
+    /*static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE `Fruit` (`id` INTEGER, "
+                    + "`name` TEXT, PRIMARY KEY(`id`))");
+        }
+    }*/
 
 }

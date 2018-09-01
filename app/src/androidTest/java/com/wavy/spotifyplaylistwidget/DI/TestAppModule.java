@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry;
 import com.wavy.spotifyplaylistwidget.PlaylistsContainer;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
+import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 
 
 import javax.inject.Singleton;
@@ -34,4 +35,7 @@ public class TestAppModule {
     AppDatabase provideAppDatabase() {
         return AppDatabase.getInMemoryDatabse(InstrumentationRegistry.getTargetContext());
     }
+
+    @Provides
+    FileHelper provideFileHelper() { return mock(FileHelper.class); }
 }

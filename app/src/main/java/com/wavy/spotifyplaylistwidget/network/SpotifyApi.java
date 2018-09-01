@@ -2,7 +2,6 @@ package com.wavy.spotifyplaylistwidget.network;
 
 import android.support.annotation.NonNull;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import org.threeten.bp.Instant;
@@ -33,7 +32,7 @@ public class SpotifyApi {
     public SpotifyApi() {
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
+                //.addNetworkInterceptor(new StethoInterceptor())
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()

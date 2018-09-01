@@ -14,12 +14,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-
-
-import java.util.ArrayList;
 
 @RunWith(AndroidJUnit4.class)
 public class ArrangeActivityTests extends ActivityTestBase {

@@ -7,10 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
 
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
