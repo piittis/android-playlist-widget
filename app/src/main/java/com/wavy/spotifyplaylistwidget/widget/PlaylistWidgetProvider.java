@@ -17,15 +17,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wavy.spotifyplaylistwidget.IoC;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
-import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
-import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
-import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
-import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
-
-import org.threeten.bp.Instant;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -91,9 +83,6 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
 
         // There may be multiple widgets active, so update all of them.
         for (int appWidgetId : appWidgetIds) {
-
-            migrateToSqlite(context, appWidgetId);
-
             WidgetEntity widget = mAppDatabase.widgetDao().getById(appWidgetId);
             if (widget != null) {
                 InitializeWidget(widget, context);
@@ -138,7 +127,7 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(i);
                     logEvent(context, "playlist_open");
-                } catch(Exception e) {
+                } catch (Exception e) {
                     Crashlytics.logException(e);
                     Toast.makeText(context, "Can't open playlist (" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
                 }
@@ -164,56 +153,5 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
     private void logEvent(Context context, String event) {
         FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         mFirebaseAnalytics.logEvent(event, new Bundle());
-    }
-
-    /**
-     * upgrade previously used config file to sqlite TODO: remove when all users are on sqlite.
-     */
-    private void migrateToSqlite(Context context, int appWidgetId) {
-
-        WidgetEntity widget = mAppDatabase.widgetDao().getById(appWidgetId);
-
-        // Widget already in sqlite.
-        if (widget != null)
-            return;
-
-        WidgetConfigFileRepository configRepo = new WidgetConfigFileRepository(context);
-        WidgetConfigModel widgetConfig;
-
-        try {
-            widgetConfig = configRepo.get(appWidgetId);
-        } catch (Exception e) {
-            return;
-        }
-
-        if (widgetConfig == null)
-            return;
-
-        // Create entities.
-        ArrayList<PlaylistEntity> playlists = new ArrayList<>();
-        ArrayList<WidgetPlaylist> widgetplaylists = new ArrayList<>();
-
-        WidgetEntity widgetEntity = new WidgetEntity(appWidgetId, Instant.now(), WidgetOptions.getDefaultOptions());
-
-        int position = 1;
-        for (PlaylistModel pl : widgetConfig.getPlaylists()) {
-            playlists.add(new PlaylistEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks));
-            widgetplaylists.add(new WidgetPlaylist(appWidgetId, pl.id, position));
-            position++;
-        }
-
-        // Persist them.
-        mAppDatabase.beginTransaction();
-        try {
-            mAppDatabase.widgetDao().upsert(widgetEntity);
-            mAppDatabase.playlistDao().upsertAll(playlists);
-            mAppDatabase.widgetPlaylistDao().setWidgetsPlaylists(appWidgetId, widgetplaylists);
-            mAppDatabase.setTransactionSuccessful();
-        }
-        finally {
-            mAppDatabase.endTransaction();
-            configRepo.remove(appWidgetId);
-        }
-
     }
 }

@@ -9,12 +9,7 @@ import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import io.reactivex.Completable;
@@ -22,38 +17,6 @@ import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 
 public class FileHelper {
-
-    // todo: get rid of this when all users are on dqlite
-    public static void writeString(Context context, String fileName, String fileContent) {
-        try {
-            FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-            writer.write(fileContent);
-            writer.close();
-        } catch (Exception e) {
-            Crashlytics.logException(e);
-        }
-    }
-
-    public static String readString(Context context, String fileName) {
-
-        StringBuilder sb = new StringBuilder();
-        try {
-            FileInputStream inputStream = context.openFileInput(fileName);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            inputStream.close();
-            return sb.toString();
-
-        } catch (Exception e) {
-            Crashlytics.logException(e);
-        }
-
-        return null;
-    }
 
     /**
      * Persists the images for given playlists. File name will be the id of the playlist.

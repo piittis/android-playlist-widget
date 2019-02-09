@@ -14,8 +14,6 @@ import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
-import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
-import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigRepository;
 
 import java.io.File;
 import java.util.List;
