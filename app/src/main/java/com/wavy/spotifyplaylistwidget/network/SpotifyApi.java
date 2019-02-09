@@ -1,6 +1,5 @@
 package com.wavy.spotifyplaylistwidget.network;
 
-import android.support.annotation.NonNull;
 
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -9,6 +8,7 @@ import org.threeten.bp.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import retrofit2.Call;

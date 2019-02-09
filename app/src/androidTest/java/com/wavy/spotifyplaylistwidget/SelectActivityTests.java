@@ -3,11 +3,6 @@ package com.wavy.spotifyplaylistwidget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.assertion.ViewAssertions;
-import android.support.test.espresso.idling.CountingIdlingResource;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -22,12 +17,17 @@ import org.mockito.junit.MockitoRule;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.assertion.ViewAssertions;
+import androidx.test.espresso.idling.CountingIdlingResource;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
 import io.reactivex.Observable;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;

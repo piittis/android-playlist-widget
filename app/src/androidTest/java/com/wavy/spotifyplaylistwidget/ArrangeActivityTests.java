@@ -3,8 +3,6 @@ package com.wavy.spotifyplaylistwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.SystemClock;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -16,9 +14,12 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.PositionAssertions.isAbove;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.PositionAssertions.isAbove;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 public class ArrangeActivityTests extends ActivityTestBase {

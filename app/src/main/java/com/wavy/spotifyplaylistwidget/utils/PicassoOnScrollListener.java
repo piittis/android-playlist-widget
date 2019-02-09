@@ -1,8 +1,9 @@
 package com.wavy.spotifyplaylistwidget.utils;
 
-import android.support.v7.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Helper to pause picasso image loading when scrolling a RecyclerView.

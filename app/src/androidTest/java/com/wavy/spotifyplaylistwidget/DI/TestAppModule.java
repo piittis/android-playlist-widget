@@ -1,6 +1,5 @@
 package com.wavy.spotifyplaylistwidget.DI;
 
-import android.support.test.InstrumentationRegistry;
 
 import com.wavy.spotifyplaylistwidget.PlaylistsContainer;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
@@ -10,6 +9,7 @@ import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 
 import javax.inject.Singleton;
 
+import androidx.test.InstrumentationRegistry;
 import dagger.Module;
 import dagger.Provides;
 

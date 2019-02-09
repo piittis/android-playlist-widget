@@ -1,8 +1,5 @@
 package com.wavy.spotifyplaylistwidget.db;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import com.wavy.spotifyplaylistwidget.db.dao.PlaylistDao;
@@ -11,6 +8,10 @@ import com.wavy.spotifyplaylistwidget.db.dao.WidgetPlaylistDao;
 import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
+
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 @Database(entities = {WidgetEntity.class, PlaylistEntity.class, WidgetPlaylist.class}, version = 1)
 

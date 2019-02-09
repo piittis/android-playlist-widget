@@ -3,13 +3,14 @@ package com.wavy.spotifyplaylistwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
 
 import javax.inject.Inject;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Since the widget configuration might span multiple activities, all activities in the

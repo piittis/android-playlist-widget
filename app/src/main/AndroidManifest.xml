@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.wavy.spotifyplaylistwidget"
     android:installLocation="internalOnly">
 
@@ -12,7 +13,8 @@
         android:icon="@mipmap/launcher_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/SpotifyWidgetTheme">
+        android:theme="@style/SpotifyWidgetTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".AuthActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 

@@ -1,8 +1,8 @@
 package com.wavy.spotifyplaylistwidget.db.converter;
 
-import android.arch.persistence.room.TypeConverter;
-
 import org.threeten.bp.Instant;
+
+import androidx.room.TypeConverter;
 
 
 public class InstantConverter {

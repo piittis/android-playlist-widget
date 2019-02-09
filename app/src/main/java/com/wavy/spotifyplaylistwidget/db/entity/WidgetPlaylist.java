@@ -1,10 +1,9 @@
 package com.wavy.spotifyplaylistwidget.db.entity;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
-import android.arch.persistence.room.Index;
-import android.arch.persistence.room.Relation;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 
 @Entity(tableName = "widget_playlists",
         primaryKeys = {"widgetId", "playlistId"},

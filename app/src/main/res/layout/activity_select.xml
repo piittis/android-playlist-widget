@@ -8,8 +8,7 @@
     android:gravity="center"
     android:orientation="vertical">
 
-
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/selection_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -32,13 +31,13 @@
             android:layout_gravity="center"
             android:visibility="gone" />
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/playlist_selection_list"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -47,7 +46,7 @@
                 android:scrollbars="vertical"
                 tools:listitem="@layout/selectable_playlist" />
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </FrameLayout>
 
 

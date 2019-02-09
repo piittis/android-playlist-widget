@@ -3,7 +3,6 @@ package com.wavy.spotifyplaylistwidget;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +14,8 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
 import javax.inject.Inject;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Activity without an UI whose only purpose is to fetch a Spotify access token and give it to
@@ -86,6 +87,7 @@ public class AuthActivity extends AppCompatActivity {
             return false;
         }
     }
+
 
     private void quitWithMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();

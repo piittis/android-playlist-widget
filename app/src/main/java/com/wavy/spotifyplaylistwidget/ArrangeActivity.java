@@ -2,8 +2,6 @@ package com.wavy.spotifyplaylistwidget;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
@@ -14,11 +12,8 @@ import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
-import com.wavy.spotifyplaylistwidget.persistence.WidgetConfigFileRepository;
 import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
-import com.wavy.spotifyplaylistwidget.widget.PlaylistModel;
-import com.wavy.spotifyplaylistwidget.widget.WidgetConfigModel;
 
 import org.threeten.bp.Instant;
 
@@ -26,6 +21,8 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Completable;
@@ -34,7 +31,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
 
     // view elements
-    @BindView(R.id.playlist_arrange_list) RecyclerView mPlaylistArrangeView;
+    @BindView(R.id.playlist_arrange_list)
+    RecyclerView mPlaylistArrangeView;
     @BindView(R.id.arrage_next_button) Button mNextButton;
 
     @Inject
