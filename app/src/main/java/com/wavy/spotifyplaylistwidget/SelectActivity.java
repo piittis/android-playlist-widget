@@ -34,7 +34,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
     private static final String TAG = "SelectActivity";
 
     // view elements
-    @BindView(R.id.playlist_selection_list) RecyclerView mPlaylistsSelectionView;
+    @BindView(R.id.playlist_selection_list) public RecyclerView mPlaylistsSelectionView;
     @BindView(R.id.selection_next_button) Button mNextButton;
     @BindView(R.id.selection_toolbar) Toolbar mToolbar;
     @BindView(R.id.swiperefresh) SwipeRefreshLayout mSwipeRefresh;

@@ -1,8 +1,11 @@
-package com.wavy.spotifyplaylistwidget;
+package com.wavy.spotifyplaylistwidget.interaction;
 
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.CheckBox;
+
+import com.wavy.spotifyplaylistwidget.R;
+import com.wavy.spotifyplaylistwidget.SelectActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

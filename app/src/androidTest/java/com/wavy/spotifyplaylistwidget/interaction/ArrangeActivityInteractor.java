@@ -1,13 +1,19 @@
-package com.wavy.spotifyplaylistwidget;
+package com.wavy.spotifyplaylistwidget.interaction;
 
 
 import android.view.View;
+
+import com.wavy.spotifyplaylistwidget.ArrangeActivity;
+import com.wavy.spotifyplaylistwidget.R;
+
+import org.hamcrest.Matchers;
 
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
+import androidx.test.espresso.matcher.ViewMatchers;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -18,14 +24,8 @@ import static org.hamcrest.Matchers.allOf;
 
 public class ArrangeActivityInteractor {
 
-    private ArrangeActivity mActivity;
-
-    public ArrangeActivityInteractor(ArrangeActivity activity) {
-        mActivity = activity;
-    }
-
     public void moveDown(String name) {
-        onView(allOf(withId(R.id.playlist_drag_handle), withParent(hasDescendant(withText(name)))))
+        onView(Matchers.allOf(ViewMatchers.withId(R.id.playlist_drag_handle), withParent(hasDescendant(withText(name)))))
                 .perform(down());
     }
 

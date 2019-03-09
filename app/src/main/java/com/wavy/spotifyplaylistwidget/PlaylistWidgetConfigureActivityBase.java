@@ -1,16 +1,31 @@
 package com.wavy.spotifyplaylistwidget;
 
+import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.wavy.spotifyplaylistwidget.db.AppDatabase;
+import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
+import com.wavy.spotifyplaylistwidget.utils.FileHelper;
+import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
+
+import org.threeten.bp.Instant;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Since the widget configuration might span multiple activities, all activities in the
@@ -38,6 +53,12 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
 
     @Inject
     PlaylistsContainer mPlaylists;
+
+    @Inject
+    AppDatabase mAppDatabase;
+
+    @Inject
+    FileHelper mFileHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +88,7 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
         // mAppWidgetId = 999; // FOR DEBUGGING ONLY
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (!BuildConfig.DEBUG && mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             quitWithError("invalid widget id");
         }
     }
@@ -163,6 +184,54 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
         finish();
     }
 
+    @SuppressLint("CheckResult")
+    protected void addWidget(WidgetOptions options) {
+
+        Completable.concatArray(
+                mFileHelper.persistPlaylistImages(this, mPlaylists.getSelectedPlaylists()),
+                this.saveWidgetConfig(options))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    logEvent("new_widget_created");
+                    finishWidgetConfiguration();
+                }, e -> {
+                    Crashlytics.log("Error saving widget information");
+                    Crashlytics.logException(e);
+                    quitWithError(e.getMessage());
+                });
+    }
+
+    @SuppressLint("CheckResult")
+    protected Completable saveWidgetConfig(WidgetOptions options) {
+
+        // Create entities.
+        ArrayList<PlaylistEntity> playlists = new ArrayList<>();
+        ArrayList<WidgetPlaylist> widgetplaylists = new ArrayList<>();
+
+        int position = 1;
+        for (PlaylistViewModel pl : mPlaylists.getSelectedPlaylists()) {
+            playlists.add(new PlaylistEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks));
+            widgetplaylists.add(new WidgetPlaylist(mAppWidgetId, pl.id, position));
+            position++;
+        }
+
+        WidgetEntity widgetEntity = new WidgetEntity(mAppWidgetId, Instant.now(), options != null ? options : WidgetOptions.getDefaultOptions());
+
+        return Completable.fromRunnable(() -> {
+            // Persist them
+            mAppDatabase.beginTransaction();
+            try {
+                mAppDatabase.widgetDao().upsert(widgetEntity);
+                mAppDatabase.playlistDao().upsertAll(playlists);
+                mAppDatabase.widgetPlaylistDao().setWidgetsPlaylists(mAppWidgetId, widgetplaylists);
+                mAppDatabase.setTransactionSuccessful();
+            }
+            finally {
+                mAppDatabase.endTransaction();
+            }
+        });
+    }
+
     /**
      * To support arbitrary amount of configuration activities, the last activity should call this
      * when it decides configuration is done.
@@ -199,5 +268,8 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
     // Makes toasts when debugging.
     protected void dToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+    protected void dToast(int num) {
+        this.dToast(Integer.toString(num));
     }
 }

@@ -8,4 +8,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
     <color name="listItemClickOverLay">#aa000000</color>
+
+    <color name="dark_bg">#121314</color>
+    <color name="dark_text1">#ffffff</color>
+    <color name="dark_text2">#A0A0A0</color>
+
+    <color name="light_bg">#ffffff</color>
+    <color name="light_text1">#000000</color>
+    <color name="light_text2">#A0A0A0</color>
+
 </resources>

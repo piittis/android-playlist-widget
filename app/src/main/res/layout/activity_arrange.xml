@@ -42,7 +42,7 @@
             android:layout_width="100dp"
             android:layout_height="56dp"
             android:enabled="true"
-            android:text="@string/add_widget" />
+            android:text="@string/selection_next_button" />
 
     </LinearLayout>
 

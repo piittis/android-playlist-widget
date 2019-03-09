@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import com.wavy.spotifyplaylistwidget.interaction.ArrangeActivityInteractor;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import org.junit.Assert;
@@ -72,7 +73,7 @@ public class ArrangeActivityTests extends ActivityTestBase {
         Intent intent = new Intent();
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
         mActivityTestRule.launchActivity(intent);
-        interactor = new ArrangeActivityInteractor(mActivityTestRule.getActivity());
+        interactor = new ArrangeActivityInteractor();
         SystemClock.sleep(200);
     }
 

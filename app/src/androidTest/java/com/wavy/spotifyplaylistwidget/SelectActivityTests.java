@@ -4,6 +4,7 @@ package com.wavy.spotifyplaylistwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 
+import com.wavy.spotifyplaylistwidget.interaction.SelectActivityInteractor;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import org.junit.Assert;
