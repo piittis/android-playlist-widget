@@ -5,12 +5,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -19,13 +21,16 @@ import butterknife.ButterKnife;
 
 public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
 
-    private String bgColor;
-    private String text1Color;
-    private String text2Color;
+    private WidgetOptions mWidgetOptions;
 
     @BindView(R.id.selection_next_button) Button mNextButton;
     @BindView(R.id.playlist_preview) View mPlaylistPreview;
     @BindView(R.id.opacityPercentage) TextView mOpacityPercentage;
+    @BindView(R.id.show_edit_checkbox) CheckBox mShowEditCheckbox;
+    @BindView(R.id.show_track_count) CheckBox mShowTrackCountCheckbox;
+    @BindView(R.id.preview_bg) ImageView mPreviewBg;
+    @BindView(R.id.styleRadios) RadioGroup mStyleRadioGroup;
+    @BindView(R.id.opacitySeek) SeekBar mOpacitySeek;
 
     @SuppressLint("ResourceType")
     @Override
@@ -35,14 +40,12 @@ public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
         setContentView(R.layout.activity_customize);
         ButterKnife.bind(this);
 
-        bgColor = this.getString(R.color.dark_bg);
-        text1Color = this.getString(R.color.dark_text1);
-        text2Color = this.getString(R.color.dark_text2);
-
         initializePreview();
+        initializeFromDb();
 
-        ((RadioGroup)this.findViewById(R.id.styleRadios)).setOnCheckedChangeListener((arg1, id) -> this.onStyleChange(id));
-        ((SeekBar)this.findViewById(R.id.opacitySeek)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mStyleRadioGroup.setOnCheckedChangeListener((arg1, id) -> this.onStyleChange(id));
+
+        mOpacitySeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 onOpacityChange(i);
@@ -53,44 +56,76 @@ public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+        mShowEditCheckbox.setOnCheckedChangeListener((e, checked) -> mWidgetOptions.showEditButton = checked);
+        mShowTrackCountCheckbox.setOnCheckedChangeListener((e, checked) -> {
+            mWidgetOptions.showTrackCount = checked;
+            updatePreviewTrackCount();
+        });
+
         mNextButton.setOnClickListener((v) -> onAddWidgetClick());
     }
 
+    @SuppressLint("ResourceType")
     void initializeFromDb() {
-        dToast("init from db");
+
+        if (mWidgetOptions != null)
+            return;
+
+        WidgetEntity existing = mAppDatabase.widgetDao().getById(mAppWidgetId);
+        if (existing != null) {
+            this.mWidgetOptions = existing.options;
+        } else {
+            this.mWidgetOptions = new WidgetOptions(
+                    this.getString(R.color.dark_bg),
+                    100,
+                    this.getString(R.color.dark_text1),
+                    this.getString(R.color.dark_text2),
+                    true,
+                    true
+            );
+        }
+
+        mShowEditCheckbox.setChecked(mWidgetOptions.showEditButton);
+        updatePreviewColors();
+        onOpacityChange(mWidgetOptions.backgroundOpacity);
+        updatePreviewTrackCount();
+        mShowTrackCountCheckbox.setChecked(mWidgetOptions.showTrackCount);
+
+        if (mWidgetOptions.backgroundColor.equals(this.getString(R.color.dark_bg))) {
+            mStyleRadioGroup.check(R.id.darkStyle);
+        } else {
+            mStyleRadioGroup.check(R.id.lightStyle);
+        }
+
+        mOpacitySeek.setProgress(mWidgetOptions.backgroundOpacity);
     }
 
     void onAddWidgetClick() {
         findViewById(R.id.customize_content).setVisibility(View.GONE);
         findViewById(R.id.processing_indicator).setVisibility(View.VISIBLE);
-
-        addWidget(new WidgetOptions(bgColor, text1Color, text2Color));
+        addWidget(mWidgetOptions);
     }
 
     @SuppressLint("ResourceType")
     void onStyleChange(int id) {
         if (id == R.id.lightStyle) {
-            bgColor = this.getString(R.color.light_bg);
-            text1Color = this.getString(R.color.light_text1);
-            text2Color = this.getString(R.color.light_text2);
+            mWidgetOptions.backgroundColor = this.getString(R.color.light_bg);
+            mWidgetOptions.primaryTextColor = this.getString(R.color.light_text1);
+            mWidgetOptions.secondaryTextColor = this.getString(R.color.light_text2);
         } else {
-            bgColor = this.getString(R.color.dark_bg);
-            text1Color = this.getString(R.color.dark_text1);
-            text2Color = this.getString(R.color.dark_text2);
+            mWidgetOptions.backgroundColor = this.getString(R.color.dark_bg);
+            mWidgetOptions.primaryTextColor = this.getString(R.color.dark_text1);
+            mWidgetOptions.secondaryTextColor = this.getString(R.color.dark_text2);
         }
-
-        mPlaylistPreview.setBackgroundColor(Color.parseColor(bgColor));
-        ((TextView)mPlaylistPreview.findViewById(R.id.playlist_name)).setTextColor(Color.parseColor(text1Color));
-        ((TextView)mPlaylistPreview.findViewById(R.id.playlist_info)).setTextColor(Color.parseColor(text2Color));
-
+        updatePreviewColors();
     }
 
     @SuppressLint("SetTextI18n")
-    void onOpacityChange(int progress) {
-        //dToast(progress);
-        ((TextView)this.findViewById(R.id.opacityPercentage)).setText(Integer.toString(progress) + " %");
+    void onOpacityChange(int newOpacity) {
+        mWidgetOptions.backgroundOpacity = newOpacity;
+        ((TextView)this.findViewById(R.id.opacityPercentage)).setText(Integer.toString(newOpacity) + " %");
+        updatePreviewBgOpacity();
     }
-
 
     void initializePreview() {
         View view = mPlaylistPreview;
@@ -100,8 +135,8 @@ public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
         int imgSize = this.getResources().getDimensionPixelSize(R.dimen.playlist_image_size);
 
         String imgUrl = "foo";
-        if (mPlaylists.getPlaylistsCount() > 0) {
-            PlaylistViewModel pl = mPlaylists.getPlaylists().get(0);
+        if (mPlaylists.getSelectedPlaylistsCount() > 0) {
+            PlaylistViewModel pl = mPlaylists.getSelectedPlaylists().get(0);
 
             playlistName.setText(pl.name);
             playlistInfo.setText(String.format(this.getString(R.string.track_count), pl.tracks));
@@ -115,7 +150,20 @@ public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
                 .placeholder(R.drawable.ic_music_note_white_48dp)
                 .error(R.drawable.ic_music_note_white_48dp)
                 .into(playlistImage);
+    }
 
+    void updatePreviewColors() {
+        mPreviewBg.setColorFilter(Color.parseColor(mWidgetOptions.backgroundColor));
+        ((TextView)mPlaylistPreview.findViewById(R.id.playlist_name)).setTextColor(Color.parseColor(mWidgetOptions.primaryTextColor));
+        ((TextView)mPlaylistPreview.findViewById(R.id.playlist_info)).setTextColor(Color.parseColor(mWidgetOptions.secondaryTextColor));
+    }
+
+    void updatePreviewBgOpacity() {
+        mPreviewBg.setAlpha((float)mWidgetOptions.backgroundOpacity / 100f);
+    }
+
+    void updatePreviewTrackCount() {
+        mPlaylistPreview.findViewById(R.id.playlist_info).setVisibility(mWidgetOptions.showTrackCount ? View.VISIBLE : View.GONE);
     }
 
 }

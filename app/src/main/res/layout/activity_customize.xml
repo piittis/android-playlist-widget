@@ -7,143 +7,173 @@
     android:background="@color/background"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/customize_content"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/selection_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_marginTop="0dp"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:title="Customize" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:id="@+id/customize_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            tools:layout_editor_absoluteY="56dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView4"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/selection_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Style"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="10dp" />
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginTop="0dp"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title="Customize" />
 
-            <RadioGroup
-                android:id="@+id/styleRadios"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/textView4"
-                tools:layout_editor_absoluteX="20dp">
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                tools:layout_editor_absoluteY="56dp">
 
-                <RadioButton
-                    android:id="@+id/darkStyle"
+                <TextView
+                    android:id="@+id/textView4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Dark"
-                    tools:layout_editor_absoluteX="10dp"
-                    tools:layout_editor_absoluteY="35dp" />
+                    android:layout_marginTop="8dp"
+                    android:text="@string/style"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:layout_editor_absoluteX="10dp" />
 
-                <RadioButton
-                    android:id="@+id/lightStyle"
+                <RadioGroup
+                    android:id="@+id/styleRadios"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Light"
-                    tools:layout_editor_absoluteX="10dp"
-                    tools:layout_editor_absoluteY="75dp" />
-            </RadioGroup>
+                    app:layout_constraintTop_toBottomOf="@+id/textView4"
+                    tools:layout_editor_absoluteX="20dp">
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Background opacity"
-                app:layout_constraintTop_toBottomOf="@+id/styleRadios"
-                tools:layout_editor_absoluteX="0dp" />
+                    <RadioButton
+                        android:id="@+id/darkStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/dark"
+                        tools:layout_editor_absoluteX="10dp"
+                        tools:layout_editor_absoluteY="35dp" />
 
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Preview"
-                app:layout_constraintTop_toBottomOf="@+id/opacitySeek"
-                tools:layout_editor_absoluteX="10dp" />
+                    <RadioButton
+                        android:id="@+id/lightStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/light"
+                        tools:layout_editor_absoluteX="10dp"
+                        tools:layout_editor_absoluteY="75dp" />
+                </RadioGroup>
 
-            <TextView
-                android:id="@+id/opacityPercentage"
-                android:layout_width="wrap_content"
-                android:layout_height="19dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="16dp"
-                android:text="100%"
-                app:layout_constraintBottom_toTopOf="@+id/opacitySeek"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/background_opacity"
+                    app:layout_constraintTop_toBottomOf="@+id/styleRadios"
+                    tools:layout_editor_absoluteX="0dp" />
 
-            <SeekBar
-                android:id="@+id/opacitySeek"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="56dp"
-                android:max="100"
-                android:progress="100"
-                app:layout_constraintTop_toBottomOf="@+id/textView5"
-                tools:layout_editor_absoluteX="10dp" />
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/preview"
+                    app:layout_constraintTop_toBottomOf="@+id/opacitySeek"
+                    tools:layout_editor_absoluteX="10dp" />
 
-            <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Show edit button"
-                app:layout_constraintTop_toBottomOf="@+id/playlist_preview"
-                tools:layout_editor_absoluteX="0dp" />
-
-            <FrameLayout
-                android:id="@+id/playlist_preview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/textView6"
-                tools:layout_editor_absoluteX="0dp">
-
-                <include
-                    layout="@layout/playlist_row"
+                <TextView
+                    android:id="@+id/opacityPercentage"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </FrameLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_height="19dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="100%"
+                    app:layout_constraintBottom_toTopOf="@+id/opacitySeek"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5"
+                    app:layout_constraintVertical_bias="0.9"
+                    tools:ignore="HardcodedText" />
 
-        <Button
-            android:id="@+id/selection_next_button"
-            android:layout_width="100dp"
-            android:layout_height="56dp"
-            android:layout_gravity="center_horizontal"
-            android:enabled="true"
-            android:text="@string/add_widget" />
+                <SeekBar
+                    android:id="@+id/opacitySeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="32dp"
+                    android:max="100"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:progress="100"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5"
+                    tools:layout_editor_absoluteX="10dp" />
 
-    </LinearLayout>
+                <FrameLayout
+                    android:id="@+id/playlist_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/checkerboard"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6"
+                    tools:layout_editor_absoluteX="0dp">
+
+                    <ImageView
+                        android:id="@+id/preview_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        app:srcCompat="@color/white"
+                        android:contentDescription="@string/description_playlist_preview_background" />
+
+                    <include
+                        layout="@layout/playlist_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </FrameLayout>
+
+                <CheckBox
+                    android:id="@+id/show_track_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/show_track_count"
+                    app:layout_constraintTop_toBottomOf="@+id/playlist_preview"
+                    tools:layout_editor_absoluteX="0dp" />
+
+                <CheckBox
+                    android:id="@+id/show_edit_checkbox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/show_edit_button"
+                    app:layout_constraintTop_toBottomOf="@+id/show_track_count"
+                    tools:layout_editor_absoluteX="9dp" />
+
+                <Button
+                    android:id="@+id/selection_next_button"
+                    android:layout_width="120dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="32dp"
+                    android:enabled="true"
+                    android:text="@string/add_widget"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/show_edit_checkbox" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
     <include
         layout="@layout/processing_indicator"

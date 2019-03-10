@@ -16,6 +16,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.wavy.spotifyplaylistwidget.IoC;
 import com.wavy.spotifyplaylistwidget.R;
+import com.wavy.spotifyplaylistwidget.SelectActivity;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 
@@ -53,7 +54,13 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
         // Purpose of this is to differentiate the intents (filterEquals must return false).
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        views.setInt(R.id.widget_container, "setBackgroundColor", Color.parseColor(widget.options.backgroundColor));
+        int color = Color.parseColor(widget.options.backgroundColor);
+        int alpha = (int)((float)widget.options.backgroundOpacity / 100f * 255f);
+
+        // First byte of color is the alpha, zero out the alpha portion and write new alpha.
+        color &= (0x00ffffff);
+        color |= (alpha << 24);
+        views.setInt(R.id.widget_container, "setBackgroundColor", color);
 
         views.setRemoteAdapter(R.id.widget_list, intent);
 
@@ -115,25 +122,31 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
     // Called when the BroadcastReceiver receives an Intent broadcast.
     @Override
     public void onReceive(Context context, Intent intent) {
-
         if (intent.getAction().equals(OPEN_PLAYLIST_ACTION)) {
+            if (!spotifyInstalled(context)) {
+                Toast.makeText(context, "Spotify app not installed", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-            if (spotifyInstalled(context)) {
-
-                try {
+            try {
+                if (intent.getBooleanExtra("edit", false)) {
+                    int widgetId = intent.getIntExtra("widgetId", 0);
+                    Intent i = new Intent(context, SelectActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+                    context.startActivity(i);
+                    logEvent(context, "playlist_edit_click");
+                } else {
                     // Opens the given playlist.
                     String uri = intent.getStringExtra("uri");
                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(i);
                     logEvent(context, "playlist_open");
-                } catch (Exception e) {
-                    Crashlytics.logException(e);
-                    Toast.makeText(context, "Can't open playlist (" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
                 }
-
-            } else {
-                Toast.makeText(context, "Spotify app not installed", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Crashlytics.logException(e);
+                Toast.makeText(context, "Can't open playlist (" + e.getMessage() + ")", Toast.LENGTH_LONG).show();
             }
 
         }

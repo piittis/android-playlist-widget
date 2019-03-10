@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
 import com.wavy.spotifyplaylistwidget.interaction.CustomizeActivityInteractor;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -11,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.threeten.bp.Instant;
 
 import java.util.ArrayList;
 
@@ -36,12 +39,45 @@ public class CustomizeActivityTests extends ActivityTestBase {
         setupAndOpenActivity();
     }
 
+    @Test
+    public void InitializeFromDbWorks() {
+
+        // Make sure options are different than the defaults.
+        mockDatabase.widgetDao().upsert(new WidgetEntity(1, Instant.now(), new WidgetOptions(
+                "#ffffff",
+                50,
+                "#ffffff",
+                "#ffffff",
+                false,
+                false
+        )));
+
+        setupSelectedPlaylists(10);
+        setupAndOpenActivity();
+
+        interactor.assertOpacityPercentageText("50 %");
+        interactor.assertOpacitySeekbarProgress(50);
+        interactor.assertShowEditButtonNotChecked();
+        interactor.assertShowTrackCountNotChecked();
+    }
+
+    @Test
+    public void PlaylistPreviewIsInitilizedCorrectly() {
+
+        setupSelectedPlaylists(10);
+        setupAndOpenActivity();
+
+        SystemClock.sleep(2000);
+        interactor.assertPreviewPlaylistName("Playlist0");
+        interactor.assertPreviewTrackCount(0);
+    }
+
 
     private void setupAndOpenActivity() {
         Intent intent = new Intent();
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
         mActivityTestRule.launchActivity(intent);
-        interactor = new CustomizeActivityInteractor();
+        interactor = new CustomizeActivityInteractor(mActivityTestRule.getActivity());
         SystemClock.sleep(200);
     }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -62,6 +63,9 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
             mPrimaryTextColor = Color.parseColor(mWidget.options.primaryTextColor);
             mSecondaryTetxtColor = Color.parseColor(mWidget.options.secondaryTextColor);
 
+            if (mWidget.options.showEditButton)
+                mItemCount++;
+
         } catch(Exception e) {
             mItemCount = 1;
             Error = true;
@@ -91,6 +95,10 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
             return new RemoteViews(mContext.getPackageName(), R.layout.widget_error);
         }
 
+        if (mWidget.options.showEditButton && position == mItemCount - 1) {
+            return getEditButton();
+        }
+
         final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist);
 
         PlaylistEntity pl = mPlaylists.get(position);
@@ -98,8 +106,12 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         remoteView.setTextViewText(R.id.playlist_name, pl.name);
         remoteView.setTextColor(R.id.playlist_name, mPrimaryTextColor);
 
-        remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.trackCount));
-        remoteView.setTextColor(R.id.playlist_info, mSecondaryTetxtColor);
+        if (mWidget.options.showTrackCount) {
+            remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.trackCount));
+            remoteView.setTextColor(R.id.playlist_info, mSecondaryTetxtColor);
+        } else {
+            remoteView.setViewVisibility(R.id.playlist_info, View.GONE);
+        }
 
         try {
             Bitmap map = Picasso.get()
@@ -120,6 +132,21 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         return remoteView;
     }
 
+    private RemoteViews getEditButton() {
+        final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_edit_button);
+        remoteView.setImageViewResource(R.id.edit_icon, R.drawable.ic_round_edit_24px);
+        remoteView.setTextColor(R.id.edit_text, mPrimaryTextColor);
+        //remoteView.setInt(R.id.edit_icon, "setTint", mPrimaryTextColor);
+
+        Intent fillInIntent = new Intent();
+        fillInIntent.putExtra("edit", true);
+        fillInIntent.putExtra("widgetId", mAppWidgetId);
+
+        remoteView.setOnClickFillInIntent(R.id.widget_edit_button, fillInIntent);
+
+        return remoteView;
+    }
+
     @Override
     public RemoteViews getLoadingView() {
         return mLoadingView;
@@ -127,7 +154,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public int getViewTypeCount() {
-        return 1;
+        return (mWidget.options.showEditButton) ? 2 : 1;
     }
 
     @Override

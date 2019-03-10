@@ -19,4 +19,14 @@
     <string name="spotify_api_error">Can\'t load spotify data, try again later.</string>
     <string name="widget_error_msg">Can\'t read config.</string>
     <string name="loading_text">Loading…</string>
+    <string name="preview">Preview</string>
+    <string name="background_opacity">Background opacity</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="style">Style</string>
+    <string name="show_track_count">Show track count</string>
+    <string name="show_edit_button">Show edit button</string>
+    <string name="edit">Edit</string>
+    <string name="edit_icon">edit icon</string>
+    <string name="description_playlist_preview_background">playlist background color</string>
 </resources>

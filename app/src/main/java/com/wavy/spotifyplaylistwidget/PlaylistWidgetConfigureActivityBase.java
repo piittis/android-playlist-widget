@@ -3,6 +3,7 @@ package com.wavy.spotifyplaylistwidget;
 import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -84,8 +85,6 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
         setResult(RESULT_CANCELED, resultValue);
-
-        // mAppWidgetId = 999; // FOR DEBUGGING ONLY
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
         if (!BuildConfig.DEBUG && mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
@@ -175,10 +174,16 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
         if (mHasParent) {
             // We have a parent activity, let it handle it.
             setResult(RESULT_CONFIGURATION_CANCELLED);
+            finish();
         } else {
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult(RESULT_CANCELED, resultValue);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                super.finishAndRemoveTask();
+                return;
+            }
         }
 
         finish();
@@ -247,6 +252,11 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult(RESULT_OK, resultValue);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                super.finishAndRemoveTask();
+                return;
+            }
         }
 
         finish();

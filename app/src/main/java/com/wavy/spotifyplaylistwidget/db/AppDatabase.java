@@ -12,8 +12,10 @@ import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {WidgetEntity.class, PlaylistEntity.class, WidgetPlaylist.class}, version = 1)
+@Database(entities = {WidgetEntity.class, PlaylistEntity.class, WidgetPlaylist.class}, version = 2)
 
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -29,7 +31,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 "spotify-playlist-widget-db")
                 // Widget must do synchronous main thread queries.
                 .allowMainThreadQueries()
-                //.addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2)
                 .build();
 
         db.query("PRAGMA recursive_triggers = false", null);
@@ -41,7 +43,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
         AppDatabase db = Room.inMemoryDatabaseBuilder(context.getApplicationContext(),
                 AppDatabase.class)
-                //.addMigrations(MIGRATION_1_2)
+                .allowMainThreadQueries()
+                .addMigrations(MIGRATION_1_2)
                 .build();
 
         db.query("PRAGMA recursive_triggers = false", null);
@@ -49,12 +52,13 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     // This is how you do migrations
-    /*static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE `Fruit` (`id` INTEGER, "
-                    + "`name` TEXT, PRIMARY KEY(`id`))");
+            database.execSQL("ALTER TABLE Widgets ADD COLUMN backgroundOpacity INTEGER NOT NULL DEFAULT 100");
+            database.execSQL("ALTER TABLE Widgets ADD COLUMN showEditButton INTEGER NOT NULL DEFAULT 1");
+            database.execSQL("ALTER TABLE Widgets ADD COLUMN showTrackCount INTEGER NOT NULL DEFAULT 1");
         }
-    }*/
+    };
 
 }

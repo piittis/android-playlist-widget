@@ -1,6 +1,8 @@
 package com.wavy.spotifyplaylistwidget;
 
 import android.app.Application;
+
+import com.facebook.stetho.Stetho;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class PlaylistWidgetApplication extends Application {
@@ -9,7 +11,7 @@ public class PlaylistWidgetApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //Stetho.initializeWithDefaults(this);
+        Stetho.initializeWithDefaults(this);
 
         AndroidThreeTen.init(this);
         IoC.Initialize(this);
