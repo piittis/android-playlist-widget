@@ -2,7 +2,7 @@
 
 🌊🌊🌊🌊🌊🌊🌊🌊🌊
 
-I mostly use spotify like this:
+Use case:
 1. Find a playlist.
 2. Play most recent song or shuffle.
 
@@ -11,7 +11,7 @@ Finding a playlist is annoying especially if you need to concentrate on somethin
 ### Goals:
 * Keep it simple:
   * Only a few activities, no fragments.
-  * Only essential features, resist scope creep.
+  * Only essential features, no scope creep.
 * Get more familiar with Android.
 * UI should look quite similar to spotify, so as to make it familiar for users. It should feel more like an extra feature for spotify that a seperate app.
 * Easy to use.
