@@ -6,13 +6,15 @@ import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 
-
 import javax.inject.Singleton;
 
 import androidx.test.InstrumentationRegistry;
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.Completable;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @Module
@@ -37,5 +39,9 @@ public class TestAppModule {
     }
 
     @Provides
-    FileHelper provideFileHelper() { return mock(FileHelper.class); }
+    FileHelper provideFileHelper() {
+        FileHelper mock = mock(FileHelper.class);
+        doReturn(Completable.complete()).when(mock).persistPlaylistImages(any(), any());
+        return mock;
+    }
 }

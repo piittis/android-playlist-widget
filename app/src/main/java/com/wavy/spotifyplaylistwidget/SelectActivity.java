@@ -16,6 +16,7 @@ import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -65,7 +66,9 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
 
         if (isFirstCreate) {
             mPlaylists.clearPlaylists();
-        } else if (mPlaylists.getSelectedPlaylistsCount() > 0) {
+            initializeFromDb();
+        }
+        if (mPlaylists.getSelectedPlaylistsCount() > 0) {
             mNextButton.setEnabled(true);
         }
 
@@ -74,6 +77,11 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
         if (isFirstCreate) {
             LoadPlaylistsAfterAuth();
         }
+    }
+
+    private void initializeFromDb() {
+        HashSet<String> existing = new HashSet<>(mAppDatabase.widgetPlaylistDao().getWidgetPlaylistsIds(mAppWidgetId));
+        mPlaylists.initializeSelectedStatus(existing);
     }
 
     @Override
@@ -152,27 +160,24 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
                 // Handle first results.
                 playlistObservable.first(new ArrayList<>())
                         .subscribe(result -> {
-                            mSwipeRefresh.setRefreshing(false);
-                            hideSpinner();
-
                             mPlaylists.initializePlaylists(result);
                             mPlaylistSelectionAdapter.notifyDataSetChanged();
-
+                            updateSelectedPlaylists();
                         }, this::onSpotifyApiError),
 
                 // Handle rest of the results.
                 playlistObservable.skip(1)
                         .subscribe(result -> {
 
-                            int firstNewItem = mPlaylists.getPlaylistsCount();
+                            int firstNewItemIndex = mPlaylists.getPlaylistsCount();
                             mPlaylists.addPlaylists(result);
 
-                            for(int i = firstNewItem; i < firstNewItem + result.size(); i++) {
+                            for(int i = firstNewItemIndex; i < firstNewItemIndex + result.size(); i++) {
                                 mPlaylistSelectionAdapter.notifyItemChanged(i);
                             }
 
-                        }, this::onSpotifyApiError)
-        );
+                            updateSelectedPlaylists();
+                        }, this::onSpotifyApiError, this::onAllPlaylistsLoaded));
 
         // Start the data fetch.
         playlistObservable.connect();
@@ -238,5 +243,10 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
         logEvent("api_error");
         Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + error.getMessage() + ")"
                 , Toast.LENGTH_LONG).show();
+    }
+
+    public void onAllPlaylistsLoaded() {
+        hideSpinner();
+        mSwipeRefresh.setRefreshing(false);
     }
 }

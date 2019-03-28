@@ -30,6 +30,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 AppDatabase.class,
                 "spotify-playlist-widget-db")
                 // Widget must do synchronous main thread queries.
+                // Otherwise we do such light queries that using main thread is fine.
                 .allowMainThreadQueries()
                 .addMigrations(MIGRATION_1_2)
                 .build();

@@ -35,6 +35,11 @@ public class PlaylistsContainer {
         mSelectedPlaylistIds.clear();
     }
 
+    public void initializeSelectedStatus(HashSet<String> selectedIds) {
+        this.mSelectedPlaylistIds = selectedIds;
+    }
+
+
     public ArrayList<PlaylistViewModel> getPlaylists() {
         return mPlaylists;
     }
@@ -60,6 +65,7 @@ public class PlaylistsContainer {
         for (PlaylistViewModel pl : playlists) {
             if (isSelected(pl.id))
                 pl.selected = true;
+                mSelectedPlaylists.add(pl);
         }
 
         mPlaylists.addAll(playlists);
@@ -84,7 +90,7 @@ public class PlaylistsContainer {
         }
     }
 
-    public boolean isSelected(String id) {
+    private boolean isSelected(String id) {
         return mSelectedPlaylistIds.contains(id);
     }
 }

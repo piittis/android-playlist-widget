@@ -3,7 +3,6 @@ package com.wavy.spotifyplaylistwidget.interaction;
 
 import android.view.View;
 
-import com.wavy.spotifyplaylistwidget.ArrangeActivity;
 import com.wavy.spotifyplaylistwidget.R;
 
 import org.hamcrest.Matchers;
@@ -16,6 +15,7 @@ import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.matcher.ViewMatchers;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -32,6 +32,10 @@ public class ArrangeActivityInteractor {
     public void moveUp(String name) {
         onView(allOf(withId(R.id.playlist_drag_handle), withParent(hasDescendant(withText(name)))))
                 .perform(up());
+    }
+
+    public void clickNext() {
+        onView(withId(R.id.arrage_next_button)).perform(click());
     }
 
     private static ViewAction up() {

@@ -74,7 +74,7 @@ public class SpotifyApi {
                                    @NonNull Response<PlaylistService.PlaylistResponseModel> response) {
                 if (emitter.isDisposed()) return;
 
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
 
                     emitter.onNext(getPlaylistViewModels(response.body()));
                     int playlistsLoaded = offset + 50;

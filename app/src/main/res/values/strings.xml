@@ -12,7 +12,7 @@
     <string name="track_count">%1$d tracks</string>
     <string name="add_widget">Add widget</string>
     <string name="playlist_image_content_description">playlist image</string>
-    <string name="spotify_auth_required">Spotify authentication is required.</string>
+    <string name="spotify_auth_required">Could not connect to Spotify for authentication.</string>
     <string name="spotify_auth_error">Can\'t authenticate, please try again.</string>
     <string name="spotify_install_ap">Please install the Spotify app first.</string>
     <string name="configuration_error">An error occurred, please try again.</string>
