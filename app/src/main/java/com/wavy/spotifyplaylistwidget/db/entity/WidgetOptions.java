@@ -28,6 +28,6 @@ public class WidgetOptions {
     }
 
     public static WidgetOptions getDefaultOptions() {
-        return new WidgetOptions("#121314", 100, "#ffffff", "#A0A0A0", false, true);
+        return new WidgetOptions("#121314", 100, "#ffffff", "#A0A0A0", true, true);
     }
 }

@@ -159,7 +159,7 @@
                     tools:layout_editor_absoluteX="9dp" />
 
                 <Button
-                    android:id="@+id/selection_next_button"
+                    android:id="@+id/customize_next_button"
                     android:layout_width="120dp"
                     android:layout_height="56dp"
                     android:layout_gravity="center_horizontal"

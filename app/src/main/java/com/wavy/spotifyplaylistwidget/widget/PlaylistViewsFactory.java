@@ -21,6 +21,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * ViewsFactory constructs views (playlist rows) for the widget
+ */
 public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = "PlaylistViewsFactory";
@@ -55,6 +58,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         IoC.getInjector().inject(this);
 
         try {
+
 
             mWidget = mAppDatabase.widgetDao().getById(mAppWidgetId);
             mPlaylists = mAppDatabase.widgetPlaylistDao().getWidgetPlaylists(mAppWidgetId);

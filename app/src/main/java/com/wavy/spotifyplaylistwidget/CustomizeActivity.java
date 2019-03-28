@@ -21,9 +21,9 @@ import butterknife.ButterKnife;
 
 public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
 
-    private WidgetOptions mWidgetOptions;
+    public WidgetOptions mWidgetOptions;
 
-    @BindView(R.id.selection_next_button) Button mNextButton;
+    @BindView(R.id.customize_next_button) Button mNextButton;
     @BindView(R.id.playlist_preview) View mPlaylistPreview;
     @BindView(R.id.opacityPercentage) TextView mOpacityPercentage;
     @BindView(R.id.show_edit_checkbox) CheckBox mShowEditCheckbox;

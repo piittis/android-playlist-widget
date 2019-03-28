@@ -31,4 +31,14 @@ public abstract class WidgetPlaylistDao {
             "where wp.widgetId = :androidWidgetId " +
             "order by wp.playlistPosition asc")
     public abstract List<PlaylistEntity> getWidgetPlaylists(int androidWidgetId);
+
+    @Query("select pl.spotifyId from widget_playlists wp " +
+            "join playlists pl on (pl.spotifyId = wp.playlistId) " +
+            "where wp.widgetId = :androidWidgetId " +
+            "order by wp.playlistPosition asc")
+    public abstract List<String> getWidgetPlaylistsIds(int androidWidgetId);
+
+    @Query("select wp.* from widget_playlists wp where wp.widgetId = :androidWidgetId order by wp.playlistPosition")
+    public abstract List<WidgetPlaylist> getByWidgetId(int androidWidgetId);
+
 }

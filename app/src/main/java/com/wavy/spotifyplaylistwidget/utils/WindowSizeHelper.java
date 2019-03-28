@@ -4,8 +4,8 @@ import android.content.Context;
 
 
 /**
- * Helper class to get correct size for the app window
- * Only use if app is not fullscreen. Not currently used.
+ * Helper class to get correct size for the app window.
+ * Only use if app is not fullscreen. Not currently used but kepts for future reference.
  */
 public class WindowSizeHelper {
 

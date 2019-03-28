@@ -55,6 +55,23 @@ public class SelectActivityTests extends ActivityTestBase {
     }
 
     @Test
+    public void initializeFromDbWorks() {
+
+        ArrayList<PlaylistViewModel> testPlaylists = getTestPlaylists(50);
+        ArrayList<PlaylistViewModel> playlistsInWidget = new ArrayList<>();
+        for (int i = 0; i < testPlaylists.size(); i+=2)
+            playlistsInWidget.add((testPlaylists.get(i)));
+
+        insertMockWidget(playlistsInWidget);
+        // the playlists in the pre-existing widget should be selected.
+        openActivity();
+        for (int i = 0; i < 50; i+=2)
+            Assert.assertTrue(interactor.getCheckBoxAtPosition(i).isChecked());
+        for (int i = 1; i < 50; i+=2)
+            Assert.assertFalse(interactor.getCheckBoxAtPosition(i).isChecked());
+    }
+
+    @Test
     public void clickingRowTogglesCheckboxStatus() {
         openActivity();
 
@@ -180,11 +197,4 @@ public class SelectActivityTests extends ActivityTestBase {
                                             .doOnEach(e -> networkIdlingResource.decrement())).when(mockSpotifyApi).getPlaylists();
     }
 
-    private ArrayList<PlaylistViewModel> getTestPlaylists(int count) {
-        ArrayList<PlaylistViewModel> models = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            models.add(new PlaylistViewModel("Playlist"+i, "id"+i, "uri"+i, null, i, "user"+1));
-        }
-        return models;
-    }
 }

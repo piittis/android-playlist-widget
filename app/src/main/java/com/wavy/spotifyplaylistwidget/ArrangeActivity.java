@@ -5,8 +5,13 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
 import com.wavy.spotifyplaylistwidget.utils.FileHelper;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,6 +41,8 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         setContentView(R.layout.activity_arrange);
         ButterKnife.bind(this);
 
+        initializeFromDb();
+
         PlaylistArrangeAdapter mPlaylistArrangeAdapter =
                 new PlaylistArrangeAdapter(mPlaylistArrangeView, mPlaylists.getSelectedPlaylists(), this);
         mPlaylistArrangeView.setAdapter(mPlaylistArrangeAdapter);
@@ -45,6 +52,28 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
             Intent intent = new Intent(getApplicationContext(), CustomizeActivity.class);
             startNextConfigurationActivity(intent);
         });
+    }
+
+    private void initializeFromDb() {
+        List<WidgetPlaylist> existing = mAppDatabase.widgetPlaylistDao().getByWidgetId(mAppWidgetId);
+        if (existing == null)
+            return;
+
+        HashMap<String, Integer> playlistPosition = new HashMap<>();
+        for (WidgetPlaylist pl : existing) {
+            playlistPosition.put(pl.playlistId, pl.playlistPosition);
+        }
+
+        Collections.sort(mPlaylists.getSelectedPlaylists(),
+                (a, b) ->
+                {
+                    Integer aPos = playlistPosition.get(a.id);
+                    Integer bPos = playlistPosition.get(b.id);
+                    aPos = aPos == null ? Integer.MAX_VALUE : aPos;
+                    bPos = bPos == null ? Integer.MAX_VALUE : bPos;
+                    return aPos - bPos;
+                });
+
     }
 
 }
