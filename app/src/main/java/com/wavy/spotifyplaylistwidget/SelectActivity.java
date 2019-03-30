@@ -250,6 +250,9 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
     }
 
     public void onSpotifyApiError(Throwable error) {
+        hideSpinner();
+        mSwipeRefresh.setRefreshing(false);
+        mPlaylists.updateSelectedPlaylists();
         Crashlytics.logException(error);
         logEvent("api_error");
         Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + error.getMessage() + ")"

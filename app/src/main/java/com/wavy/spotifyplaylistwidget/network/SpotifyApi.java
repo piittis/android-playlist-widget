@@ -85,19 +85,17 @@ public class SpotifyApi {
                         emitter.onComplete();
                     }
                 } else {
-                    emitter.onNext(new ArrayList<>());
-                    emitter.onComplete();
-                    emitter.onError(new Error(response.message()));
+                    if (!emitter.isDisposed()) emitter.onNext(new ArrayList<>());
+                    if (!emitter.isDisposed()) emitter.onError(new Error(response.message()));
+                    if (!emitter.isDisposed()) emitter.onComplete();
                 }
             }
 
             @Override
             public void onFailure(Call<PlaylistService.PlaylistResponseModel> call, Throwable t) {
-                if (emitter.isDisposed()) return;
-
-                emitter.onNext(new ArrayList<>());
-                emitter.onComplete();
-                emitter.onError(t);
+                if (!emitter.isDisposed()) emitter.onNext(new ArrayList<>());
+                if (!emitter.isDisposed()) emitter.onError(t);
+                if (!emitter.isDisposed()) emitter.onComplete();
             }
         });
     }
