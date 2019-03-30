@@ -120,7 +120,7 @@ public class ArrangeActivityTests extends ActivityTestBase {
         setupSelectedPlaylists(10000);
         setupAndOpenActivity();
         interactor.clickNext();
-        onView(withText("Customize")).check(matches(isDisplayed()));
+        onView(withText(mActivityTestRule.getActivity().getString(R.string.customize_widget))).check(matches(isDisplayed()));
     }
 
     private void setupAndOpenActivity() {
