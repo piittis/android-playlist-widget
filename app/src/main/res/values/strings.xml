@@ -3,6 +3,7 @@
     <string name="widget_name">Spotify playlists</string>
     <string name="select_playlists">Select playlists</string>
     <string name="arrange_playlists">Arrange playlists</string>
+    <string name="customize_widget">Customize widget</string>
     <string name="processing_text">processing…</string>
     <string name="playlists_selected_count">%1$d / %2$d selected</string>
     <string name="select_all">select all</string>
