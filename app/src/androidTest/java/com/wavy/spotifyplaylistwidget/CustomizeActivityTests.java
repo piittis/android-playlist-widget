@@ -100,21 +100,19 @@ public class CustomizeActivityTests extends ActivityTestBase {
 
         WidgetOptions options = mActivityTestRule.getActivity().mWidgetOptions;
 
-        SystemClock.sleep(1000);
+        SystemClock.sleep(500);
 
         interactor.setOpacitySeekbarValue(10);
         interactor.assertOpacityPercentageText("10 %");
         interactor.assertOpacitySeekbarProgress(10);
         Assert.assertEquals(10, options.backgroundOpacity);
 
-        SystemClock.sleep(1000);
+        SystemClock.sleep(500);
 
         interactor.setOpacitySeekbarValue(50);
         interactor.assertOpacityPercentageText("50 %");
         interactor.assertOpacitySeekbarProgress(50);
         Assert.assertEquals(50, options.backgroundOpacity);
-
-        SystemClock.sleep(1000);
     }
 
     @Test
@@ -173,7 +171,6 @@ public class CustomizeActivityTests extends ActivityTestBase {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1);
         mActivityTestRule.launchActivity(intent);
         interactor = new CustomizeActivityInteractor(mActivityTestRule.getActivity());
-        SystemClock.sleep(200);
     }
 
     private void setupSelectedPlaylists(int count) {

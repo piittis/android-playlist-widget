@@ -56,10 +56,11 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     @Override
     public void onCreate() {
         IoC.getInjector().inject(this);
+        updateFromDb();
+    }
 
+    private void updateFromDb() {
         try {
-
-
             mWidget = mAppDatabase.widgetDao().getById(mAppWidgetId);
             mPlaylists = mAppDatabase.widgetPlaylistDao().getWidgetPlaylists(mAppWidgetId);
             mItemCount = mPlaylists.size();
@@ -74,12 +75,11 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
             mItemCount = 1;
             Error = true;
         }
-
     }
 
     @Override
     public void onDataSetChanged() {
-
+        updateFromDb();
     }
 
     @Override
@@ -113,6 +113,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         if (mWidget.options.showTrackCount) {
             remoteView.setTextViewText(R.id.playlist_info, String.format(mTrackCountString, pl.trackCount));
             remoteView.setTextColor(R.id.playlist_info, mSecondaryTetxtColor);
+            remoteView.setViewVisibility(R.id.playlist_info, View.VISIBLE);
         } else {
             remoteView.setViewVisibility(R.id.playlist_info, View.GONE);
         }
@@ -140,7 +141,6 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_edit_button);
         remoteView.setImageViewResource(R.id.edit_icon, R.drawable.ic_round_edit_24px);
         remoteView.setTextColor(R.id.edit_text, mPrimaryTextColor);
-        //remoteView.setInt(R.id.edit_icon, "setTint", mPrimaryTextColor);
 
         Intent fillInIntent = new Intent();
         fillInIntent.putExtra("edit", true);
@@ -168,6 +168,6 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public boolean hasStableIds() {
-        return true;
+        return false;
     }
 }

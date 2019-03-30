@@ -11,6 +11,7 @@
     <string name="selection_next_button">next</string>
     <string name="track_count">%1$d tracks</string>
     <string name="add_widget">Add widget</string>
+    <string name="update_widget">Update widget</string>
     <string name="playlist_image_content_description">playlist image</string>
     <string name="spotify_auth_required">Could not connect to Spotify for authentication.</string>
     <string name="spotify_auth_error">Can\'t authenticate, please try again.</string>

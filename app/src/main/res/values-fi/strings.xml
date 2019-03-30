@@ -18,14 +18,15 @@
     <string name="spotify_api_error">Lataus ei onnistunut.</string>
     <string name="widget_error_msg">Konfiguraation lukeminen ei onnistu.</string>
     <string name="loading_text">Ladataan…</string>
-    <string name="preview">Preview</string>
-    <string name="background_opacity">Background opacity</string>
-    <string name="light">Light</string>
-    <string name="dark">Dark</string>
-    <string name="style">Style</string>
-    <string name="show_track_count">Show track count</string>
-    <string name="show_edit_button">Show edit button</string>
-    <string name="description_playlist_preview_background">playlist background color</string>
+    <string name="preview">Esikatselu</string>
+    <string name="background_opacity">Taustan läpinäkyvyys</string>
+    <string name="light">Vaalea</string>
+    <string name="dark">Tumma</string>
+    <string name="style">Tyyli</string>
+    <string name="show_track_count">Näytä kappalemäärä</string>
+    <string name="show_edit_button">Näytä editoitinappi</string>
+    <string name="description_playlist_preview_background">playlist taustaväri</string>
     <string name="edit">Editoi</string>
-    <string name="edit_icon">edit icon</string>
+    <string name="edit_icon">edit ikoni</string>
+    <string name="update_widget">Päivitä widget</string>
 </resources>

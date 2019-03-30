@@ -68,10 +68,9 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
             mPlaylists.clearPlaylists();
             initializeFromDb();
         }
-        if (mPlaylists.getSelectedPlaylistsCount() > 0) {
-            mNextButton.setEnabled(true);
-        }
 
+        updateNextButtonEnabledStatus();
+        updateSelectedPlaylistsText();
         initializePlaylistSelectionList();
 
         if (isFirstCreate) {
@@ -97,7 +96,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
         mPlaylistsSelectionView.setAdapter(mPlaylistSelectionAdapter);
         mPlaylistsSelectionView.setLayoutManager(new LinearLayoutManager(this));
         mPlaylistsSelectionView.addOnScrollListener(new PicassoOnScrollListener());
-        mPlaylistSelectionAdapter.setOnClickListener((v) -> updateSelectedPlaylists());
+        mPlaylistSelectionAdapter.setOnClickListener((v) -> handlePlaylistSelectionChanged());
     }
 
     @Override
@@ -162,7 +161,8 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
                         .subscribe(result -> {
                             mPlaylists.initializePlaylists(result);
                             mPlaylistSelectionAdapter.notifyDataSetChanged();
-                            updateSelectedPlaylists();
+                            updateSelectedPlaylistsText();
+                            updateNextButtonEnabledStatus();
                         }, this::onSpotifyApiError),
 
                 // Handle rest of the results.
@@ -176,7 +176,8 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
                                 mPlaylistSelectionAdapter.notifyItemChanged(i);
                             }
 
-                            updateSelectedPlaylists();
+                            updateSelectedPlaylistsText();
+                            updateNextButtonEnabledStatus();
                         }, this::onSpotifyApiError, this::onAllPlaylistsLoaded));
 
         // Start the data fetch.
@@ -201,20 +202,30 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
                 pl.selected = selected;
             }
             mPlaylistSelectionAdapter.notifyDataSetChanged();
-            updateSelectedPlaylists();
+            handlePlaylistSelectionChanged();
         }
     }
 
-    private void updateSelectedPlaylists() {
-
+    private void handlePlaylistSelectionChanged() {
         mPlaylists.updateSelectedPlaylists();
+        updateSelectedPlaylistsText();
+        updateNextButtonEnabledStatus();
+    }
+
+    private void updateSelectedPlaylistsText() {
         if (mPlaylists.getSelectedPlaylistsCount() > 0) {
             mToolbar.setTitle(String.format(getString(R.string.playlists_selected_count),
-                    mPlaylists.getSelectedPlaylistsCount(), mPlaylists.getPlaylistsCount()));
-
-            mNextButton.setEnabled(true);
+                    mPlaylists.getSelectedPlaylistsCount(),
+                    mPlaylists.getPlaylistsCount()));
         } else {
             mToolbar.setTitle(mToolbarTitle);
+        }
+    }
+
+    private void updateNextButtonEnabledStatus() {
+        if (mPlaylists.getSelectedPlaylistsCount() > 0) {
+            mNextButton.setEnabled(true);
+        } else {
             mNextButton.setEnabled(false);
         }
     }
@@ -248,5 +259,6 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
     public void onAllPlaylistsLoaded() {
         hideSpinner();
         mSwipeRefresh.setRefreshing(false);
+        mPlaylists.updateSelectedPlaylists();
     }
 }
