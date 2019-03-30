@@ -74,6 +74,7 @@ public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
         WidgetEntity existing = mAppDatabase.widgetDao().getById(mAppWidgetId);
         if (existing != null) {
             this.mWidgetOptions = existing.options;
+            ((Button)this.findViewById(R.id.customize_next_button)).setText(R.string.update_widget);
         } else {
             this.mWidgetOptions = new WidgetOptions(
                     this.getString(R.color.dark_bg),

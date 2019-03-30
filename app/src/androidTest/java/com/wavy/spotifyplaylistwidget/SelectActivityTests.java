@@ -51,13 +51,13 @@ public class SelectActivityTests extends ActivityTestBase {
         IdlingRegistry.getInstance().register(networkIdlingResource);
 
         when(mockSpotifyApi.isAccessTokenValid()).thenReturn(true);
-        setSpotifyApiResult(50);
+        setSpotifyApiResult(60);
     }
 
     @Test
     public void initializeFromDbWorks() {
 
-        ArrayList<PlaylistViewModel> testPlaylists = getTestPlaylists(50);
+        ArrayList<PlaylistViewModel> testPlaylists = getTestPlaylists(60);
         ArrayList<PlaylistViewModel> playlistsInWidget = new ArrayList<>();
         for (int i = 0; i < testPlaylists.size(); i+=2)
             playlistsInWidget.add((testPlaylists.get(i)));
@@ -65,9 +65,9 @@ public class SelectActivityTests extends ActivityTestBase {
         insertMockWidget(playlistsInWidget);
         // the playlists in the pre-existing widget should be selected.
         openActivity();
-        for (int i = 0; i < 50; i+=2)
+        for (int i = 0; i < 60; i+=2)
             Assert.assertTrue(interactor.getCheckBoxAtPosition(i).isChecked());
-        for (int i = 1; i < 50; i+=2)
+        for (int i = 1; i < 60; i+=2)
             Assert.assertFalse(interactor.getCheckBoxAtPosition(i).isChecked());
     }
 
@@ -119,7 +119,7 @@ public class SelectActivityTests extends ActivityTestBase {
         interactor.clickRow(2);
         interactor.clickRow(4);
 
-        setSpotifyApiResult(getTestPlaylists(50));
+        setSpotifyApiResult(getTestPlaylists(60));
         interactor.refresh();
 
         Assert.assertTrue(interactor.getCheckBoxAtPosition(0).isChecked());
@@ -148,9 +148,9 @@ public class SelectActivityTests extends ActivityTestBase {
     }
 
     @Test
-    public void transitionToArrangeActivityWorksWith100kPlaylists() {
+    public void transitionToArrangeActivityWorksWith10kPlaylists() {
 
-        setSpotifyApiResult(100000);
+        setSpotifyApiResult(10000);
         openActivity();
 
         interactor.selectAll();
@@ -173,17 +173,18 @@ public class SelectActivityTests extends ActivityTestBase {
         mActivityTestRule.launchActivity(intent);
         interactor = new SelectActivityInteractor(mActivityTestRule.getActivity());
 
-        Assert.assertTrue(interactor.waitForPlaylistsDataLoaded(5000));
+        Assert.assertTrue(interactor.waitForPlaylistsDataLoaded(50000));
     }
 
     /**
      * Set the mock api to return a default set of playlists
      */
     private void setSpotifyApiResult(int playlistCount) {
-
-        doAnswer(invocationOnMock -> Observable.fromArray(getTestPlaylists(playlistCount))
+        doAnswer(invocationOnMock -> Observable.fromIterable(getTestPlaylists(playlistCount))
+                                            .window(50, 50)
+                                            .flatMapSingle(w -> w.toList())
                                             .doOnEach(e -> networkIdlingResource.increment())
-                                            .delay(1000, TimeUnit.MILLISECONDS)
+                                            .zipWith(Observable.interval(50, TimeUnit.MILLISECONDS), (batch, interval) -> batch)
                                             .doOnEach(e -> networkIdlingResource.decrement())).when(mockSpotifyApi).getPlaylists();
     }
 
@@ -191,9 +192,11 @@ public class SelectActivityTests extends ActivityTestBase {
      * Set the mock api to return specific set of playlists
      */
     private void setSpotifyApiResult(ArrayList<PlaylistViewModel> models) {
-        doAnswer(invocationOnMock -> Observable.fromArray(models)
+        doAnswer(invocationOnMock -> Observable.fromIterable(models)
+                                            .window(50, 50)
+                                            .flatMapSingle(w -> w.toList())
                                             .doOnEach(e -> networkIdlingResource.increment())
-                                            .delay(1000, TimeUnit.MILLISECONDS)
+                                            .zipWith(Observable.interval(50, TimeUnit.MILLISECONDS), (batch, interval) -> batch)
                                             .doOnEach(e -> networkIdlingResource.decrement())).when(mockSpotifyApi).getPlaylists();
     }
 

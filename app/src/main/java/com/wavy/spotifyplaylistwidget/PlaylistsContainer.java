@@ -13,6 +13,7 @@ public class PlaylistsContainer {
 
     private ArrayList<PlaylistViewModel> mPlaylists;
     private ArrayList<PlaylistViewModel> mSelectedPlaylists;
+    // With this we can persist selected status between spotify api calls.
     private HashSet<String> mSelectedPlaylistIds;
 
     public PlaylistsContainer() {
@@ -31,14 +32,9 @@ public class PlaylistsContainer {
         mSelectedPlaylistIds.clear();
     }
 
-    public void clearSelectedStatus() {
-        mSelectedPlaylistIds.clear();
-    }
-
     public void initializeSelectedStatus(HashSet<String> selectedIds) {
         this.mSelectedPlaylistIds = selectedIds;
     }
-
 
     public ArrayList<PlaylistViewModel> getPlaylists() {
         return mPlaylists;
@@ -53,6 +49,7 @@ public class PlaylistsContainer {
      */
     public void initializePlaylists(ArrayList<PlaylistViewModel> playlists) {
         mPlaylists.clear();
+        mSelectedPlaylists.clear();
         addPlaylists(playlists);
     }
 
@@ -63,9 +60,10 @@ public class PlaylistsContainer {
 
         // restore selected status
         for (PlaylistViewModel pl : playlists) {
-            if (isSelected(pl.id))
+            if (isSelected(pl.id))  {
                 pl.selected = true;
                 mSelectedPlaylists.add(pl);
+            }
         }
 
         mPlaylists.addAll(playlists);
@@ -76,16 +74,17 @@ public class PlaylistsContainer {
     }
 
     public int getSelectedPlaylistsCount() {
-        return mSelectedPlaylistIds.size();
+        return mSelectedPlaylists.size();
     }
 
     public void updateSelectedPlaylists() {
-        mSelectedPlaylistIds.clear();
         mSelectedPlaylists.clear();
         for (PlaylistViewModel pl : mPlaylists) {
             if (pl.selected) {
                 mSelectedPlaylistIds.add(pl.id);
                 mSelectedPlaylists.add(pl);
+            } else if (mSelectedPlaylistIds.contains(pl.id)) {
+                mSelectedPlaylistIds.remove(pl.id);
             }
         }
     }

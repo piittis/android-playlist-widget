@@ -83,6 +83,8 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
 
         // Tell the AppWidgetManager to perform an update on the current app widget.
         AppWidgetManager.getInstance(context).updateAppWidget(widget.androidWidgetId, views);
+        // If widget already exists, make sure data is up to date.
+        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widget.androidWidgetId, R.id.widget_list);
     }
 
     @Override
