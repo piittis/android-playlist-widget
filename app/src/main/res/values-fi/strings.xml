@@ -29,4 +29,5 @@
     <string name="edit">Editoi</string>
     <string name="edit_icon">edit ikoni</string>
     <string name="update_widget">Päivitä widget</string>
+    <string name="customize_widget">Kustomoi ulkonäkö</string>
 </resources>

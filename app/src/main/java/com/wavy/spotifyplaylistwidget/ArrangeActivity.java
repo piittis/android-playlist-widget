@@ -41,7 +41,9 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
         setContentView(R.layout.activity_arrange);
         ButterKnife.bind(this);
 
-        initializeFromDb();
+        if (isFirstCreate) {
+            initializeFromDb();
+        }
 
         PlaylistArrangeAdapter mPlaylistArrangeAdapter =
                 new PlaylistArrangeAdapter(mPlaylistArrangeView, mPlaylists.getSelectedPlaylists(), this);
