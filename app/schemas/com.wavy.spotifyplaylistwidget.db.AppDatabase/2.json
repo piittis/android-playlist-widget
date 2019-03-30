@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "be15d821289957829188de27ce0497f7",
+    "identityHash": "ebff6363307fe91adb309cb6e90f8049",
     "entities": [
       {
         "tableName": "widgets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`androidWidgetId` INTEGER NOT NULL, `creationTime` INTEGER, `backgroundColor` TEXT, `backgroundOpacity` INTEGER, `primaryTextColor` TEXT, `secondaryTextColor` TEXT, `showEditButton` INTEGER, `showTrackCount` INTEGER, PRIMARY KEY(`androidWidgetId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`androidWidgetId` INTEGER NOT NULL, `creationTime` INTEGER, `backgroundColor` TEXT, `backgroundOpacity` INTEGER NOT NULL, `primaryTextColor` TEXT, `secondaryTextColor` TEXT, `showEditButton` INTEGER NOT NULL, `showTrackCount` INTEGER NOT NULL, PRIMARY KEY(`androidWidgetId`))",
         "fields": [
           {
             "fieldPath": "androidWidgetId",
@@ -30,7 +30,7 @@
             "fieldPath": "options.backgroundOpacity",
             "columnName": "backgroundOpacity",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "options.primaryTextColor",
@@ -48,13 +48,13 @@
             "fieldPath": "options.showEditButton",
             "columnName": "showEditButton",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "options.showTrackCount",
             "columnName": "showTrackCount",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -188,7 +188,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"be15d821289957829188de27ce0497f7\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ebff6363307fe91adb309cb6e90f8049\")"
     ]
   }
 }
