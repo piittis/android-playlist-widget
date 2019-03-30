@@ -52,8 +52,7 @@ public abstract class AppDatabase extends RoomDatabase {
         return db;
     }
 
-    // This is how you do migrations
-    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Widgets ADD COLUMN backgroundOpacity INTEGER NOT NULL DEFAULT 100");

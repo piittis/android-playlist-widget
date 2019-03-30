@@ -2,7 +2,6 @@ package com.wavy.spotifyplaylistwidget.db.entity;
 
 import com.wavy.spotifyplaylistwidget.db.converter.BooleanConverter;
 
-import androidx.annotation.NonNull;
 import androidx.room.TypeConverters;
 
 public class WidgetOptions {
@@ -12,11 +11,9 @@ public class WidgetOptions {
     public String primaryTextColor;
     public String secondaryTextColor;
     @TypeConverters(BooleanConverter.class)
-    @NonNull
-    public Boolean showEditButton;
+    public boolean showEditButton;
     @TypeConverters(BooleanConverter.class)
-    @NonNull
-    public Boolean showTrackCount;
+    public boolean showTrackCount;
 
     public WidgetOptions(String backgroundColor, int backgroundOpacity, String primaryTextColor, String secondaryTextColor,  Boolean showEditButton, Boolean showTrackCount) {
         this.backgroundColor = backgroundColor;

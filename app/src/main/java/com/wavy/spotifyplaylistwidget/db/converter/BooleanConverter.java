@@ -5,7 +5,7 @@ import androidx.room.TypeConverter;
 public class BooleanConverter {
 
     @TypeConverter
-    public static Boolean toBoolean(int value) {
+    public static boolean toBoolean(int value) {
         return value != 0;
     }
 
