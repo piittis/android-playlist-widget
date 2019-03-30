@@ -63,9 +63,9 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
     //noinspection GradleCompatible
     androidTestImplementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    androidTestImplementation 'androidx.recyclerview:recyclerview:1.1.0-alpha02'
-    androidTestImplementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
-    androidTestImplementation 'com.google.android.material:material:1.1.0-alpha04'
+    androidTestImplementation 'androidx.recyclerview:recyclerview:1.1.0-alpha03'
+    androidTestImplementation 'androidx.appcompat:appcompat:1.1.0-alpha03'
+    androidTestImplementation 'com.google.android.material:material:1.1.0-alpha05'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test:rules:1.1.2-alpha02'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha02'
@@ -80,21 +80,21 @@ dependencies {
     androidTestAnnotationProcessor 'com.google.dagger:dagger-android-processor:2.21'
 
     // ROOM
-    def room_version = '2.1.0-alpha04'
+    def room_version = '2.1.0-alpha06'
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // optional - RxJava support for Room
     implementation "androidx.room:room-rxjava2:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
 
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation "io.reactivex.rxjava2:rxjava:2.2.6"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.8"
 
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
-    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha03'
+    implementation 'com.google.android.material:material:1.1.0-alpha05'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha02'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha03'
 
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
@@ -107,7 +107,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
 
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
 
     // Dagger
@@ -119,7 +119,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.21'
 
     // for debugging
-    implementation 'com.facebook.stetho:stetho:1.5.0'
+    // implementation 'com.facebook.stetho:stetho:1.5.0'
     //implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 }
 
