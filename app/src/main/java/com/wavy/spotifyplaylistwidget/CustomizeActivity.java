@@ -92,10 +92,10 @@ public class CustomizeActivity extends PlaylistWidgetConfigureActivityBase {
         updatePreviewTrackCount();
         mShowTrackCountCheckbox.setChecked(mWidgetOptions.showTrackCount);
 
-        if (mWidgetOptions.backgroundColor.equals(this.getString(R.color.dark_bg))) {
-            mStyleRadioGroup.check(R.id.darkStyle);
-        } else {
+        if (mWidgetOptions.backgroundColor.equals(this.getString(R.color.light_bg))) {
             mStyleRadioGroup.check(R.id.lightStyle);
+        } else {
+            mStyleRadioGroup.check(R.id.darkStyle);
         }
 
         mOpacitySeek.setProgress(mWidgetOptions.backgroundOpacity);
