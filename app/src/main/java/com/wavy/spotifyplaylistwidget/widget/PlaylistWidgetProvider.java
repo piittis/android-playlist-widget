@@ -134,7 +134,7 @@ public class PlaylistWidgetProvider extends AppWidgetProvider {
                 if (intent.getBooleanExtra("edit", false)) {
                     int widgetId = intent.getIntExtra("widgetId", 0);
                     Intent i = new Intent(context, SelectActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
                     context.startActivity(i);
                     logEvent(context, "playlist_edit_click");
