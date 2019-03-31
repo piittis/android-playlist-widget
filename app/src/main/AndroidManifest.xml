@@ -18,7 +18,8 @@
         <activity android:name=".AuthActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
-        <activity android:name=".SelectActivity">
+        <activity android:name=".SelectActivity"
+            android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -29,11 +30,14 @@
              <!--</intent-filter>-->
         </activity>
 
-        <activity android:name=".ArrangeActivity" />
-        <activity android:name=".CustomizeActivity" android:exported="true">
+        <activity android:name=".ArrangeActivity"
+            android:excludeFromRecents="true"/>
+        <activity android:name=".CustomizeActivity"
+            android:excludeFromRecents="true">
         </activity>
 
         <activity
+            android:excludeFromRecents="true"
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
