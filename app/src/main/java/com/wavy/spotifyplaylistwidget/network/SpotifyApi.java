@@ -1,6 +1,9 @@
 package com.wavy.spotifyplaylistwidget.network;
 
 
+import androidx.annotation.NonNull;
+
+import com.crashlytics.android.Crashlytics;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import org.threeten.bp.Instant;
@@ -8,7 +11,6 @@ import org.threeten.bp.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import retrofit2.Call;
@@ -93,6 +95,7 @@ public class SpotifyApi {
 
             @Override
             public void onFailure(Call<PlaylistService.PlaylistResponseModel> call, Throwable t) {
+                Crashlytics.log("Playlist load error: " + t.getMessage());
                 if (!emitter.isDisposed()) emitter.onNext(new ArrayList<>());
                 if (!emitter.isDisposed()) emitter.onError(t);
                 if (!emitter.isDisposed()) emitter.onComplete();
