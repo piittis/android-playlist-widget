@@ -81,15 +81,6 @@
                     tools:layout_editor_absoluteX="0dp" />
 
                 <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/preview"
-                    app:layout_constraintTop_toBottomOf="@+id/opacitySeek"
-                    tools:layout_editor_absoluteX="10dp" />
-
-                <TextView
                     android:id="@+id/opacityPercentage"
                     android:layout_width="wrap_content"
                     android:layout_height="19dp"
@@ -117,10 +108,19 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView5"
                     tools:layout_editor_absoluteX="10dp" />
 
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/preview"
+                    app:layout_constraintTop_toBottomOf="@+id/opacitySeek"
+                    tools:layout_editor_absoluteX="10dp" />
+
                 <FrameLayout
                     android:id="@+id/playlist_preview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="64dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/checkerboard"
                     app:layout_constraintTop_toBottomOf="@+id/textView6"
@@ -129,14 +129,15 @@
                     <ImageView
                         android:id="@+id/preview_bg"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        app:srcCompat="@color/white"
-                        android:contentDescription="@string/description_playlist_preview_background" />
+                        android:layout_height="64dp"
+                        android:contentDescription="@string/description_playlist_preview_background"
+                        app:srcCompat="@color/white" />
 
                     <include
                         layout="@layout/playlist_row"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
 
                 </FrameLayout>
 
