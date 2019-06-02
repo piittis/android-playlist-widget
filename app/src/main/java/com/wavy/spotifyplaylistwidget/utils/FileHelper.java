@@ -32,7 +32,9 @@ public class FileHelper {
                 .doOnNext(pl -> {
                     try {
                         Bitmap image = Picasso.get().load(pl.imageUrl).resize(imageSize, imageSize).get();
-                        savePng(callingActivity, pl.id, image);
+                        if (image != null) {
+                            savePng(callingActivity, pl.id, image);
+                        }
                     } catch(Exception e) {
                         Crashlytics.log("Error loading playlist image");
                         Crashlytics.logException(e);

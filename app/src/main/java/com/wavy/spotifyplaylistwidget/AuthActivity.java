@@ -6,16 +6,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.wavy.spotifyplaylistwidget.exceptions.AuthErrorException;
+import com.wavy.spotifyplaylistwidget.exceptions.AuthException;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 
 import javax.inject.Inject;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Activity without an UI whose only purpose is to fetch a Spotify access token and give it to
@@ -68,14 +70,10 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void authenticationFailed(String reason) {
-        setResult(RESULT_CANCELED);
-        Crashlytics.log("Authentication failed");
         quitWithMessage(getString(R.string.spotify_auth_error) + " (" + reason + ")");
     }
 
     private void authenticationCancelled() {
-        setResult(RESULT_CANCELED);
-        Crashlytics.log("Authentication cancelled");
         quitWithMessage(getString(R.string.spotify_auth_required));
     }
 
@@ -87,7 +85,6 @@ public class AuthActivity extends AppCompatActivity {
             return false;
         }
     }
-
 
     private void quitWithMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
@@ -105,6 +102,7 @@ public class AuthActivity extends AppCompatActivity {
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
+                    Crashlytics.log("Auth success");
                     // Get token and go to select view
                     String token = response.getAccessToken();
                     int expiresInSeconds = response.getExpiresIn();
@@ -119,16 +117,29 @@ public class AuthActivity extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
-                    Log.d("auth result", response.getError());
+                    Crashlytics.log("Auth response type: " + response.getType());
+                    Crashlytics.log("Auth response code: " + response.getCode());
+                    Crashlytics.log("Auth response state: " + response.getState());
+                    Crashlytics.log("Auth response error: " + response.getError());
+                    Crashlytics.logException(new AuthErrorException());
+
                     mFirebaseAnalytics.logEvent("auth_error", new Bundle());
+                    Log.d("auth result", response.getError());
+
                     authenticationFailed(response.getError());
                     break;
                 // Most likely auth flow was cancelled
                 default:
-                    Log.d("auth result", "cancelled");
+                    Crashlytics.log("Auth response type: " + response.getType());
+                    Crashlytics.log("Auth response code: " + response.getCode());
+                    Crashlytics.log("Auth response state: " + response.getState());
+                    Crashlytics.log("Auth response error: " + response.getError());
+                    Crashlytics.logException(new AuthException());
+
                     mFirebaseAnalytics.logEvent("auth_cancel", new Bundle());
+                    Log.d("auth result", "cancelled");
+
                     authenticationCancelled();
-                    // Handle other cases
             }
         }
     }
