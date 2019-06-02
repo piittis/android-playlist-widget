@@ -1,5 +1,5 @@
 <bitmap
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:dither="true"
-    android:src="@drawable/checkerboard_tile"
+    android:src="@drawable/checkerboard_tile_32"
     android:tileMode="repeat"/>
