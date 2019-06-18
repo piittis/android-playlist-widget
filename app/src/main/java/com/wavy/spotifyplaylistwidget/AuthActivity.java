@@ -96,6 +96,8 @@ public class AuthActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
+        Crashlytics.log("[AuthActivity.onActivityResult] requestCode: " + requestCode);
+        Crashlytics.log("[AuthActivity.onActivityResult] resultCode: " + resultCode);
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
