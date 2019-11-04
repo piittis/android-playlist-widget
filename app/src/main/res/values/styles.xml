@@ -18,7 +18,7 @@
         <item name="android:windowAnimationStyle">@style/CustomAnimations.Activity</item>
         <item name="android:textColorSecondary">#FFFFFF</item>
         <item name="colorAccent">#1DB954</item>
-
+        <item name="android:fontFamily">@font/spotify</item>
         <!--<item name="android:windowIsFloating">true</item>-->
         <!--<item name="android:windowCloseOnTouchOutside">false</item>-->
         <!--<item name="android:colorBackgroundCacheHint">@null</item>-->
