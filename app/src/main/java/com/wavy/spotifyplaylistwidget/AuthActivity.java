@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
 import com.wavy.spotifyplaylistwidget.exceptions.AuthErrorException;
 import com.wavy.spotifyplaylistwidget.exceptions.AuthException;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
@@ -46,7 +46,7 @@ public class AuthActivity extends AppCompatActivity {
         Log.d(TAG, "on create");
         if (!spotifyInstalled()) {
             mFirebaseAnalytics.logEvent("spotify_not_installed", new Bundle());
-            AuthenticationClient.openDownloadSpotifyActivity(this);
+            AuthorizationClient.openDownloadSpotifyActivity(this);
             quitWithMessage(getString(R.string.spotify_install_ap));
         } else {
             openAuthenticationActivity();
@@ -60,13 +60,13 @@ public class AuthActivity extends AppCompatActivity {
 
     private void openAuthenticationActivity() {
 
-        AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
+        AuthorizationRequest request = new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI)
                 .setScopes(new String[]{"user-read-private",
                         "playlist-read-private",
                         "playlist-read-collaborative"})
                 .build();
 
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
     private void authenticationFailed(String reason) {
@@ -100,7 +100,7 @@ public class AuthActivity extends AppCompatActivity {
         Crashlytics.log("[AuthActivity.onActivityResult] resultCode: " + resultCode);
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
-            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
