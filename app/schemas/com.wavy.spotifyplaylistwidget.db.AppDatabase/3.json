@@ -1,0 +1,191 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "89d5162e190f0e9920db1c62bdc14404",
+    "entities": [
+      {
+        "tableName": "widgets",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`androidWidgetId` INTEGER NOT NULL, `creationTime` INTEGER, `backgroundColor` TEXT, `backgroundOpacity` INTEGER NOT NULL, `primaryTextColor` TEXT, `secondaryTextColor` TEXT, `showEditButton` INTEGER NOT NULL, `showTrackCount` INTEGER NOT NULL, PRIMARY KEY(`androidWidgetId`))",
+        "fields": [
+          {
+            "fieldPath": "androidWidgetId",
+            "columnName": "androidWidgetId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "creationTime",
+            "columnName": "creationTime",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "options.backgroundColor",
+            "columnName": "backgroundColor",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "options.backgroundOpacity",
+            "columnName": "backgroundOpacity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "options.primaryTextColor",
+            "columnName": "primaryTextColor",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "options.secondaryTextColor",
+            "columnName": "secondaryTextColor",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "options.showEditButton",
+            "columnName": "showEditButton",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "options.showTrackCount",
+            "columnName": "showTrackCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "androidWidgetId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_widgets_androidWidgetId",
+            "unique": false,
+            "columnNames": [
+              "androidWidgetId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_widgets_androidWidgetId` ON `${TABLE_NAME}` (`androidWidgetId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "playables",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`spotifyId` TEXT NOT NULL, `name` TEXT, `uri` TEXT, `owner` TEXT, `trackCount` INTEGER NOT NULL, `type` INTEGER NOT NULL, PRIMARY KEY(`spotifyId`))",
+        "fields": [
+          {
+            "fieldPath": "spotifyId",
+            "columnName": "spotifyId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "owner",
+            "columnName": "owner",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "trackCount",
+            "columnName": "trackCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "spotifyId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "widget_playables",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`widgetId` INTEGER NOT NULL, `playableId` TEXT NOT NULL, `playablePosition` INTEGER NOT NULL, PRIMARY KEY(`widgetId`, `playableId`), FOREIGN KEY(`widgetId`) REFERENCES `widgets`(`androidWidgetId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`playableId`) REFERENCES `playables`(`spotifyId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "widgetId",
+            "columnName": "widgetId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playableId",
+            "columnName": "playableId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playablePosition",
+            "columnName": "playablePosition",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "widgetId",
+            "playableId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "widgets",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "widgetId"
+            ],
+            "referencedColumns": [
+              "androidWidgetId"
+            ]
+          },
+          {
+            "table": "playables",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "playableId"
+            ],
+            "referencedColumns": [
+              "spotifyId"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '89d5162e190f0e9920db1c62bdc14404')"
+    ]
+  }
+}

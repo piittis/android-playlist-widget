@@ -19,5 +19,5 @@
         android:drawSelectorOnTop="true"
         android:listSelector="@drawable/widget_selectable_item"
         android:scrollbarThumbVertical="@drawable/widget_scroll"
-        tools:listitem="@layout/widget_playlist" />
+        tools:listitem="@layout/widget_playable" />
 </LinearLayout>

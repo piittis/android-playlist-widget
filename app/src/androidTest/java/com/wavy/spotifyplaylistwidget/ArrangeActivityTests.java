@@ -4,10 +4,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.SystemClock;
 
-import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.PlayableEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
-import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlayables;
 import com.wavy.spotifyplaylistwidget.interaction.ArrangeActivityInteractor;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -50,17 +50,17 @@ public class ArrangeActivityTests extends ActivityTestBase {
 
         mockDatabase.widgetDao().upsert(new WidgetEntity(1, Instant.now(), WidgetOptions.getDefaultOptions()));
 
-        ArrayList<PlaylistEntity> widgetPlaylists = new ArrayList<>();
-        widgetPlaylists.add(new PlaylistEntity("id0", "Playlist0", "", "", 5));
-        widgetPlaylists.add(new PlaylistEntity("id1", "Playlist1", "", "", 5));
-        widgetPlaylists.add(new PlaylistEntity("id2", "Playlist2", "", "", 5));
+        ArrayList<PlayableEntity> widgetPlaylists = new ArrayList<>();
+        widgetPlaylists.add(new PlayableEntity("id0", "Playlist0", "", "", 5));
+        widgetPlaylists.add(new PlayableEntity("id1", "Playlist1", "", "", 5));
+        widgetPlaylists.add(new PlayableEntity("id2", "Playlist2", "", "", 5));
         mockDatabase.playlistDao().upsertAll(widgetPlaylists);
 
-        ArrayList<WidgetPlaylist> widgetPlaylistsMapping = new ArrayList<>();
-        widgetPlaylistsMapping.add(new WidgetPlaylist(1, "id2", 1));
-        widgetPlaylistsMapping.add(new WidgetPlaylist(1, "id1", 2));
-        widgetPlaylistsMapping.add(new WidgetPlaylist(1, "id0", 3));
-        mockDatabase.widgetPlaylistDao().setWidgetsPlaylists(1, widgetPlaylistsMapping);
+        ArrayList<WidgetPlayables> widgetPlaylistsMapping = new ArrayList<>();
+        widgetPlaylistsMapping.add(new WidgetPlayables(1, "id2", 1));
+        widgetPlaylistsMapping.add(new WidgetPlayables(1, "id1", 2));
+        widgetPlaylistsMapping.add(new WidgetPlayables(1, "id0", 3));
+        mockDatabase.widgetPlayablesDao().setWidgetsPlaylists(1, widgetPlaylistsMapping);
 
         setupAndOpenActivity();
 

@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
-import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlayables;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistArrangeAdapter;
 import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 
@@ -15,8 +18,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -57,20 +58,20 @@ public class ArrangeActivity extends PlaylistWidgetConfigureActivityBase {
     }
 
     private void initializeFromDb() {
-        List<WidgetPlaylist> existing = mAppDatabase.widgetPlaylistDao().getByWidgetId(mAppWidgetId);
+        List<WidgetPlayables> existing = mAppDatabase.widgetPlayablesDao().getByWidgetId(mAppWidgetId);
         if (existing == null)
             return;
 
-        HashMap<String, Integer> playlistPosition = new HashMap<>();
-        for (WidgetPlaylist pl : existing) {
-            playlistPosition.put(pl.playlistId, pl.playlistPosition);
+        HashMap<String, Integer> playablePositions = new HashMap<>();
+        for (WidgetPlayables pl : existing) {
+            playablePositions.put(pl.playableId, pl.playablePosition);
         }
 
         Collections.sort(mPlaylists.getSelectedPlaylists(),
                 (a, b) ->
                 {
-                    Integer aPos = playlistPosition.get(a.id);
-                    Integer bPos = playlistPosition.get(b.id);
+                    Integer aPos = playablePositions.get(a.id);
+                    Integer bPos = playablePositions.get(b.id);
                     aPos = aPos == null ? Integer.MAX_VALUE : aPos;
                     bPos = bPos == null ? Integer.MAX_VALUE : bPos;
                     return aPos - bPos;

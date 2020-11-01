@@ -12,10 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
-import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.PlayableEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.PlayableType;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
-import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlayables;
 import com.wavy.spotifyplaylistwidget.utils.FileHelper;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 import com.wavy.spotifyplaylistwidget.widget.PlaylistWidgetProvider;
@@ -211,13 +212,13 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
     protected Completable saveWidgetConfig(WidgetOptions options) {
 
         // Create entities.
-        ArrayList<PlaylistEntity> playlists = new ArrayList<>();
-        ArrayList<WidgetPlaylist> widgetplaylists = new ArrayList<>();
+        ArrayList<PlayableEntity> playlists = new ArrayList<>();
+        ArrayList<WidgetPlayables> widgetplaylists = new ArrayList<>();
 
         int position = 1;
         for (PlaylistViewModel pl : mPlaylists.getSelectedPlaylists()) {
-            playlists.add(new PlaylistEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks));
-            widgetplaylists.add(new WidgetPlaylist(mAppWidgetId, pl.id, position));
+            playlists.add(new PlayableEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks, PlayableType.PLAYLIST));
+            widgetplaylists.add(new WidgetPlayables(mAppWidgetId, pl.id, position));
             position++;
         }
 
@@ -229,7 +230,7 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
             try {
                 mAppDatabase.widgetDao().upsert(widgetEntity);
                 mAppDatabase.playlistDao().upsertAll(playlists);
-                mAppDatabase.widgetPlaylistDao().setWidgetsPlaylists(mAppWidgetId, widgetplaylists);
+                mAppDatabase.widgetPlayablesDao().setWidgetsPlaylists(mAppWidgetId, widgetplaylists);
                 mAppDatabase.setTransactionSuccessful();
             }
             finally {

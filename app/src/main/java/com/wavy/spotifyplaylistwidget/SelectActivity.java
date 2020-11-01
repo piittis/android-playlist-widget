@@ -81,7 +81,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
     }
 
     private void initializeFromDb() {
-        HashSet<String> existing = new HashSet<>(mAppDatabase.widgetPlaylistDao().getWidgetPlaylistsIds(mAppWidgetId));
+        HashSet<String> existing = new HashSet<>(mAppDatabase.widgetPlayablesDao().getWidgetPlayableIds(mAppWidgetId));
         mPlaylists.initializeSelectedStatus(existing);
     }
 

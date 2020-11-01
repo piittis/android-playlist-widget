@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.IoC;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
-import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.PlayableEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private RemoteViews mLoadingView;
 
     private WidgetEntity mWidget;
-    private List<PlaylistEntity> mPlaylists;
+    private List<PlayableEntity> mPlayables;
 
     private int mPrimaryTextColor;
     private int mSecondaryTetxtColor;
@@ -50,7 +50,7 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
         mImageBasePath = mContext.getFilesDir().getAbsolutePath() + File.separator;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mTrackCountString = context.getString(R.string.track_count);
-        mLoadingView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist_loading_placeholder);
+        mLoadingView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playable_loading_placeholder);
     }
 
     @Override
@@ -62,8 +62,8 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
     private void updateFromDb() {
         try {
             mWidget = mAppDatabase.widgetDao().getById(mAppWidgetId);
-            mPlaylists = mAppDatabase.widgetPlaylistDao().getWidgetPlaylists(mAppWidgetId);
-            mItemCount = mPlaylists.size();
+            mPlayables = mAppDatabase.widgetPlayablesDao().getWidgetPlayables(mAppWidgetId);
+            mItemCount = mPlayables.size();
 
             mPrimaryTextColor = Color.parseColor(mWidget.options.primaryTextColor);
             mSecondaryTetxtColor = Color.parseColor(mWidget.options.secondaryTextColor);
@@ -103,9 +103,9 @@ public class PlaylistViewsFactory implements RemoteViewsService.RemoteViewsFacto
             return getEditButton();
         }
 
-        final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playlist);
+        final RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_playable);
 
-        PlaylistEntity pl = mPlaylists.get(position);
+        PlayableEntity pl = mPlayables.get(position);
 
         remoteView.setTextViewText(R.id.playlist_name, pl.name);
         remoteView.setTextColor(R.id.playlist_name, mPrimaryTextColor);

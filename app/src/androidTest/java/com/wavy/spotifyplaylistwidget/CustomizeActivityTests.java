@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.SystemClock;
 
-import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.PlayableEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
 import com.wavy.spotifyplaylistwidget.interaction.CustomizeActivityInteractor;
@@ -158,7 +158,7 @@ public class CustomizeActivityTests extends ActivityTestBase {
         SystemClock.sleep(500);
 
         WidgetEntity createdWidget = mockDatabase.widgetDao().getById(1);
-        List<PlaylistEntity> createdPlaylists = mockDatabase.widgetPlaylistDao().getWidgetPlaylists(1);
+        List<PlayableEntity> createdPlaylists = mockDatabase.widgetPlayablesDao().getWidgetPlayables(1);
 
         Assert.assertNotNull(createdWidget);
         Assert.assertNotNull(createdPlaylists);

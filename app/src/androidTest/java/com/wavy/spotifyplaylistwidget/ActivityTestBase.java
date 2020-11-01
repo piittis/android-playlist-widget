@@ -6,10 +6,10 @@ import com.wavy.spotifyplaylistwidget.DI.DaggerTestAppComponent;
 import com.wavy.spotifyplaylistwidget.DI.TestAppComponent;
 import com.wavy.spotifyplaylistwidget.DI.TestAppModule;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
-import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
+import com.wavy.spotifyplaylistwidget.db.entity.PlayableEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetOptions;
-import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlaylist;
+import com.wavy.spotifyplaylistwidget.db.entity.WidgetPlayables;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
@@ -60,15 +60,15 @@ public class ActivityTestBase {
      */
     protected void insertMockWidget(ArrayList<PlaylistViewModel> testPlaylists) {
         mockDatabase.widgetDao().upsert(new WidgetEntity(1, Instant.now(), WidgetOptions.getDefaultOptions()));
-        ArrayList<PlaylistEntity> playlists = new ArrayList<>();
-        ArrayList<WidgetPlaylist> widgetplaylists = new ArrayList<>();
+        ArrayList<PlayableEntity> playlists = new ArrayList<>();
+        ArrayList<WidgetPlayables> widgetplaylists = new ArrayList<>();
         for (int i = 0; i < testPlaylists.size(); i++) {
             PlaylistViewModel pl = testPlaylists.get(i);
-            playlists.add(new PlaylistEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks));
-            widgetplaylists.add(new WidgetPlaylist(1, pl.id, i+1));
+            playlists.add(new PlayableEntity(pl.id, pl.name, pl.uri, pl.owner, pl.tracks));
+            widgetplaylists.add(new WidgetPlayables(1, pl.id, i+1));
         }
         mockDatabase.playlistDao().upsertAll(playlists);
-        mockDatabase.widgetPlaylistDao().setWidgetsPlaylists(1, widgetplaylists);
+        mockDatabase.widgetPlayablesDao().setWidgetsPlaylists(1, widgetplaylists);
     }
 
     private void clearDb() {
