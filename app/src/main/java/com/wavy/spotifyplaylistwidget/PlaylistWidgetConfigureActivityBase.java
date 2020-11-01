@@ -7,8 +7,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.wavy.spotifyplaylistwidget.db.AppDatabase;
 import com.wavy.spotifyplaylistwidget.db.entity.PlaylistEntity;
 import com.wavy.spotifyplaylistwidget.db.entity.WidgetEntity;
@@ -24,7 +26,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -200,8 +201,8 @@ public abstract class PlaylistWidgetConfigureActivityBase extends AppCompatActiv
                     logEvent("new_widget_created");
                     finishWidgetConfiguration();
                 }, e -> {
-                    Crashlytics.log("Error saving widget information");
-                    Crashlytics.logException(e);
+                    FirebaseCrashlytics.getInstance().log("Error saving widget information");
+                    FirebaseCrashlytics.getInstance().recordException(e);
                     quitWithError(e.getMessage());
                 });
     }

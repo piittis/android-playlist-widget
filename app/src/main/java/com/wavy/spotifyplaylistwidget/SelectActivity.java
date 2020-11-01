@@ -9,7 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.wavy.spotifyplaylistwidget.listAdapters.PlaylistSelectionAdapter;
 import com.wavy.spotifyplaylistwidget.network.SpotifyApi;
 import com.wavy.spotifyplaylistwidget.utils.PicassoOnScrollListener;
@@ -20,10 +25,6 @@ import java.util.HashSet;
 
 import javax.inject.Inject;
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -76,6 +77,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
         if (isFirstCreate) {
             LoadPlaylistsAfterAuth();
         }
+
     }
 
     private void initializeFromDb() {
@@ -253,7 +255,7 @@ public class SelectActivity extends PlaylistWidgetConfigureActivityBase {
         hideSpinner();
         mSwipeRefresh.setRefreshing(false);
         mPlaylists.updateSelectedPlaylists();
-        Crashlytics.logException(error);
+        FirebaseCrashlytics.getInstance().recordException(error);
         logEvent("api_error");
         Toast.makeText(getApplicationContext(), getString(R.string.spotify_api_error) + " (" + error.getMessage() + ")"
                 , Toast.LENGTH_LONG).show();

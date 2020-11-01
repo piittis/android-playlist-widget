@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.squareup.picasso.Picasso;
 import com.wavy.spotifyplaylistwidget.R;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
@@ -36,8 +36,8 @@ public class FileHelper {
                             savePng(callingActivity, pl.id, image);
                         }
                     } catch(Exception e) {
-                        Crashlytics.log("Error loading playlist image");
-                        Crashlytics.logException(e);
+                        FirebaseCrashlytics.getInstance().log("Error loading playlist image");
+                        FirebaseCrashlytics.getInstance().recordException(e);
                     }
                 })
                 .sequential()
@@ -51,8 +51,8 @@ public class FileHelper {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.close();
         } catch (Exception e) {
-            Crashlytics.log("Error saving playlist image");
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().log("Error saving playlist image");
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
     }
 

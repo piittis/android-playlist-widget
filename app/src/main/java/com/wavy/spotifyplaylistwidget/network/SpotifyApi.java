@@ -3,7 +3,7 @@ package com.wavy.spotifyplaylistwidget.network;
 
 import androidx.annotation.NonNull;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.wavy.spotifyplaylistwidget.viewModels.PlaylistViewModel;
 
 import org.threeten.bp.Instant;
@@ -95,7 +95,7 @@ public class SpotifyApi {
 
             @Override
             public void onFailure(Call<PlaylistService.PlaylistResponseModel> call, Throwable t) {
-                Crashlytics.log("Playlist load error: " + t.getMessage());
+                FirebaseCrashlytics.getInstance().log("Playlist load error: " + t.getMessage());
                 if (!emitter.isDisposed()) emitter.onNext(new ArrayList<>());
                 if (!emitter.isDisposed()) emitter.onError(t);
                 if (!emitter.isDisposed()) emitter.onComplete();

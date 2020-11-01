@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
@@ -96,15 +96,16 @@ public class AuthActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        Crashlytics.log("[AuthActivity.onActivityResult] requestCode: " + requestCode);
-        Crashlytics.log("[AuthActivity.onActivityResult] resultCode: " + resultCode);
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.log("[AuthActivity.onActivityResult] requestCode: " + requestCode);
+        crashlytics.log("[AuthActivity.onActivityResult] resultCode: " + resultCode);
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
-                    Crashlytics.log("Auth success");
+                    crashlytics.log("Auth success");
                     // Get token and go to select view
                     String token = response.getAccessToken();
                     int expiresInSeconds = response.getExpiresIn();
@@ -119,11 +120,11 @@ public class AuthActivity extends AppCompatActivity {
 
                 // Auth flow returned an error
                 case ERROR:
-                    Crashlytics.log("Auth response type: " + response.getType());
-                    Crashlytics.log("Auth response code: " + response.getCode());
-                    Crashlytics.log("Auth response state: " + response.getState());
-                    Crashlytics.log("Auth response error: " + response.getError());
-                    Crashlytics.logException(new AuthErrorException());
+                    crashlytics.log("Auth response type: " + response.getType());
+                    crashlytics.log("Auth response code: " + response.getCode());
+                    crashlytics.log("Auth response state: " + response.getState());
+                    crashlytics.log("Auth response error: " + response.getError());
+                    crashlytics.recordException(new AuthErrorException());
 
                     mFirebaseAnalytics.logEvent("auth_error", new Bundle());
                     Log.d("auth result", response.getError());
@@ -132,11 +133,11 @@ public class AuthActivity extends AppCompatActivity {
                     break;
                 // Most likely auth flow was cancelled
                 default:
-                    Crashlytics.log("Auth response type: " + response.getType());
-                    Crashlytics.log("Auth response code: " + response.getCode());
-                    Crashlytics.log("Auth response state: " + response.getState());
-                    Crashlytics.log("Auth response error: " + response.getError());
-                    Crashlytics.logException(new AuthException());
+                    crashlytics.log("Auth response type: " + response.getType());
+                    crashlytics.log("Auth response code: " + response.getCode());
+                    crashlytics.log("Auth response state: " + response.getState());
+                    crashlytics.log("Auth response error: " + response.getError());
+                    crashlytics.recordException(new AuthException());
 
                     mFirebaseAnalytics.logEvent("auth_cancel", new Bundle());
                     Log.d("auth result", "cancelled");
